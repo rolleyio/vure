@@ -51,5 +51,22 @@
   "volta": {
     "node": "15.6.0",
     "npm": "7.20.2"
-  }
+  },
+  "description": "## TODO - Get login / firestore models working with zod validation   - Add vue refs for data from firestore   - Re-add testing for typesaurus   - Allow firebase emulator port override in config - Font awesome - Prose config for windicss - Add OG tasks and required html tags - allow for multiple hosting envs - Add cypress for frontend - Add firebase rules tests - Vite-ssg",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolleyio/vure.git"
+  },
+  "keywords": [
+    "vue",
+    "firebase",
+    "typesaurus",
+    "firestore"
+  ],
+  "author": "Matthew Rollinson <matt@rolley.io>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rolleyio/vure/issues"
+  },
+  "homepage": "https://github.com/rolleyio/vure#readme"
 }

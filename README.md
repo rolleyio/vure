@@ -1,14 +1,11 @@
-# Rolley Vite Template
+# Vure
+
+This is a proof of concept to see if Vue and Firebase (Vure) can create a firestore powered ssg app (built on top of typesaurus and firebase v9), powered by Vite
 
 ## TODO
 - Get login / firestore models working with zod validation
-  - Add vue refs for data from firestore
-  - Re-add testing for typesaurus
-  - Allow firebase emulator port override in config
-- Font awesome
-- Prose config for windicss
-- Add OG tasks and required html tags
-- allow for multiple hosting envs
-- Add cypress for frontend
+- Re-add testing for typesaurus
+- Allow firebase emulator port override in config
 - Add firebase rules tests
-- Vite-ssg
+- Allow zod to check schemas
+- Cleanup onEvents in onBeforeUnmount
