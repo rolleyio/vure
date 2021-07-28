@@ -1,4 +1,4 @@
-import { ref, Ref, markRaw } from 'vue';
+import { markRaw, shallowRef } from 'vue';
 import {
   Auth,
   User,
@@ -9,9 +9,10 @@ import {
 
 import { useFirebaseApp } from '../composables';
 
+import type { VureAuthEmulatorConfig } from '../types';
+
 let auth: Auth | null = null;
-// TODO: this might need to be injected to keep reactive
-let user: Ref<User | null> = ref(null);
+let user = shallowRef<User | null>(null);
 
 export function useAuth() {
   if (!auth) {
@@ -27,11 +28,16 @@ export function useUser() {
   return user;
 }
 
-export function initializeAuth() {
+export function initializeAuth(
+  emulator: VureAuthEmulatorConfig = {
+    enabled: false,
+    url: 'http://localhost:9099',
+  },
+) {
   auth = markRaw(getAuth(useFirebaseApp()));
 
-  if (import.meta.env.DEV) {
-    useAuthEmulator(auth, 'http://localhost:9099');
+  if (emulator.enabled) {
+    useAuthEmulator(auth, emulator.url ?? 'http://localhost:9099');
   }
 
   onAuthStateChanged(auth, (u) => {

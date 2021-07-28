@@ -7,6 +7,8 @@ import {
 
 import { useFirebaseApp } from '../composables';
 
+import type { VureEmulatorConfig } from '../types';
+
 let functions: Functions | null = null;
 
 export function useFunctions() {
@@ -19,11 +21,21 @@ export function useFunctions() {
   return functions;
 }
 
-export function initializeFunctions() {
+export function initializeFunctions(
+  emulator: VureEmulatorConfig = {
+    enabled: false,
+    host: 'localhost',
+    port: 5001,
+  },
+) {
   functions = markRaw(getFunctions(useFirebaseApp()));
 
-  if (import.meta.env.DEV) {
-    useFunctionsEmulator(functions, 'localhost', 5001);
+  if (emulator.enabled) {
+    useFunctionsEmulator(
+      functions,
+      emulator.host ?? 'localhost',
+      emulator.port ?? 5001,
+    );
   }
 
   return functions;

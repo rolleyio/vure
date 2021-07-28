@@ -7,6 +7,8 @@ import { markRaw } from 'vue';
 
 import { useFirebaseApp } from '../composables';
 
+import type { VureEmulatorConfig } from '../types';
+
 let storage: StorageService | null = null;
 
 export function useStorage() {
@@ -19,11 +21,21 @@ export function useStorage() {
   return storage;
 }
 
-export function initializeStorage() {
+export function initializeStorage(
+  emulator: VureEmulatorConfig = {
+    enabled: false,
+    host: 'localhost',
+    port: 9199,
+  },
+) {
   storage = markRaw(getStorage(useFirebaseApp()));
 
-  if (import.meta.env.DEV) {
-    useStorageEmulator(storage, 'localhost', 9199);
+  if (emulator.enabled) {
+    useStorageEmulator(
+      storage,
+      emulator.host ?? 'localhost',
+      emulator.port ?? 9199,
+    );
   }
 
   return storage;

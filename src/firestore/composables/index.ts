@@ -7,6 +7,8 @@ import { markRaw } from 'vue';
 
 import { useFirebaseApp } from '../../composables';
 
+import type { VureEmulatorConfig } from '../../types';
+
 let firestore: FirebaseFirestore | null = null;
 
 export function useFirestore() {
@@ -19,11 +21,21 @@ export function useFirestore() {
   return firestore;
 }
 
-export function initializeFirestore() {
+export function initializeFirestore(
+  emulator: VureEmulatorConfig = {
+    enabled: false,
+    host: 'localhost',
+    port: 8080,
+  },
+) {
   firestore = markRaw(getFirestore(useFirebaseApp()));
 
-  if (import.meta.env.DEV) {
-    useFirestoreEmulator(firestore, 'localhost', 8080);
+  if (emulator.enabled) {
+    useFirestoreEmulator(
+      firestore,
+      emulator.host ?? 'localhost',
+      emulator.port ?? 8080,
+    );
   }
 
   return firestore;

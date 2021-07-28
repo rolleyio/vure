@@ -5,8 +5,20 @@ import type {
   ReCaptchaV3Provider,
 } from 'firebase/app-check';
 
+export type VureAuthEmulatorConfig = {
+  enabled: boolean;
+  url?: string;
+};
+
+export type VureEmulatorConfig = {
+  enabled: boolean;
+  host?: string;
+  port?: number;
+};
+
 export type VureConfig = {
   name?: string;
+  config: FirebaseOptions;
   features: {
     analytics?: boolean;
     appCheck?: {
@@ -21,5 +33,10 @@ export type VureConfig = {
     remoteConfig?: boolean;
     storage?: boolean;
   };
-  config: FirebaseOptions;
+  emulators?: {
+    auth?: VureAuthEmulatorConfig;
+    firestore?: VureEmulatorConfig;
+    functions?: VureEmulatorConfig;
+    storage?: VureEmulatorConfig;
+  };
 };

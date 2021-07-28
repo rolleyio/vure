@@ -1,4 +1,4 @@
-import { App } from 'vue';
+import type { App } from 'vue';
 
 import { initializeAnalytics } from './analytics';
 import { initializeAppCheck } from './app-check';
@@ -30,7 +30,7 @@ export function defineVureConfig(options: VureConfig) {
 
 export default {
   install(_: App, options: VureConfig) {
-    const { name, features, config } = options;
+    const { name, features, config, emulators } = options;
 
     initializeFirebaseApp(config, name);
 
@@ -59,7 +59,7 @@ export default {
 
     if (features.auth) {
       if (config.authDomain) {
-        initializeAuth();
+        initializeAuth(emulators?.auth);
       } else {
         throw new Error(
           'You need to provide an authDomain in your options config to enable auth',
@@ -68,11 +68,11 @@ export default {
     }
 
     if (features.firestore) {
-      initializeFirestore();
+      initializeFirestore(emulators?.firestore);
     }
 
     if (features.functions) {
-      initializeFunctions();
+      initializeFunctions(emulators?.functions);
     }
 
     if (features.messaging) {
@@ -95,7 +95,7 @@ export default {
 
     if (features.storage) {
       if (config.storageBucket) {
-        initializeStorage();
+        initializeStorage(emulators?.storage);
       } else {
         throw new Error(
           'You need to provide an storageBucket in your options config to enable storage',
