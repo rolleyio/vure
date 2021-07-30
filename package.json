@@ -15,11 +15,9 @@
     "serve": "vite preview",
     "lint": "eslint --ext .js,.vue,.ts --ignore-path .gitignore .",
     "build": "vuedx-typecheck . && vite build",
-    "watch-functions": "cd functions && npm run watch",
-    "emulators": "npm run watch-functions & firebase emulators:start --inspect-functions --import=./seeds --export-on-exit & wait",
+    "emulators": "firebase emulators:start --only firestore",
     "indexes": "firebase firestore:indexes",
-    "test": "jest",
-    "test:rules": "jest",
+    "test": "jest --forceExit --detectOpenHandles",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

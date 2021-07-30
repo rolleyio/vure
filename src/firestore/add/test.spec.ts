@@ -1,9 +1,14 @@
-import assert from 'assert';
 import add from '.';
+import { initializeFirebaseApp, initializeFirestore } from '../../';
 import { collection } from '../collection';
 import get from '../get';
 import { Ref, ref } from '../ref';
 import { value } from '../value';
+
+const firebase = initializeFirebaseApp({
+  projectId: 'vure',
+});
+const firestore = initializeFirestore({ enabled: true });
 
 describe('add', () => {
   type User = { name: string };
@@ -16,9 +21,9 @@ describe('add', () => {
     const data = { name: 'Sasha' };
     const user = await add(users, data);
     const { id } = user;
-    assert(typeof id === 'string');
+    expect(typeof id).toBe('string');
     const userFromDB = await get(users, id);
-    assert.deepEqual(userFromDB.data, data);
+    return expect(userFromDB.data).toStrictEqual(data);
   });
 
   it('supports references', async () => {
@@ -29,7 +34,7 @@ describe('add', () => {
     });
     const postFromDB = await get(posts, post.id);
     const userFromDB = await get(users, postFromDB.data.author.id);
-    assert.deepEqual(userFromDB.data, { name: 'Sasha' });
+    return expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
   });
 
   it('supports dates', async () => {
@@ -41,8 +46,10 @@ describe('add', () => {
       date,
     });
     const postFromDB = await get(posts, post.id);
-    assert(postFromDB.data.date instanceof Date);
-    assert(postFromDB.data.date.getTime() === date.getTime());
+    expect(postFromDB.data.date).toBeInstanceOf(Date);
+    return expect(postFromDB.data.date.getTime()).toBe(
+      date.getTime(),
+    );
   });
 
   it('supports server dates', async () => {
@@ -55,17 +62,17 @@ describe('add', () => {
     const post = await get(postRef);
     const now = Date.now();
     const returnedDate = post.data.date;
-    assert(returnedDate instanceof Date);
-    assert(
+    expect(returnedDate).toBeInstanceOf(Date);
+    expect(
       returnedDate.getTime() < now &&
         returnedDate.getTime() > now - 10000,
-    );
+    ).toBeTruthy();
     const postFromDB = await get(posts, post.ref.id);
     const dateFromDB = postFromDB.data.date;
-    assert(dateFromDB instanceof Date);
-    assert(
+    expect(dateFromDB).toBeInstanceOf(Date);
+    return expect(
       dateFromDB.getTime() < now &&
         dateFromDB.getTime() > now - 10000,
-    );
+    ).toBeTruthy();
   });
 });
