@@ -2,7 +2,7 @@ import { markRaw } from 'vue';
 import {
   Functions,
   getFunctions,
-  useFunctionsEmulator,
+  connectFunctionsEmulator,
 } from 'firebase/functions';
 
 import { useFirebaseApp } from '../composables';
@@ -31,7 +31,7 @@ export function initializeFunctions(
   functions = markRaw(getFunctions(useFirebaseApp()));
 
   if (emulator.enabled) {
-    useFunctionsEmulator(
+    connectFunctionsEmulator(
       functions,
       emulator.host ?? 'localhost',
       emulator.port ?? 5001,

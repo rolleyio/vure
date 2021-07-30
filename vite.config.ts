@@ -25,6 +25,13 @@ export default defineConfig({
       ],
       external: [
         'vue',
+        '@vue',
+        '@vue/compiler-core',
+        '@vue/compiler-dom',
+        '@vue/reactivity',
+        '@vue/runtime-core',
+        '@vue/runtime-dom',
+        '@vue/shared',
         'firebase',
         '@firebase/firestore',
         'firebase/app',
@@ -37,6 +44,7 @@ export default defineConfig({
         'firebase/performance',
         'firebase/remote-config',
         'firebase/storage',
+        'source-map',
         'zod',
       ],
       output: {

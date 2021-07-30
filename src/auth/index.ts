@@ -4,7 +4,7 @@ import {
   User,
   getAuth,
   onAuthStateChanged,
-  useAuthEmulator,
+  connectAuthEmulator,
 } from 'firebase/auth';
 
 import { useFirebaseApp } from '../composables';
@@ -37,7 +37,10 @@ export function initializeAuth(
   auth = markRaw(getAuth(useFirebaseApp()));
 
   if (emulator.enabled) {
-    useAuthEmulator(auth, emulator.url ?? 'http://localhost:9099');
+    connectAuthEmulator(
+      auth,
+      emulator.url ?? 'http://localhost:9099',
+    );
   }
 
   onAuthStateChanged(auth, (u) => {

@@ -1,7 +1,7 @@
 import {
   FirebaseFirestore,
   getFirestore,
-  useFirestoreEmulator,
+  connectFirestoreEmulator,
 } from 'firebase/firestore';
 import { markRaw } from 'vue';
 
@@ -31,7 +31,7 @@ export function initializeFirestore(
   firestore = markRaw(getFirestore(useFirebaseApp()));
 
   if (emulator.enabled) {
-    useFirestoreEmulator(
+    connectFirestoreEmulator(
       firestore,
       emulator.host ?? 'localhost',
       emulator.port ?? 8080,
