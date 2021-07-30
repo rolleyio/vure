@@ -1,9 +1,14 @@
 import {
   StorageService,
-  useStorageEmulator,
+  connectStorageEmulator,
   getStorage,
+  uploadBytesResumable,
+  ref as storageRef,
+  UploadMetadata,
+  getDownloadURL,
+  UploadTaskSnapshot,
 } from 'firebase/storage';
-import { markRaw } from 'vue';
+import { markRaw, ref, shallowRef } from 'vue';
 
 import { useFirebaseApp } from '../composables';
 
@@ -31,7 +36,7 @@ export function initializeStorage(
   storage = markRaw(getStorage(useFirebaseApp()));
 
   if (emulator.enabled) {
-    useStorageEmulator(
+    connectStorageEmulator(
       storage,
       emulator.host ?? 'localhost',
       emulator.port ?? 9199,
@@ -39,4 +44,42 @@ export function initializeStorage(
   }
 
   return storage;
+}
+
+export function getUploadProgress(snapshot: UploadTaskSnapshot) {
+  return (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+}
+
+export async function uploadFile(
+  path: string,
+  file: File | Blob,
+  metadata?: UploadMetadata,
+) {
+  const storage = useStorage();
+  const r = storageRef(storage, path);
+
+  const result = ref('');
+  const snapshot = shallowRef<UploadTaskSnapshot | null>(null);
+  const error = shallowRef<Error | null>(null);
+
+  const uploadTask = uploadBytesResumable(r, file, metadata);
+
+  uploadTask.on(
+    'state_changed',
+    (s) => {
+      snapshot.value = s;
+    },
+    (e) => {
+      error.value = e;
+    },
+    async () => {
+      result.value = await getDownloadURL(uploadTask.snapshot.ref);
+    },
+  );
+
+  return {
+    snapshot,
+    result,
+    error,
+  };
 }

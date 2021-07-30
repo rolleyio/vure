@@ -1,4 +1,9 @@
-import { ref, shallowRef } from 'vue';
+import {
+  onBeforeUnmount,
+  ref,
+  shallowRef,
+  getCurrentInstance,
+} from 'vue';
 import { z } from 'zod';
 
 import { collection as vureCollection } from '../collection';
@@ -106,79 +111,162 @@ export function useModel<Model>(
       ) {
         return getMany(modelCollection, ids, onMissing);
       },
-      onAll() {
+      onAll(
+        onResult?: (docs: Doc<Model>[]) => void,
+        onError?: (error: Error) => void,
+      ) {
         const { loading, result, error } = createRefs<Doc<Model>[]>(
           [],
         );
 
-        onAll(
+        const unwatch = onAll(
           modelCollection,
           (r) => {
             loading.value = false;
             result.value = r;
+
+            if (onResult) {
+              onResult(r);
+            }
           },
           (e) => {
+            loading.value = false;
             error.value = e;
+
+            if (onError) {
+              onError(e);
+            }
           },
         );
 
-        return { loading, result, error };
+        const currentInstance = getCurrentInstance();
+
+        if (currentInstance) {
+          onBeforeUnmount(() => {
+            unwatch();
+          }, currentInstance);
+        }
+
+        return { loading, result, error, unwatch };
       },
-      onGet(id: string) {
+      onGet(
+        id: string,
+        onResult?: (docs: Doc<Model> | null) => void,
+        onError?: (error: Error) => void,
+      ) {
         const { loading, result, error } =
           createRefs<Nullable<Doc<Model>>>(null);
 
-        onGet(
+        const unwatch = onGet(
           modelCollection,
           id,
           (r) => {
             loading.value = false;
             result.value = r;
+
+            if (onResult) {
+              onResult(r);
+            }
           },
           (e) => {
+            loading.value = false;
             error.value = e;
+
+            if (onError) {
+              onError(e);
+            }
           },
         );
 
-        return { loading, result, error };
+        const currentInstance = getCurrentInstance();
+
+        if (currentInstance) {
+          onBeforeUnmount(() => {
+            unwatch();
+          }, currentInstance);
+        }
+
+        return { loading, result, error, unwatch };
       },
-      onGetMany(ids: string[]) {
+      onGetMany(
+        ids: string[],
+        onResult?: (docs: Doc<Model>[]) => void,
+        onError?: (error: Error) => void,
+      ) {
         const { loading, result, error } = createRefs<Doc<Model>[]>(
           [],
         );
 
-        onGetMany(
+        const unwatch = onGetMany(
           modelCollection,
           ids,
           (r) => {
             loading.value = false;
             result.value = r;
+
+            if (onResult) {
+              onResult(r);
+            }
           },
           (e) => {
+            loading.value = false;
             error.value = e;
+
+            if (onError) {
+              onError(e);
+            }
           },
         );
 
-        return { loading, result, error };
+        const currentInstance = getCurrentInstance();
+
+        if (currentInstance) {
+          onBeforeUnmount(() => {
+            unwatch();
+          }, currentInstance);
+        }
+
+        return { loading, result, error, unwatch };
       },
-      onQuery(queries: Query<Model, keyof Model>[]) {
+      onQuery(
+        queries: Query<Model, keyof Model>[],
+        onResult?: (docs: Doc<Model>[]) => void,
+        onError?: (error: Error) => void,
+      ) {
         const { loading, result, error } = createRefs<Doc<Model>[]>(
           [],
         );
 
-        onQuery(
+        const unwatch = onQuery(
           modelCollection,
           queries,
           (r) => {
             loading.value = false;
             result.value = r;
+
+            if (onResult) {
+              onResult(r);
+            }
           },
           (e) => {
+            loading.value = false;
             error.value = e;
+
+            if (onError) {
+              onError(e);
+            }
           },
         );
 
-        return { loading, result, error };
+        const currentInstance = getCurrentInstance();
+
+        if (currentInstance) {
+          onBeforeUnmount(() => {
+            unwatch();
+          }, currentInstance);
+        }
+
+        return { loading, result, error, unwatch };
       },
       query(queries: Query<Model, keyof Model>[]) {
         return toRefs(this.queryAsync(queries), [] as Doc<Model>[]);

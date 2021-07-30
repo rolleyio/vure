@@ -23,3 +23,5 @@ pubsub-debug.log
 storage.rules
 tsconfig.json
 vite.config.ts
+ui-debug.log
+*-debug.log
