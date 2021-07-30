@@ -1,13 +1,23 @@
-import assert from 'assert';
 import onGet from '.';
 import get from '../get';
 import { collection } from '../collection';
 import { Ref, ref } from '../ref';
 import add from '../add';
 import update from '../update';
-import sinon from 'sinon';
+
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('onGet', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
 
@@ -23,7 +33,7 @@ describe('onGet', () => {
 
   it('returns nothing if document is not present', (done) => {
     off = onGet(collection('nope'), 'nah', (nothing) => {
-      assert(nothing === null);
+      expect(nothing === null);
       done();
     });
   });
@@ -32,8 +42,8 @@ describe('onGet', () => {
     const user = await add(users, { name: 'Sasha' });
     return new Promise((resolve) => {
       off = onGet(user, (userFromDB) => {
-        assert.deepEqual(userFromDB.data, { name: 'Sasha' });
-        resolve();
+        expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
+        resolve(true);
       });
     });
   });
@@ -46,13 +56,13 @@ describe('onGet', () => {
     });
     return new Promise((resolve) => {
       off = onGet(posts, post.id, async (postFromDB) => {
-        assert(postFromDB.data.author.__type__ === 'ref');
+        expect(postFromDB.data.author.__type__ === 'ref');
         const userFromDB = await get(
           users,
           postFromDB.data.author.id,
         );
-        assert.deepEqual(userFromDB.data, { name: 'Sasha' });
-        resolve();
+        expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
+        resolve(true);
       });
     });
   });
@@ -67,15 +77,15 @@ describe('onGet', () => {
     });
     return new Promise((resolve) => {
       off = onGet(posts, post.id, (postFromDB) => {
-        assert(postFromDB.data.date.getTime() === date.getTime());
-        resolve();
+        expect(postFromDB.data.date.getTime() === date.getTime());
+        resolve(true);
       });
     });
   });
 
   describe('real-time', () => {
     it('subscribes to updates', async () => {
-      const spy = sinon.spy();
+      const spy = jest.fn();
       const user = await add(users, { name: 'Sasha' });
       return new Promise((resolve) => {
         off = onGet(user, async (doc) => {
@@ -84,9 +94,9 @@ describe('onGet', () => {
           if (name === 'Sasha') {
             await update(user, { name: 'Sasha Koss' });
           } else if (name === 'Sasha Koss') {
-            assert(spy.calledWith('Sasha'));
-            assert(spy.calledWith('Sasha Koss'));
-            resolve();
+            expect(spy).toBeCalledWith('Sasha');
+            expect(spy).toBeCalledWith('Sasha Koss');
+            resolve(true);
           }
         });
       });
@@ -96,7 +106,7 @@ describe('onGet', () => {
     if (typeof window === undefined) {
       it('returns function that unsubscribes from the updates', () => {
         return new Promise(async (resolve) => {
-          const spy = sinon.spy();
+          const spy = jest.fn();
           const user = await add(users, { name: 'Sasha' });
           const on = () => {
             off = onGet(user, (doc) => {
@@ -104,9 +114,9 @@ describe('onGet', () => {
               spy(name);
               if (name === 'Sasha Koss') {
                 off();
-                assert(spy.neverCalledWith('Sashka'));
-                assert(spy.calledWith('Sasha Koss'));
-                resolve();
+                expect(spy).not.toBeCalledWith('Sashka');
+                expect(spy).toBeCalledWith('Sasha Koss');
+                resolve(true);
               }
             });
           };

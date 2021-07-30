@@ -1,10 +1,4 @@
-import {
-  collection as firebaseCollection,
-  CollectionReference,
-} from 'firebase/firestore';
-
 import { Collection } from '../collection';
-import { useFirestore } from '../composables';
 import { Subcollection, NestedSubcollection } from '../subcollection';
 
 /**
@@ -12,7 +6,7 @@ import { Subcollection, NestedSubcollection } from '../subcollection';
  */
 export interface CollectionGroup<_Model> {
   __type__: 'collectionGroup';
-  path: CollectionReference;
+  path: string;
 }
 
 type CollectionEntity<Model> =
@@ -70,7 +64,7 @@ function group(
 ): CollectionGroup<unknown> {
   return {
     __type__: 'collectionGroup',
-    path: firebaseCollection(useFirestore(), name),
+    path: name,
   };
 }
 

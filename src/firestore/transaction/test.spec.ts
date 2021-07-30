@@ -1,12 +1,23 @@
-import assert from 'assert';
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { nanoid } from 'nanoid';
+
 import { transaction } from '.';
 import { collection } from '../collection';
-import nanoid from 'nanoid';
 import set from '../set';
 import { ref, Ref } from '../ref';
 import get from '../get';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('transaction', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type Counter = { count: number; optional?: true };
   const counters = collection<Counter>('counters');
 
@@ -49,7 +60,7 @@ describe('transaction', () => {
     const {
       data: { count },
     } = await get(counter);
-    assert(count === 3);
+    expect(count).toBe(3);
   });
 
   it('returns the value from the write function', async () => {
@@ -61,7 +72,7 @@ describe('transaction', () => {
       plusOne(counter),
       plusOne(counter),
     ]);
-    assert.deepEqual(results.sort(), [1, 2, 3]);
+    expect(results.sort()).toStrictEqual([1, 2, 3]);
   });
 
   it('allows upsetting', async () => {
@@ -77,8 +88,8 @@ describe('transaction', () => {
       data: { count, optional },
     } = await get(counter);
 
-    assert(count === 1);
-    assert(optional);
+    expect(count).toBe(1);
+    expect(optional).toBeTruthy();
   });
 
   it('allows updating', async () => {
@@ -99,8 +110,8 @@ describe('transaction', () => {
     const {
       data: { count, optional },
     } = await get(counter);
-    assert(count === 2);
-    assert(optional);
+    expect(count).toBe(2);
+    expect(optional).toBeTruthy();
   });
 
   it('allows removing', async () => {
@@ -115,6 +126,6 @@ describe('transaction', () => {
       ),
     ]);
     const counterFromDB = await get(counter);
-    assert(!counterFromDB);
+    expect(!counterFromDB).toBeTruthy();
   });
 });

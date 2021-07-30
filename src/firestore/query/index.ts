@@ -8,7 +8,10 @@ import {
   getDocs,
 } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { doc, Doc } from '../doc';
 import { ref, pathToRef } from '../ref';
 import { WhereQuery } from '../where';
@@ -70,7 +73,7 @@ export async function query<Model>(
           const { field, method, cursors } = q;
 
           acc.firestoreQuery = fQuery(
-            collection.path,
+            collectionToFirestoreCollection(collection.path),
             orderBy(
               field instanceof DocId
                 ? documentId()
@@ -104,7 +107,7 @@ export async function query<Model>(
             : field;
 
           acc.firestoreQuery = fQuery(
-            collection.path,
+            collectionToFirestoreCollection(collection.path),
             where(
               fieldName instanceof DocId ? documentId() : fieldName,
               filter,
@@ -116,7 +119,10 @@ export async function query<Model>(
 
         case 'limit': {
           const { number } = q;
-          acc.firestoreQuery = fQuery(collection.path, limit(number));
+          acc.firestoreQuery = fQuery(
+            collectionToFirestoreCollection(collection.path),
+            limit(number),
+          );
           break;
         }
       }
@@ -124,7 +130,9 @@ export async function query<Model>(
       return acc;
     },
     {
-      firestoreQuery: collection.path as unknown as FirebaseQuery,
+      firestoreQuery: collectionToFirestoreCollection(
+        collection.path,
+      ) as unknown as FirebaseQuery,
       cursors: [],
     } as {
       firestoreQuery: FirebaseQuery;

@@ -4,6 +4,7 @@
  */
 
 export default {
+  // setupFilesAfterEnv: ['<rootDir>src/__test__/setup.ts'],
   // All imported modules in your tests should be mocked automatically
   // automock: false,
   // Stop running tests after `n` failures

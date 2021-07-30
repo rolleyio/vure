@@ -4,7 +4,10 @@ import {
   doc as firestoreDoc,
 } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { Ref } from '../ref';
 import { unwrapData } from '../data';
 import { UpdateModel } from '../update';
@@ -232,7 +235,10 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
       firestoreBatch.set(
-        firestoreDoc(collection.path, id),
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
         unwrapData(data),
       );
     });
@@ -262,7 +268,10 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
       firestoreBatch.set(
-        firestoreDoc(collection.path, id),
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
         unwrapData(data),
         {
           merge: true,
@@ -301,7 +310,10 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular update function
       firestoreBatch.update(
-        firestoreDoc(collection.path, id),
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
         unwrapData(updateData),
       );
     });
@@ -326,7 +338,12 @@ export function batch(): Batch {
     commands.push((firestoreBatch) => {
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular remove function
-      firestoreBatch.delete(firestoreDoc(collection.path, id));
+      firestoreBatch.delete(
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
+      );
     });
   }
 

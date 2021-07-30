@@ -1,6 +1,9 @@
 import { onSnapshot } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { CollectionGroup } from '../group';
@@ -43,7 +46,7 @@ export default function onAll<Model>(
   };
 
   firebaseUnsub = onSnapshot(
-    collection.path,
+    collectionToFirestoreCollection(collection.path),
     (firestoreSnap) => {
       const docs = firestoreSnap.docs.map((snap) =>
         doc<Model>(

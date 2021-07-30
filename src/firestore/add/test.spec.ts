@@ -1,3 +1,4 @@
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
 import add from '.';
 import { initializeFirebaseApp, initializeFirestore } from '../../';
 import { collection } from '../collection';
@@ -5,12 +6,16 @@ import get from '../get';
 import { Ref, ref } from '../ref';
 import { value } from '../value';
 
-const firebase = initializeFirebaseApp({
+initializeFirebaseApp({
   projectId: 'vure',
 });
-const firestore = initializeFirestore({ enabled: true });
+initializeFirestore({ enabled: true });
 
 describe('add', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
 

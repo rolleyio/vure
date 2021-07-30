@@ -10,7 +10,10 @@ import {
   QuerySnapshot,
 } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { Cursor, CursorMethod } from '../cursor';
 import { unwrapData, wrapData } from '../data';
 import { doc, Doc } from '../doc';
@@ -82,7 +85,7 @@ export default function onQuery<Model>(
           const { field, method, cursors } = q;
 
           acc.firestoreQuery = fQuery(
-            collection.path,
+            collectionToFirestoreCollection(collection.path),
             orderBy(
               field instanceof DocId
                 ? documentId()
@@ -116,7 +119,7 @@ export default function onQuery<Model>(
             : field;
 
           acc.firestoreQuery = fQuery(
-            collection.path,
+            collectionToFirestoreCollection(collection.path),
             where(
               fieldName instanceof DocId ? documentId() : fieldName,
               filter,
@@ -128,7 +131,10 @@ export default function onQuery<Model>(
 
         case 'limit': {
           const { number } = q;
-          acc.firestoreQuery = fQuery(collection.path, limit(number));
+          acc.firestoreQuery = fQuery(
+            collectionToFirestoreCollection(collection.path),
+            limit(number),
+          );
           break;
         }
       }
@@ -136,7 +142,9 @@ export default function onQuery<Model>(
       return acc;
     },
     {
-      firestoreQuery: collection.path as unknown as FirebaseQuery,
+      firestoreQuery: collectionToFirestoreCollection(
+        collection.path,
+      ) as unknown as FirebaseQuery,
       cursors: [],
     } as {
       firestoreQuery: FirebaseQuery;

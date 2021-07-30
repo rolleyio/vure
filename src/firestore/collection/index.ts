@@ -10,7 +10,7 @@ import { useFirestore } from '../composables';
  */
 export interface Collection<_Model> {
   __type__: 'collection';
-  path: CollectionReference;
+  path: string;
 }
 
 /**
@@ -32,6 +32,10 @@ export interface Collection<_Model> {
 export function collection<Model>(path: string): Collection<Model> {
   return {
     __type__: 'collection',
-    path: firebaseCollection(useFirestore(), path),
+    path,
   };
+}
+
+export function collectionToFirestoreCollection(path: string) {
+  return firebaseCollection(useFirestore(), path);
 }

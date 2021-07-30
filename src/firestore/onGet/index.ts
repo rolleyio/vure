@@ -1,8 +1,8 @@
+import { doc as firestoreDoc, onSnapshot } from 'firebase/firestore';
 import {
-  doc as firestoreDoc,
-  onSnapshot,
-} from 'firebase/firestore';
-import { Collection } from '../collection';
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref, Ref } from '../ref';
@@ -87,7 +87,10 @@ export default function onGet<Model>(
   }
 
   firebaseUnsub = onSnapshot(
-    firestoreDoc(collection.path, id),
+    firestoreDoc(
+      collectionToFirestoreCollection(collection.path),
+      id,
+    ),
     (snap) => {
       const firestoreData = snap.data();
       const data =

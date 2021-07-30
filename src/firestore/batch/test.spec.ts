@@ -1,12 +1,23 @@
-import assert from 'assert';
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { nanoid } from 'nanoid';
+
 import { batch } from '.';
 import { collection } from '../collection';
 import { ref } from '../ref';
-import nanoid from 'nanoid';
 import get from '../get';
 import set from '../set';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('batch', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type User = { name: string; foo?: boolean };
   const users = collection<User>('users');
 
@@ -25,9 +36,9 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    assert(sasha.data.name === 'Sasha');
-    assert(tati.data.name === 'Tati');
-    assert(ed.data.name === 'Ed');
+    expect(sasha.data.name).toBe('Sasha');
+    expect(tati.data.name).toBe('Tati');
+    expect(ed.data.name).toBe('Ed');
   });
 
   it('allows set a new document', async () => {
@@ -45,19 +56,31 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    assert.deepEqual(sasha, {
+    expect(sasha).toEqual({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-sasha` },
+      meta: {
+        fromCache: false,
+        hasPendingWrites: false,
+      },
       data: { name: 'Sasha' },
     });
-    assert.deepEqual(tati, {
+    expect(tati).toEqual({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-tati` },
+      meta: {
+        fromCache: false,
+        hasPendingWrites: false,
+      },
       data: { name: 'Tati' },
     });
-    assert.deepEqual(ed, {
+    expect(ed).toEqual({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-ed` },
+      meta: {
+        fromCache: false,
+        hasPendingWrites: false,
+      },
       data: { name: 'Ed' },
     });
   });
@@ -82,12 +105,15 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    assert.deepEqual(sasha.data, { name: 'Sasha Koss', foo: true });
-    assert.deepEqual(tati.data, {
+    expect(sasha.data).toEqual({
+      name: 'Sasha Koss',
+      foo: true,
+    });
+    expect(tati.data).toEqual({
       name: 'Tati Shepeleva',
       foo: false,
     });
-    assert.deepEqual(ed.data, { name: 'Ed Tsech', foo: true });
+    expect(ed.data).toEqual({ name: 'Ed Tsech', foo: true });
   });
 
   it('allows updating', async () => {
@@ -110,9 +136,9 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    assert(sasha.data.name === 'Sasha Koss');
-    assert(tati.data.name === 'Tati Shepeleva');
-    assert(ed.data.name === 'Ed Tsech');
+    expect(sasha.data.name).toEqual('Sasha Koss');
+    expect(tati.data.name).toEqual('Tati Shepeleva');
+    expect(ed.data.name).toEqual('Ed Tsech');
   });
 
   it('allows removing', async () => {
@@ -135,8 +161,8 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    assert(!sasha);
-    assert(!tati);
-    assert(!ed);
+    expect(sasha).toBeNull();
+    expect(tati).toBeNull();
+    expect(ed).toBeNull();
   });
 });

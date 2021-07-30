@@ -1,10 +1,20 @@
-import assert from 'assert';
+import { initializeFirebaseApp, initializeFirestore } from '../../';
 import get from '.';
 import { collection } from '../collection';
 import { Ref, ref } from '../ref';
 import add from '../add';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('get', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
 
@@ -13,13 +23,13 @@ describe('get', () => {
 
   it('returns nothing if document is not present', async () => {
     const nothing = await get(collection('nope'), 'nah');
-    assert(nothing === null);
+    expect(nothing).toBeNull();
   });
 
   it('allows to get by ref', async () => {
     const user = await add(users, { name: 'Sasha' });
     const userFromDB = await get(user);
-    assert.deepEqual(userFromDB.data, { name: 'Sasha' });
+    expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
   });
 
   it('expands references', async () => {
@@ -29,9 +39,9 @@ describe('get', () => {
       text: 'Hello!',
     });
     const postFromDB = await get(posts, post.id);
-    assert(postFromDB.data.author.__type__ === 'ref');
+    expect(postFromDB.data.author.__type__).toBe('ref');
     const userFromDB = await get(users, postFromDB.data.author.id);
-    assert.deepEqual(userFromDB.data, { name: 'Sasha' });
+    expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
   });
 
   it('expands dates', async () => {
@@ -43,6 +53,6 @@ describe('get', () => {
       date,
     });
     const postFromDB = await get(posts, post.id);
-    assert(postFromDB.data.date.getTime() === date.getTime());
+    expect(postFromDB.data.date.getTime()).toBe(date.getTime());
   });
 });

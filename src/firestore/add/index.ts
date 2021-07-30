@@ -1,6 +1,9 @@
 import { addDoc } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { unwrapData } from '../data';
 import { ref } from '../ref';
 import { AddValue } from '../value';
@@ -37,6 +40,9 @@ export default async function add<Model>(
   collection: Collection<Model>,
   data: AddModel<Model>,
 ) {
-  const firebaseDoc = await addDoc(collection.path, unwrapData(data));
+  const firebaseDoc = await addDoc(
+    collectionToFirestoreCollection(collection.path),
+    unwrapData(data),
+  );
   return ref(collection, firebaseDoc.id);
 }

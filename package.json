@@ -17,7 +17,7 @@
     "build": "vuedx-typecheck . && vite build",
     "emulators": "firebase emulators:start --only firestore",
     "indexes": "firebase firestore:indexes",
-    "test": "jest --forceExit --detectOpenHandles",
+    "test": "FIRESTORE_EMULATOR_HOST=localhost:8080 jest --forceExit --detectOpenHandles",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

@@ -1,5 +1,4 @@
-import assert from 'assert';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import add from '../add';
 import { where } from '../where';
 import { limit } from '../limit';
@@ -8,14 +7,25 @@ import { collection } from '../collection';
 import { order } from '../order';
 import { startAfter, startAt, endBefore, endAt } from '../cursor';
 import { Ref, ref } from '../ref';
-import { Doc } from '../doc';
 import get from '../get';
 import set from '../set';
 import { subcollection } from '../subcollection';
 import { group } from '../group';
 import { docId } from '../docId';
 
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
+
 describe('query', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type Contact = {
     ownerId: string;
     name: string;
@@ -83,11 +93,9 @@ describe('query', () => {
     const docs = await query(contacts, [
       where('ownerId', '==', ownerId),
     ]);
-    assert.deepEqual(docs.map(({ data: { name } }) => name).sort(), [
-      'Lesha',
-      'Sasha',
-      'Tati',
-    ]);
+    expect(
+      docs.map(({ data: { name } }) => name).sort(),
+    ).toStrictEqual(['Lesha', 'Sasha', 'Tati']);
   });
 
   it('allows to query by value in maps', async () => {
@@ -117,10 +125,9 @@ describe('query', () => {
       where('mapId', '==', mapId),
       where(['address', 'city'], '==', 'New York'),
     ]);
-    assert.deepEqual(docs.map(({ data: { name } }) => name).sort(), [
-      'Bagels Tower',
-      'Pizza City',
-    ]);
+    expect(
+      docs.map(({ data: { name } }) => name).sort(),
+    ).toStrictEqual(['Bagels Tower', 'Pizza City']);
   });
 
   it('allows to query using array-contains filter', async () => {
@@ -149,10 +156,9 @@ describe('query', () => {
       where('blogId', '==', blogId),
       where('tags', 'array-contains', 'pets'),
     ]);
-    assert.deepEqual(
+    expect(
       docs.map(({ data: { title } }) => title).sort(),
-      ['Post about cats', 'Post about dogs'],
-    );
+    ).toStrictEqual(['Post about cats', 'Post about dogs']);
   });
 
   it('allows to query using in filter', async () => {
@@ -184,10 +190,9 @@ describe('query', () => {
       where('ownerId', '==', ownerId),
       where('type', 'in', ['cat', 'dog']),
     ]);
-    assert.deepEqual(docs.map(({ data: { name } }) => name).sort(), [
-      'Kimchi',
-      'Persik',
-    ]);
+    expect(
+      docs.map(({ data: { name } }) => name).sort(),
+    ).toStrictEqual(['Kimchi', 'Persik']);
   });
 
   it('allows to query using array-contains-any filter', async () => {
@@ -231,10 +236,13 @@ describe('query', () => {
       where('blogId', '==', blogId),
       where('tags', 'array-contains-any', ['pets', 'wildlife']),
     ]);
-    assert.deepEqual(
+    expect(
       docs.map(({ data: { title } }) => title).sort(),
-      ['Post about cats', 'Post about dogs', 'Post about kangaroos'],
-    );
+    ).toStrictEqual([
+      'Post about cats',
+      'Post about dogs',
+      'Post about kangaroos',
+    ]);
   });
 
   it('expands references', async () => {
@@ -242,14 +250,13 @@ describe('query', () => {
       where('ownerId', '==', ownerId),
       where('text', '==', '+1'),
     ]);
-    assert(docs[0].data.author.__type__ === 'ref');
+    expect(docs[0].data.author.__type__).toBe('ref');
     const authors = await Promise.all(
       docs.map((doc) => get(contacts, doc.data.author.id)),
     );
-    assert.deepEqual(
+    expect(
       authors.map(({ data: { name } }) => name).sort(),
-      ['Lesha', 'Sasha'],
-    );
+    ).toStrictEqual(['Lesha', 'Sasha']);
   });
 
   it('allows to query by reference', async () => {
@@ -257,7 +264,7 @@ describe('query', () => {
       where('ownerId', '==', ownerId),
       where('author', '==', ref(contacts, sashaId)),
     ]);
-    assert.deepEqual(docs.map((doc) => doc.data.text).sort(), [
+    expect(docs.map((doc) => doc.data.text).sort()).toStrictEqual([
       '+1',
       'lul',
     ]);
@@ -268,8 +275,8 @@ describe('query', () => {
       where('ownerId', '==', ownerId),
       where('birthday', '==', new Date(1987, 1, 11)),
     ]);
-    assert(docs.length === 1);
-    assert(docs[0].data.name === 'Sasha');
+    expect(docs.length).toBe(1);
+    expect(docs[0].data.name).toBe('Sasha');
   });
 
   it('allows querying collection groups', async () => {
@@ -305,7 +312,7 @@ describe('query', () => {
     const messages = await query(allContactMessages, [
       where('ownerId', '==', ownerId),
     ]);
-    assert.deepEqual(messages.map((m) => m.data.text).sort(), [
+    expect(messages.map((m) => m.data.text).sort()).toStrictEqual([
       'Hello from Sasha!',
       'Hello from Tati!',
       'Hello, again!',
@@ -341,7 +348,7 @@ describe('query', () => {
     const posts = await query(allPosts, [
       where('ownerId', '==', ownerId),
     ]);
-    assert.deepEqual(posts.map((m) => m.data.title).sort(), [
+    expect(posts.map((m) => m.data.title).sort()).toStrictEqual([
       'Hello',
       'Hello, again!',
     ]);
@@ -353,10 +360,11 @@ describe('query', () => {
         where('ownerId', '==', ownerId),
         order('year', 'asc'),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Sasha', 'Tati', 'Lesha'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Sasha',
+        'Tati',
+        'Lesha',
+      ]);
     });
 
     it('allows ordering by desc', async () => {
@@ -364,10 +372,11 @@ describe('query', () => {
         where('ownerId', '==', ownerId),
         order('year', 'desc'),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Lesha', 'Tati', 'Sasha'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Lesha',
+        'Tati',
+        'Sasha',
+      ]);
     });
 
     it('allows ordering by references', async () => {
@@ -383,7 +392,7 @@ describe('query', () => {
           ),
         ),
       );
-      assert.deepEqual(messagesLog, [
+      expect(messagesLog).toStrictEqual([
         'Tati: wut',
         'Sasha: +1',
         'Sasha: lul',
@@ -396,10 +405,11 @@ describe('query', () => {
         where('ownerId', '==', ownerId),
         order('birthday', 'asc'),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Sasha', 'Tati', 'Lesha'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Sasha',
+        'Tati',
+        'Lesha',
+      ]);
     });
   });
 
@@ -410,10 +420,10 @@ describe('query', () => {
         order('year', 'asc'),
         limit(2),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Sasha', 'Tati'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Sasha',
+        'Tati',
+      ]);
     });
   });
 
@@ -425,19 +435,17 @@ describe('query', () => {
           order('year', 'asc', [startAfter(undefined)]),
           limit(2),
         ]);
-        assert.deepEqual(
+        expect(
           page1Docs.map(({ data: { name } }) => name),
-          ['Sasha', 'Tati'],
-        );
+        ).toStrictEqual(['Sasha', 'Tati']);
         const page2Docs = await query(contacts, [
           where('ownerId', '==', ownerId),
           order('year', 'asc', [startAfter(page1Docs[1].data.year)]),
           limit(2),
         ]);
-        assert.deepEqual(
+        expect(
           page2Docs.map(({ data: { name } }) => name),
-          ['Lesha'],
-        );
+        ).toStrictEqual(['Lesha']);
       });
     });
 
@@ -448,10 +456,10 @@ describe('query', () => {
           order('year', 'asc', [startAt(1989)]),
           limit(2),
         ]);
-        assert.deepEqual(
-          docs.map(({ data: { name } }) => name),
-          ['Tati', 'Lesha'],
-        );
+        expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+          'Tati',
+          'Lesha',
+        ]);
       });
     });
 
@@ -462,10 +470,9 @@ describe('query', () => {
           order('year', 'asc', [endBefore(1989)]),
           limit(2),
         ]);
-        assert.deepEqual(
-          docs.map(({ data: { name } }) => name),
-          ['Sasha'],
-        );
+        expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+          'Sasha',
+        ]);
       });
     });
 
@@ -476,10 +483,10 @@ describe('query', () => {
           order('year', 'asc', [endAt(1989)]),
           limit(2),
         ]);
-        assert.deepEqual(
-          docs.map(({ data: { name } }) => name),
-          ['Sasha', 'Tati'],
-        );
+        expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+          'Sasha',
+          'Tati',
+        ]);
       });
     });
 
@@ -489,10 +496,10 @@ describe('query', () => {
         order('year', [startAt(1989)]),
         limit(2),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Tati', 'Lesha'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Tati',
+        'Lesha',
+      ]);
     });
 
     it('allows specify multiple cursor conditions', async () => {
@@ -522,10 +529,12 @@ describe('query', () => {
         order('state', 'asc', [startAt('Missouri')]),
         limit(2),
       ]);
-      assert.deepEqual(
+      expect(
         docs.map(({ data: { name, state } }) => `${name}, ${state}`),
-        ['Springfield, Missouri', 'Springfield, Wisconsin'],
-      );
+      ).toStrictEqual([
+        'Springfield, Missouri',
+        'Springfield, Wisconsin',
+      ]);
     });
 
     it('allows to combine cursors', async () => {
@@ -534,10 +543,9 @@ describe('query', () => {
         order('year', 'asc', [startAt(1989), endAt(1989)]),
         limit(2),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Tati'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Tati',
+      ]);
     });
 
     it('allows to pass docs as cursors', async () => {
@@ -547,10 +555,10 @@ describe('query', () => {
         order('year', 'asc', [startAt(tati)]),
         limit(2),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Tati', 'Lesha'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Tati',
+        'Lesha',
+      ]);
     });
 
     it('allows using dates as cursors', async () => {
@@ -559,10 +567,10 @@ describe('query', () => {
         order('birthday', 'asc', [startAt(new Date(1989, 6, 10))]),
         limit(2),
       ]);
-      assert.deepEqual(
-        docs.map(({ data: { name } }) => name),
-        ['Tati', 'Lesha'],
-      );
+      expect(docs.map(({ data: { name } }) => name)).toStrictEqual([
+        'Tati',
+        'Lesha',
+      ]);
     });
   });
 
@@ -583,10 +591,10 @@ describe('query', () => {
         where(docId, '>=', 'published'),
         where(docId, '<', 'publishee'),
       ]);
-      assert.deepEqual(
-        docs.map((doc) => doc.ref.id),
-        ['published-0', 'published-1'],
-      );
+      expect(docs.map((doc) => doc.ref.id)).toStrictEqual([
+        'published-0',
+        'published-1',
+      ]);
     });
 
     it('allows ordering by documentId', async () => {
@@ -595,18 +603,18 @@ describe('query', () => {
         where(docId, '<', 'publishee'),
         order(docId, 'desc'),
       ]);
-      assert(descend.length === 2);
-      assert(descend[0].ref.id === `published-1`);
-      assert(descend[1].ref.id === `published-0`);
+      expect(descend.length).toBe(2);
+      expect(descend[0].ref.id).toBe(`published-1`);
+      expect(descend[1].ref.id).toBe(`published-0`);
 
       const ascend = await query(shardedCounters, [
         where(docId, '>=', 'published'),
         where(docId, '<', 'publishee'),
         order(docId, 'asc'),
       ]);
-      assert(ascend.length === 2);
-      assert(ascend[0].ref.id === `published-0`);
-      assert(ascend[1].ref.id === `published-1`);
+      expect(ascend.length).toBe(2);
+      expect(ascend[0].ref.id).toBe(`published-0`);
+      expect(ascend[1].ref.id).toBe(`published-1`);
     });
 
     it('allows cursors to use documentId', async () => {
@@ -616,10 +624,10 @@ describe('query', () => {
           endAt('published-1'),
         ]),
       ]);
-      assert(docs.length === 3);
-      assert(docs[0].ref.id === `draft-1`);
-      assert(docs[1].ref.id === `published-0`);
-      assert(docs[2].ref.id === `published-1`);
+      expect(docs.length).toBe(3);
+      expect(docs[0].ref.id).toBe(`draft-1`);
+      expect(docs[1].ref.id).toBe(`published-0`);
+      expect(docs[2].ref.id).toBe(`published-1`);
     });
   });
 });

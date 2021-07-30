@@ -1,5 +1,4 @@
 import { group } from '.';
-import assert from 'assert';
 import { subcollection } from '../subcollection';
 import { Ref } from '../ref';
 import { collection } from '../collection';
@@ -8,6 +7,7 @@ describe('group', () => {
   type User = { name: string };
   type Company = { name: string; address: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
+
   const users = collection<User>('users');
   const companies = collection<Company>('companies');
 
@@ -24,7 +24,7 @@ describe('group', () => {
         userPosts,
         companyPosts,
       ]);
-      assert.deepEqual(allPosts, {
+      expect(allPosts).toStrictEqual({
         __type__: 'collectionGroup',
         path: 'posts',
       });

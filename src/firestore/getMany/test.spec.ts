@@ -1,9 +1,20 @@
+import { initializeFirebaseApp, initializeFirestore } from '../../';
 import { collection } from '../collection';
 import set from '../set';
 import getMany from '.';
 import remove from '../remove';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('getMany', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type Fruit = { color: string };
 
   const fruits = collection<Fruit>('fruits');

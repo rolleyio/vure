@@ -1,10 +1,21 @@
 import get from '../get';
 import add from '../add';
 import remove from '.';
-import assert from 'assert';
 import { collection } from '../collection';
 
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
+
 describe('remove', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type User = { name: string };
   const users = collection<User>('users');
 
@@ -13,13 +24,13 @@ describe('remove', () => {
     const { id } = user;
     await remove(users, id);
     const userFromDB = await get(users, id);
-    assert(userFromDB === null);
+    expect(userFromDB).toBe(null);
   });
 
   it('allows removing by ref', async () => {
     const user = await add(users, { name: 'Sasha' });
     await remove(user);
     const userFromDB = await get(users, user.id);
-    assert(userFromDB === null);
+    expect(userFromDB).toBe(null);
   });
 });

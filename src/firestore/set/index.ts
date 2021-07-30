@@ -1,5 +1,8 @@
 import { setDoc, doc as firestoreDoc } from 'firebase/firestore';
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { unwrapData } from '../data';
 import { Ref } from '../ref';
 import { SetValue } from '../value';
@@ -69,7 +72,13 @@ async function set<Model>(
     data = idOrData as SetModel<Model>;
   }
 
-  await setDoc(firestoreDoc(collection.path, id), unwrapData(data));
+  await setDoc(
+    firestoreDoc(
+      collectionToFirestoreCollection(collection.path),
+      id,
+    ),
+    unwrapData(data),
+  );
 }
 
 export default set;

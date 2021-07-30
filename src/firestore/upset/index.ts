@@ -1,6 +1,9 @@
 import { doc as firestoreDoc, setDoc } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { unwrapData } from '../data';
 import { Ref } from '../ref';
 import { UpsetValue } from '../value';
@@ -74,7 +77,14 @@ export default async function upset<Model>(
     data = idOrData as UpsetModel<Model>;
   }
 
-  await setDoc(firestoreDoc(collection.path, id), unwrapData(data), {
-    merge: true,
-  });
+  await setDoc(
+    firestoreDoc(
+      collectionToFirestoreCollection(collection.path),
+      id,
+    ),
+    unwrapData(data),
+    {
+      merge: true,
+    },
+  );
 }

@@ -1,15 +1,21 @@
-import assert, { rejects } from 'assert';
 import onGetMany from '.';
-import get from '../get';
 import { collection } from '../collection';
-import { Ref, ref } from '../ref';
-import add from '../add';
 import update from '../update';
-import sinon from 'sinon';
 import set from '../set';
-import remove from '../remove';
+
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('onGetMany', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type Fruit = { color: string };
 
   const fruits = collection<Fruit>('fruits');
@@ -33,7 +39,7 @@ describe('onGetMany', () => {
     return new Promise((resolve) => {
       off = onGetMany(fruits, [], (list) => {
         expect(list.length).toBe(0);
-        resolve();
+        resolve(true);
       });
     });
   });
@@ -46,7 +52,7 @@ describe('onGetMany', () => {
         expect(fruitsFromDB[0].data.color).toBe('green');
         expect(fruitsFromDB[0].ref.id).toBe('apple');
         expect(fruitsFromDB[0].ref.collection.path).toBe('fruits');
-        resolve();
+        resolve(true);
       });
     });
   });
@@ -62,7 +68,7 @@ describe('onGetMany', () => {
           expect(fruitsFromDB[1].ref.id).toBe('apple');
           expect(fruitsFromDB[2].ref.id).toBe('banana');
           expect(fruitsFromDB[3].ref.id).toBe('orange');
-          resolve();
+          resolve(true);
         },
       );
     });
@@ -145,7 +151,7 @@ describe('onGetMany', () => {
             colorOf('mango') === 'red' &&
             colorOf('apple') === 'red'
           ) {
-            resolve();
+            resolve(true);
           }
         });
       });

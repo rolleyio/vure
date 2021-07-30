@@ -1,16 +1,27 @@
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+import { nanoid } from 'nanoid';
+
 import all from '../all';
-import assert from 'assert';
 import set from '../set';
 import { collection } from '../collection';
 import { Ref, ref } from '../ref';
 import get from '../get';
 import remove from '../remove';
-import nanoid from 'nanoid';
 import { subcollection } from '../subcollection';
 import add from '../add';
 import { group } from '../group';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('all', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type Book = { title: string };
   type Order = { book: Ref<Book>; quantity: number; date?: Date };
 
@@ -31,14 +42,13 @@ describe('all', () => {
 
   it('returns all documents in a collection', async () => {
     const docs = await all(books);
-    assert.deepEqual(
+    expect(
       docs.map(({ data: { title } }) => title).sort(),
-      [
-        'Sapiens',
-        'The 22 Immutable Laws of Marketing',
-        'The Mom Test',
-      ],
-    );
+    ).toStrictEqual([
+      'Sapiens',
+      'The 22 Immutable Laws of Marketing',
+      'The Mom Test',
+    ]);
   });
 
   it('expands references', async () => {
@@ -53,14 +63,16 @@ describe('all', () => {
       }),
     ]);
     const docs = await all(orders);
-    assert(docs[0].data.book.__type__ === 'ref');
+    expect(docs[0].data.book.__type__).toBe('ref');
     const orderedBooks = await Promise.all(
       docs.map((doc) => get(books, doc.data.book.id)),
     );
-    assert.deepEqual(
+    expect(
       orderedBooks.map(({ data: { title } }) => title).sort(),
-      ['Sapiens', 'The 22 Immutable Laws of Marketing'],
-    );
+    ).toStrictEqual([
+      'Sapiens',
+      'The 22 Immutable Laws of Marketing',
+    ]);
   });
 
   it('expands dates', async () => {
@@ -78,8 +90,8 @@ describe('all', () => {
       }),
     ]);
     const docs = await all(orders);
-    assert(docs[0].data.date.getTime() === date.getTime());
-    assert(docs[1].data.date.getTime() === date.getTime());
+    expect(docs[0].data.date.getTime()).toEqual(date.getTime());
+    expect(docs[1].data.date.getTime()).toEqual(date.getTime());
   });
 
   it('allows to get all data from collection groups', async () => {
@@ -114,7 +126,7 @@ describe('all', () => {
       orderComments,
     ]);
     const comments = await all(allComments);
-    assert.deepEqual(comments.map((c) => c.data.text).sort(), [
+    expect(comments.map((c) => c.data.text).sort()).toStrictEqual([
       'cruel',
       'hello',
       'world',

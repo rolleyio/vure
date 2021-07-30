@@ -1,6 +1,9 @@
 import { doc as firestoreDoc, deleteDoc } from '@firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { Ref } from '../ref';
 
 /**
@@ -47,7 +50,12 @@ async function remove<Model>(
     id = ref.id;
   }
 
-  await deleteDoc(firestoreDoc(collection.path, id));
+  await deleteDoc(
+    firestoreDoc(
+      collectionToFirestoreCollection(collection.path),
+      id,
+    ),
+  );
 }
 
 export default remove;

@@ -1,6 +1,9 @@
 import { doc as firestoreDoc } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { UpdateValue } from '../value';
 import { Field } from '../field';
 import { unwrapData } from '../data';
@@ -111,7 +114,10 @@ async function update<Model>(
       }, {} as { [key: string]: any })
     : data;
   await updateDoc(
-    firestoreDoc(collection.path, id),
+    firestoreDoc(
+      collectionToFirestoreCollection(collection.path),
+      id,
+    ),
     unwrapData(updateData),
   );
 }

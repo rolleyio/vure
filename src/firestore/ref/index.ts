@@ -64,7 +64,7 @@ export function id() {
  * @returns Firestore path
  */
 export function getRefPath(ref: Ref<any>) {
-  return [ref.collection.path.path].concat(ref.id).join('/');
+  return [ref.collection.path].concat(ref.id).join('/');
 }
 
 /**

@@ -1,7 +1,10 @@
 import { doc as firestoreDoc } from 'firebase/firestore';
 
 import { runTransaction } from 'firebase/firestore';
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { useFirestore } from '../composables';
 import { unwrapData, wrapData } from '../data';
 import { Doc, doc } from '../doc';
@@ -278,7 +281,10 @@ export async function transaction<ReadResult, WriteResult>(
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular get function
       const firestoreSnap = await t.get(
-        firestoreDoc(collection.path, id),
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
       );
       // v below
       const firestoreData = firestoreSnap.data();
@@ -311,7 +317,13 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
-      t.set(firestoreDoc(collection.path, id), unwrapData(data));
+      t.set(
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
+        unwrapData(data),
+      );
     }
 
     function upset<Model>(
@@ -336,9 +348,16 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
-      t.set(firestoreDoc(collection.path, id), unwrapData(data), {
-        merge: true,
-      });
+      t.set(
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
+        unwrapData(data),
+        {
+          merge: true,
+        },
+      );
     }
 
     function update<Model>(
@@ -370,7 +389,10 @@ export async function transaction<ReadResult, WriteResult>(
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular update function
       t.update(
-        firestoreDoc(collection.path, id),
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
         unwrapData(updateData),
       );
     }
@@ -393,7 +415,12 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular update function
-      t.delete(firestoreDoc(collection.path, id));
+      t.delete(
+        firestoreDoc(
+          collectionToFirestoreCollection(collection.path),
+          id,
+        ),
+      );
     }
 
     const data = await readFunction({ get });

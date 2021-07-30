@@ -1,19 +1,27 @@
+import { initializeFirebaseApp, initializeFirestore } from '../../';
+
 import onAll from '.';
-import assert from 'assert';
 import set from '../set';
 import { collection } from '../collection';
 import { Ref, ref } from '../ref';
 import get from '../get';
 import remove from '../remove';
-import sinon from 'sinon';
-import nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import { subcollection } from '../subcollection';
 import add from '../add';
 import { group } from '../group';
-import onQuery from '../onQuery';
-import { where } from '../where';
+import { clearFirestoreData } from '@firebase/rules-unit-testing';
+
+initializeFirebaseApp({
+  projectId: 'vure',
+});
+initializeFirestore({ enabled: true });
 
 describe('onAll', () => {
+  afterAll(() => {
+    clearFirestoreData({ projectId: 'vure' });
+  });
+
   type Book = { title: string };
   type Order = { book: Ref<Book>; quantity: number; date?: Date };
 
@@ -39,18 +47,17 @@ describe('onAll', () => {
     off = undefined;
   });
 
-  it('returns all documents in a collection', (done) => {
-    const spy = sinon.spy();
+  it('returns all documents in a collection', () => {
+    const spy = jest.fn();
     off = onAll(books, (docs) => {
       spy(docs.map(({ data: { title } }) => title).sort());
-      if (
-        spy.calledWithMatch([
+      expect(spy).toBeCalledWith([
+        [
           'Sapiens',
           'The 22 Immutable Laws of Marketing',
           'The Mom Test',
-        ])
-      )
-        done();
+        ],
+      ]);
     });
   });
 
@@ -67,20 +74,18 @@ describe('onAll', () => {
     ]);
 
     return new Promise((resolve) => {
-      const spy = sinon.spy();
+      const spy = jest.fn();
       off = onAll(orders, async (docs) => {
         off();
         const orderedBooks = await Promise.all(
           docs.map((doc) => get(books, doc.data.book.id)),
         );
         spy(orderedBooks.map(({ data: { title } }) => title).sort());
-        if (
-          spy.calledWithMatch([
-            'Sapiens',
-            'The 22 Immutable Laws of Marketing',
-          ])
-        )
-          resolve();
+        expect(spy).toBeCalledWith([
+          'Sapiens',
+          'The 22 Immutable Laws of Marketing',
+        ]);
+        resolve(true);
       });
     });
   });
@@ -109,18 +114,18 @@ describe('onAll', () => {
         ) {
           off();
           if (typeof window === undefined) {
-            assert(docs[0].data.date.getTime() === date.getTime());
-            assert(docs[1].data.date.getTime() === date.getTime());
+            expect(docs[0].data.date.getTime()).toBe(date.getTime());
+            expect(docs[1].data.date.getTime()).toBe(date.getTime());
           } else {
             // TODO: WTF, Node.js and browser dates are processed differently
-            assert(
+            expect(
               docs[0].data.date.getTime() - date.getTime() < 20000,
-            );
-            assert(
+            ).toBeTruthy();
+            expect(
               docs[1].data.date.getTime() - date.getTime() < 20000,
-            );
+            ).toBeTruthy();
           }
-          resolve();
+          resolve(true);
         }
       });
     });
@@ -161,12 +166,10 @@ describe('onAll', () => {
       off = onAll(allComments, (comments) => {
         if (comments.length === 3) {
           off();
-          assert.deepEqual(comments.map((c) => c.data.text).sort(), [
-            'cruel',
-            'hello',
-            'world',
-          ]);
-          resolve();
+          expect(
+            comments.map((c) => c.data.text).sort(),
+          ).toStrictEqual(['cruel', 'hello', 'world']);
+          resolve(true);
         }
       });
     });
@@ -242,7 +245,7 @@ describe('onAll', () => {
     if (typeof window === undefined) {
       it('returns function that unsubscribes from the updates', () => {
         return new Promise(async (resolve) => {
-          const spy = sinon.spy();
+          const spy = jest.fn();
           const on = () => {
             off = onAll(books, (docs) => {
               const titles = docs
@@ -251,24 +254,20 @@ describe('onAll', () => {
               spy(titles);
               if (titles.length === 5) {
                 off();
-                assert(
-                  spy.neverCalledWithMatch([
-                    "Harry Potter and the Sorcerer's Stone",
-                    'Sapiens',
-                    'The 22 Immutable Laws of Marketing',
-                    'The Mom Test',
-                  ]),
-                );
-                assert(
-                  spy.calledWithMatch([
-                    'Harry Potter and the Chamber of Secrets',
-                    "Harry Potter and the Sorcerer's Stone",
-                    'Sapiens',
-                    'The 22 Immutable Laws of Marketing',
-                    'The Mom Test',
-                  ]),
-                );
-                resolve();
+                expect(spy).not.toHaveBeenCalledWith([
+                  "Harry Potter and the Sorcerer's Stone",
+                  'Sapiens',
+                  'The 22 Immutable Laws of Marketing',
+                  'The Mom Test',
+                ]);
+                expect(spy).toBeCalledWith([
+                  'Harry Potter and the Chamber of Secrets',
+                  "Harry Potter and the Sorcerer's Stone",
+                  'Sapiens',
+                  'The 22 Immutable Laws of Marketing',
+                  'The Mom Test',
+                ]);
+                resolve(true);
               }
             });
           };

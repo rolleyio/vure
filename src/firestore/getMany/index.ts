@@ -1,5 +1,8 @@
 import { doc as firestoreDoc } from '@firebase/firestore';
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref } from '../ref';
@@ -42,12 +45,17 @@ export default async function getMany<Model>(
   }
 
   const firestoreSnaps = await getAll(
-    ...ids.map((id) => firestoreDoc(collection.path, id)),
+    ...ids.map((id) =>
+      firestoreDoc(
+        collectionToFirestoreCollection(collection.path),
+        id,
+      ),
+    ),
   );
 
   return firestoreSnaps
     .map((firestoreSnap) => {
-      if (!firestoreSnap.exists) {
+      if (!firestoreSnap.exists()) {
         if (onMissing === 'ignore') {
           return null;
         } else {

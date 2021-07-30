@@ -1,6 +1,9 @@
 import { getDocs } from 'firebase/firestore';
 
-import { Collection } from '../collection';
+import {
+  Collection,
+  collectionToFirestoreCollection,
+} from '../collection';
 import { getDocMeta } from '../utils';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
@@ -32,7 +35,9 @@ import { pathToRef, ref } from '../ref';
 export default async function all<Model>(
   collection: Collection<Model> | CollectionGroup<Model>,
 ): Promise<Doc<Model>[]> {
-  const firebaseSnap = await getDocs(collection.path);
+  const firebaseSnap = await getDocs(
+    collectionToFirestoreCollection(collection.path),
+  );
   return firebaseSnap.docs.map((snap) =>
     doc(
       collection.__type__ === 'collectionGroup'
