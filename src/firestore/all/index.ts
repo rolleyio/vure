@@ -38,13 +38,14 @@ export default async function all<Model>(
   const firebaseSnap = await getDocs(
     collectionToFirestoreCollection(collection.path),
   );
-  return firebaseSnap.docs.map((snap) =>
-    doc(
+
+  return firebaseSnap.docs.map((snap) => {
+    return doc(
       collection.__type__ === 'collectionGroup'
         ? pathToRef(snap.ref.path)
         : ref(collection, snap.id),
       wrapData(snap.data()) as Model,
       getDocMeta(snap),
-    ),
-  );
+    );
+  });
 }
