@@ -1,7 +1,9 @@
-import { group } from '.';
-import { subcollection } from '../subcollection';
-import { Ref } from '../ref';
-import { collection } from '../collection';
+import '../../setup';
+
+import { group } from '../../../src/firestore/group';
+import { subcollection } from '../../../src/firestore/subcollection';
+import { Ref } from '../../../src/firestore/ref';
+import { collection } from '../../../src/firestore/collection';
 
 describe('group', () => {
   type User = { name: string };
@@ -24,7 +26,7 @@ describe('group', () => {
         userPosts,
         companyPosts,
       ]);
-      expect(allPosts).toStrictEqual({
+      expect(allPosts).to.deep.equal({
         __type__: 'collectionGroup',
         path: 'posts',
       });

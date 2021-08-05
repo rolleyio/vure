@@ -1,20 +1,11 @@
-import { initializeFirebaseApp, initializeFirestore } from '../../';
-import get from '.';
-import { collection } from '../collection';
-import { Ref, ref } from '../ref';
-import add from '../add';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
+import '../../setup';
 
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
+import get from '../../../src/firestore/get';
+import { collection } from '../../../src/firestore/collection';
+import { Ref, ref } from '../../../src/firestore/ref';
+import add from '../../../src/firestore/add';
 
 describe('get', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
 
@@ -23,13 +14,13 @@ describe('get', () => {
 
   it('returns nothing if document is not present', async () => {
     const nothing = await get(collection('nope'), 'nah');
-    expect(nothing).toBeNull();
+    expect(nothing).to.be.null;
   });
 
   it('allows to get by ref', async () => {
     const user = await add(users, { name: 'Sasha' });
     const userFromDB = await get(user);
-    expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
+    expect(userFromDB!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('expands references', async () => {
@@ -39,9 +30,9 @@ describe('get', () => {
       text: 'Hello!',
     });
     const postFromDB = await get(posts, post.id);
-    expect(postFromDB.data.author.__type__).toBe('ref');
-    const userFromDB = await get(users, postFromDB.data.author.id);
-    expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
+    expect(postFromDB!.data.author.__type__).to.equal('ref');
+    const userFromDB = await get(users, postFromDB!.data.author.id);
+    expect(userFromDB!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('expands dates', async () => {
@@ -53,6 +44,6 @@ describe('get', () => {
       date,
     });
     const postFromDB = await get(posts, post.id);
-    expect(postFromDB.data.date.getTime()).toBe(date.getTime());
+    expect(postFromDB!.data.date!.getTime()).to.equal(date.getTime());
   });
 });

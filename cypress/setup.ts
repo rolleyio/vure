@@ -7,6 +7,6 @@ initializeFirebaseApp({
 });
 initializeFirestore({ enabled: true });
 
-afterEach(() => {
-  // clearFirestoreData({ projectId: 'vure' });
+after(() => {
+  clearFirestoreData({ projectId: 'vure' });
 });

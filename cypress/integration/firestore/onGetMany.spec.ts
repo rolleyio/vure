@@ -1,26 +1,16 @@
-import onGetMany from '.';
-import { collection } from '../collection';
-import update from '../update';
-import set from '../set';
+import '../../setup';
 
-import { initializeFirebaseApp, initializeFirestore } from '../../';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
+import onGetMany from '../../../src/firestore/onGetMany';
+import { collection } from '../../../src/firestore/collection';
+import update from '../../../src/firestore/update';
+import set from '../../../src/firestore/set';
 
 describe('onGetMany', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type Fruit = { color: string };
 
   const fruits = collection<Fruit>('fruits');
 
-  beforeAll(async () => {
+  before(async () => {
     await Promise.all([
       set(fruits, 'apple', { color: 'green' }),
       set(fruits, 'banana', { color: 'yellow' }),
@@ -38,7 +28,7 @@ describe('onGetMany', () => {
   it('returns nothing when called with empty array', () => {
     return new Promise((resolve) => {
       off = onGetMany(fruits, [], (list) => {
-        expect(list.length).toBe(0);
+        expect(list.length).to.equal(0);
         resolve(true);
       });
     });
@@ -47,11 +37,13 @@ describe('onGetMany', () => {
   it('allows to get single doc by id', () => {
     return new Promise((resolve) => {
       off = onGetMany(fruits, ['apple'], (fruitsFromDB) => {
-        expect(fruitsFromDB.length).toBe(1);
-        expect(fruitsFromDB[0].__type__).toBe('doc');
-        expect(fruitsFromDB[0].data.color).toBe('green');
-        expect(fruitsFromDB[0].ref.id).toBe('apple');
-        expect(fruitsFromDB[0].ref.collection.path).toBe('fruits');
+        expect(fruitsFromDB.length).to.equal(1);
+        expect(fruitsFromDB[0].__type__).to.equal('doc');
+        expect(fruitsFromDB[0].data.color).to.equal('green');
+        expect(fruitsFromDB[0].ref.id).to.equal('apple');
+        expect(fruitsFromDB[0].ref.collection.path).to.equal(
+          'fruits',
+        );
         resolve(true);
       });
     });
@@ -63,11 +55,11 @@ describe('onGetMany', () => {
         fruits,
         ['banana', 'apple', 'banana', 'orange'],
         (fruitsFromDB) => {
-          expect(fruitsFromDB.length).toBe(4);
-          expect(fruitsFromDB[0].ref.id).toBe('banana');
-          expect(fruitsFromDB[1].ref.id).toBe('apple');
-          expect(fruitsFromDB[2].ref.id).toBe('banana');
-          expect(fruitsFromDB[3].ref.id).toBe('orange');
+          expect(fruitsFromDB.length).to.equal(4);
+          expect(fruitsFromDB[0].ref.id).to.equal('banana');
+          expect(fruitsFromDB[1].ref.id).to.equal('apple');
+          expect(fruitsFromDB[2].ref.id).to.equal('banana');
+          expect(fruitsFromDB[3].ref.id).to.equal('orange');
           resolve(true);
         },
       );
@@ -85,7 +77,7 @@ describe('onGetMany', () => {
   //         reject(new Error('onResult should not been called'))
   //       },
   //       err => {
-  //         expect(err.message).toBe('Missing document with id nonexistant')
+  //         expect(err.message).to.equal('Missing document with id nonexistant')
   //         resolve()
   //       }
   //     )
@@ -98,8 +90,8 @@ describe('onGetMany', () => {
   //       fruits,
   //       ['nonexistant'],
   //       list => {
-  //         expect(list.length).toBe(1)
-  //         expect(list[0].data.color).toBe(
+  //         expect(list.length).to.equal(1)
+  //         expect(list[0].data.color).to.equal(
   //           'nonexistant is missing but I filled it in'
   //         )
   //         resolve()
@@ -118,7 +110,7 @@ describe('onGetMany', () => {
   //       fruits,
   //       ['apple', 'nonexistant', 'banana'],
   //       list => {
-  //         expect(list.length).toBe(2)
+  //         expect(list.length).to.equal(2)
   //         resolve()
   //       },
   //       null,
@@ -140,7 +132,7 @@ describe('onGetMany', () => {
 
       return new Promise((resolve) => {
         off = onGetMany(fruits, ['apple', 'mango'], (list) => {
-          const colorOf = (id) =>
+          const colorOf = (id: string) =>
             list.find((doc) => doc.ref.id === id)!.data.color;
 
           if (colorOf('mango') === 'yellow') {
@@ -151,7 +143,7 @@ describe('onGetMany', () => {
             colorOf('mango') === 'red' &&
             colorOf('apple') === 'red'
           ) {
-            resolve(true);
+            resolve();
           }
         });
       });

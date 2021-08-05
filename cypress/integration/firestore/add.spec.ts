@@ -1,11 +1,11 @@
-import '../setup';
+import '../../setup';
 
-import add from '../../src/firestore/add';
+import add from '../../../src/firestore/add';
 
-import { collection } from '../../src/firestore/collection';
-import get from '../../src/firestore/get';
-import { Ref, ref } from '../../src/firestore/ref';
-import { value } from '../../src/firestore/value';
+import { collection } from '../../../src/firestore/collection';
+import get from '../../../src/firestore/get';
+import { Ref, ref } from '../../../src/firestore/ref';
+import { value } from '../../../src/firestore/value';
 
 describe('add', () => {
   type User = { name: string };

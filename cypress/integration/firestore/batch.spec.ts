@@ -1,23 +1,14 @@
-import { initializeFirebaseApp, initializeFirestore } from '../../';
+import '../../setup';
+
 import { nanoid } from 'nanoid';
 
-import { batch } from '.';
-import { collection } from '../collection';
-import { ref } from '../ref';
-import get from '../get';
-import set from '../set';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
+import { batch } from '../../../src/firestore/batch';
+import { collection } from '../../../src/firestore/collection';
+import { ref } from '../../../src/firestore/ref';
+import get from '../../../src/firestore/get';
+import set from '../../../src/firestore/set';
 
 describe('batch', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type User = { name: string; foo?: boolean };
   const users = collection<User>('users');
 
@@ -36,9 +27,9 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    expect(sasha.data.name).toBe('Sasha');
-    expect(tati.data.name).toBe('Tati');
-    expect(ed.data.name).toBe('Ed');
+    expect(sasha!.data.name).to.eq('Sasha');
+    expect(tati!.data.name).to.eq('Tati');
+    expect(ed!.data.name).to.eq('Ed');
   });
 
   it('allows set a new document', async () => {
@@ -56,7 +47,7 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    expect(sasha).toEqual({
+    expect(sasha).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-sasha` },
       meta: {
@@ -65,7 +56,7 @@ describe('batch', () => {
       },
       data: { name: 'Sasha' },
     });
-    expect(tati).toEqual({
+    expect(tati).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-tati` },
       meta: {
@@ -74,7 +65,7 @@ describe('batch', () => {
       },
       data: { name: 'Tati' },
     });
-    expect(ed).toEqual({
+    expect(ed).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-ed` },
       meta: {
@@ -105,15 +96,15 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    expect(sasha.data).toEqual({
+    expect(sasha!.data).to.deep.equal({
       name: 'Sasha Koss',
       foo: true,
     });
-    expect(tati.data).toEqual({
+    expect(tati!.data).to.deep.equal({
       name: 'Tati Shepeleva',
       foo: false,
     });
-    expect(ed.data).toEqual({ name: 'Ed Tsech', foo: true });
+    expect(ed!.data).to.deep.equal({ name: 'Ed Tsech', foo: true });
   });
 
   it('allows updating', async () => {
@@ -136,9 +127,9 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    expect(sasha.data.name).toEqual('Sasha Koss');
-    expect(tati.data.name).toEqual('Tati Shepeleva');
-    expect(ed.data.name).toEqual('Ed Tsech');
+    expect(sasha!.data.name).to.equal('Sasha Koss');
+    expect(tati!.data.name).to.equal('Tati Shepeleva');
+    expect(ed!.data.name).to.equal('Ed Tsech');
   });
 
   it('allows removing', async () => {
@@ -161,8 +152,8 @@ describe('batch', () => {
       get(tatiRef),
       get(edRef),
     ]);
-    expect(sasha).toBeNull();
-    expect(tati).toBeNull();
-    expect(ed).toBeNull();
+    expect(sasha).to.be.null;
+    expect(tati).to.be.null;
+    expect(ed).to.be.null;
   });
 });

@@ -1,19 +1,10 @@
-import { subcollection } from '.';
-import { Ref, ref } from '../ref';
-import { collection } from '../collection';
-import { initializeFirebaseApp, initializeFirestore } from '../../';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
+import '../../setup';
 
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
+import { subcollection } from '../../../src/firestore/subcollection';
+import { Ref, ref } from '../../../src/firestore/ref';
+import { collection } from '../../../src/firestore/collection';
 
 describe('Subcollection', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
   type Comment = { author: Ref<User>; text: string; date?: Date };
@@ -24,7 +15,7 @@ describe('Subcollection', () => {
     it('creates subcollection function', () => {
       const userRef = ref(users, '42');
       const userPosts = subcollection<Post, User>('posts', users);
-      expect(userPosts(userRef)).toStrictEqual({
+      expect(userPosts(userRef)).to.deep.equal({
         __type__: 'collection',
         path: 'users/42/posts',
       });
@@ -32,7 +23,7 @@ describe('Subcollection', () => {
 
     it('allows to pass parent document id', () => {
       const userPosts = subcollection<Post, User>('posts', users);
-      expect(userPosts('42')).toStrictEqual({
+      expect(userPosts('42')).to.deep.equal({
         __type__: 'collection',
         path: 'users/42/posts',
       });
@@ -55,20 +46,20 @@ describe('Subcollection', () => {
       const post = ref(userPosts(user), '69');
       const comment = ref(postComments(post), '13');
 
-      expect(postComments(post)).toStrictEqual({
+      expect(postComments(post)).to.deep.equal({
         __type__: 'collection',
         path: 'users/42/posts/69/comments',
       });
-      expect(postComments(['42', '69'])).toStrictEqual({
+      expect(postComments(['42', '69'])).to.deep.equal({
         __type__: 'collection',
         path: 'users/42/posts/69/comments',
       });
 
-      expect(commentLikes(comment)).toStrictEqual({
+      expect(commentLikes(comment)).to.deep.equal({
         __type__: 'collection',
         path: 'users/42/posts/69/comments/13/likes',
       });
-      expect(commentLikes(['42', '69', '13'])).toStrictEqual({
+      expect(commentLikes(['42', '69', '13'])).to.deep.equal({
         __type__: 'collection',
         path: 'users/42/posts/69/comments/13/likes',
       });

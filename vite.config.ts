@@ -44,6 +44,7 @@ export default defineConfig({
         'firebase/performance',
         'firebase/remote-config',
         'firebase/storage',
+        'geofire-common',
         'source-map',
         'zod',
       ],

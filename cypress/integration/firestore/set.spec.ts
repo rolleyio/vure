@@ -1,23 +1,14 @@
+import '../../setup';
+
 import { nanoid } from 'nanoid';
-import get from '../get';
-import set from '.';
-import { collection } from '../collection';
-import { Ref, ref } from '../ref';
-import { value } from '../value';
 
-import { initializeFirebaseApp, initializeFirestore } from '../../';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
+import get from '../../../src/firestore/get';
+import set from '../../../src/firestore/set';
+import { collection } from '../../../src/firestore/collection';
+import { Ref, ref } from '../../../src/firestore/ref';
+import { value } from '../../../src/firestore/value';
 
 describe('set', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
 
@@ -28,7 +19,7 @@ describe('set', () => {
     const id = nanoid();
     await set(users, id, { name: 'Sasha' });
     const user = await get(users, id);
-    expect(user.data).toStrictEqual({ name: 'Sasha' });
+    expect(user!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('overwrites a document', async () => {
@@ -36,7 +27,7 @@ describe('set', () => {
     await set(users, id, { name: 'Sasha' });
     await set(users, id, { name: 'Sasha Koss' });
     const user = await get(users, id);
-    expect(user.data).toStrictEqual({ name: 'Sasha Koss' });
+    expect(user!.data).to.deep.equal({ name: 'Sasha Koss' });
   });
 
   it('allows setting to refs', async () => {
@@ -44,7 +35,7 @@ describe('set', () => {
     const userRef = ref(users, id);
     await set(userRef, { name: 'Sasha' });
     const user = await get(users, id);
-    expect(user.data).toStrictEqual({ name: 'Sasha' });
+    expect(user!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('supports references', async () => {
@@ -56,8 +47,8 @@ describe('set', () => {
       text: 'Hello!',
     });
     const postFromDB = await get(posts, postId);
-    const userFromDB = await get(users, postFromDB.data.author.id);
-    expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
+    const userFromDB = await get(users, postFromDB!.data.author.id);
+    expect(userFromDB!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('supports dates', async () => {
@@ -70,7 +61,7 @@ describe('set', () => {
       date,
     });
     const postFromDB = await get(posts, postId);
-    expect(postFromDB.data.date.getTime()).toBe(date.getTime());
+    expect(postFromDB!.data.date!.getTime()).to.equal(date.getTime());
   });
 
   it('supports server dates', async () => {
@@ -83,18 +74,18 @@ describe('set', () => {
     });
     const post = await get(posts, postId);
     const now = Date.now();
-    const returnedDate = post.data.date;
-    expect(returnedDate).toBeInstanceOf(Date);
+    const returnedDate = post!.data.date!;
+    expect(returnedDate).to.be.instanceOf(Date);
     expect(
       returnedDate.getTime() < now &&
         returnedDate.getTime() > now - 10000,
-    ).toBeTruthy();
-    const postFromDB = await get(posts, post.ref.id);
-    const dateFromDB = postFromDB.data.date;
-    expect(dateFromDB).toBeInstanceOf(Date);
+    ).to.be.true;
+    const postFromDB = await get(posts, post!.ref.id);
+    const dateFromDB = postFromDB!.data.date!;
+    expect(dateFromDB).to.be.instanceOf(Date);
     expect(
       dateFromDB.getTime() < now &&
         dateFromDB.getTime() > now - 10000,
-    ).toBeTruthy();
+    ).to.be.true;
   });
 });
