@@ -1,6 +1,6 @@
-import '../../setup';
+import '../__test__/setup';
 
-import { collection } from '../../../src/firestore/collection';
+import { collection } from '../collection';
 
 describe('collection', () => {
   type User = { name: string };

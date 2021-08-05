@@ -1,9 +1,9 @@
-import '../../setup';
+import '../__test__/setup';
 
-import onGetMany from '../../../src/firestore/onGetMany';
-import { collection } from '../../../src/firestore/collection';
-import update from '../../../src/firestore/update';
-import set from '../../../src/firestore/set';
+import onGetMany from '../onGetMany';
+import { collection } from '../collection';
+import update from '../update';
+import set from '../set';
 
 describe('onGetMany', () => {
   type Fruit = { color: string };

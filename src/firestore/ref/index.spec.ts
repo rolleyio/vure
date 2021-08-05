@@ -1,12 +1,7 @@
-import '../../setup';
+import '../__test__/setup';
 
-import {
-  getRefPath,
-  ref,
-  pathToRef,
-  id,
-} from '../../../src/firestore/ref';
-import { collection } from '../../../src/firestore/collection';
+import { getRefPath, ref, pathToRef, id } from '../ref';
+import { collection } from '../collection';
 
 describe('Ref', () => {
   interface User {

@@ -1,17 +1,17 @@
-import '../../setup';
+import '../__test__/setup';
 
 import sinon from 'sinon';
 
-import onAll from '../../../src/firestore/onAll';
-import set from '../../../src/firestore/set';
-import { collection } from '../../../src/firestore/collection';
-import { Ref, ref } from '../../../src/firestore/ref';
-import get from '../../../src/firestore/get';
-import remove from '../../../src/firestore/remove';
+import onAll from '../onAll';
+import set from '../set';
+import { collection } from '../collection';
+import { Ref, ref } from '../ref';
+import get from '../get';
+import remove from '../remove';
 import { nanoid } from 'nanoid';
-import { subcollection } from '../../../src/firestore/subcollection';
-import add from '../../../src/firestore/add';
-import { group } from '../../../src/firestore/group';
+import { subcollection } from '../subcollection';
+import add from '../add';
+import { group } from '../group';
 
 describe('onAll', () => {
   type Book = { title: string };

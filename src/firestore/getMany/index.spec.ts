@@ -1,9 +1,9 @@
-import '../../setup';
+import '../__test__/setup';
 
-import { collection } from '../../../src/firestore/collection';
-import set from '../../../src/firestore/set';
-import getMany from '../../../src/firestore/getMany';
-import remove from '../../../src/firestore/remove';
+import { collection } from '../collection';
+import set from '../set';
+import getMany from '../getMany';
+import remove from '../remove';
 
 describe('getMany', () => {
   type Fruit = { color: string };

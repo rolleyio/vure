@@ -1,9 +1,9 @@
-import '../../setup';
+import '../__test__/setup';
 
-import get from '../../../src/firestore/get';
-import add from '../../../src/firestore/add';
-import remove from '../../../src/firestore/remove';
-import { collection } from '../../../src/firestore/collection';
+import get from '../get';
+import add from '../add';
+import remove from '../remove';
+import { collection } from '../collection';
 
 describe('remove', () => {
   type User = { name: string };

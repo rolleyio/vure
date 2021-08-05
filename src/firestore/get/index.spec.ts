@@ -1,9 +1,9 @@
-import '../../setup';
+import '../__test__/setup';
 
-import get from '../../../src/firestore/get';
-import { collection } from '../../../src/firestore/collection';
-import { Ref, ref } from '../../../src/firestore/ref';
-import add from '../../../src/firestore/add';
+import get from '../get';
+import { collection } from '../collection';
+import { Ref, ref } from '../ref';
+import add from '../add';
 
 describe('get', () => {
   type User = { name: string };

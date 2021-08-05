@@ -1,15 +1,15 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import update from '../../../src/firestore/update';
-import add from '../../../src/firestore/add';
-import { collection } from '../../../src/firestore/collection';
-import field from '../../../src/firestore/field';
-import get from '../../../src/firestore/get';
-import { ref, Ref, id } from '../../../src/firestore/ref';
-import set from '../../../src/firestore/set';
-import { value } from '../../../src/firestore/value';
+import update from '../update';
+import add from '../add';
+import { collection } from '../collection';
+import field from '../field';
+import get from '../get';
+import { ref, Ref, id } from '../ref';
+import set from '../set';
+import { value } from '../value';
 
 describe('update', () => {
   type User = {

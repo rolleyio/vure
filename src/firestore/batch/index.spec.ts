@@ -1,12 +1,12 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import { batch } from '../../../src/firestore/batch';
-import { collection } from '../../../src/firestore/collection';
-import { ref } from '../../../src/firestore/ref';
-import get from '../../../src/firestore/get';
-import set from '../../../src/firestore/set';
+import { batch } from '../batch';
+import { collection } from '../collection';
+import { ref } from '../ref';
+import get from '../get';
+import set from '../set';
 
 describe('batch', () => {
   type User = { name: string; foo?: boolean };

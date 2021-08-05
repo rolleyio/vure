@@ -18,3 +18,11 @@ import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+beforeEach(() => {
+  cy.exec('npm run clear:db');
+});
+
+after(() => {
+  cy.exec('npm run clear:db');
+});

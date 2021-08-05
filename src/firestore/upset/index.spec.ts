@@ -1,14 +1,14 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import get from '../../../src/firestore/get';
-import upset from '../../../src/firestore/upset';
-import { collection } from '../../../src/firestore/collection';
-import { Ref, ref } from '../../../src/firestore/ref';
-import { value } from '../../../src/firestore/value';
-import set from '../../../src/firestore/set';
-import update from '../../../src/firestore/update';
+import get from '../get';
+import upset from '../upset';
+import { collection } from '../collection';
+import { Ref, ref } from '../ref';
+import { value } from '../value';
+import set from '../set';
+import update from '../update';
 
 describe('merge', () => {
   type User = { name: string; deleted?: boolean };

@@ -1,12 +1,12 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import { transaction } from '../../../src/firestore/transaction';
-import { collection } from '../../../src/firestore/collection';
-import set from '../../../src/firestore/set';
-import { ref, Ref } from '../../../src/firestore/ref';
-import get from '../../../src/firestore/get';
+import { transaction } from '../transaction';
+import { collection } from '../collection';
+import set from '../set';
+import { ref, Ref } from '../ref';
+import get from '../get';
 
 describe('transaction', () => {
   type Counter = { count: number; optional?: true };

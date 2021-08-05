@@ -1,25 +1,20 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import add from '../../../src/firestore/add';
-import { where } from '../../../src/firestore/where';
-import { limit } from '../../../src/firestore/limit';
-import { query } from '../../../src/firestore/query';
-import { collection } from '../../../src/firestore/collection';
-import { order } from '../../../src/firestore/order';
-import {
-  startAfter,
-  startAt,
-  endBefore,
-  endAt,
-} from '../../../src/firestore/cursor';
-import { Ref, ref } from '../../../src/firestore/ref';
-import get from '../../../src/firestore/get';
-import set from '../../../src/firestore/set';
-import { subcollection } from '../../../src/firestore/subcollection';
-import { group } from '../../../src/firestore/group';
-import { docId } from '../../../src/firestore/docId';
+import add from '../add';
+import { where } from '../where';
+import { limit } from '../limit';
+import { query } from '../query';
+import { collection } from '../collection';
+import { order } from '../order';
+import { startAfter, startAt, endBefore, endAt } from '../cursor';
+import { Ref, ref } from '../ref';
+import get from '../get';
+import set from '../set';
+import { subcollection } from '../subcollection';
+import { group } from '../group';
+import { docId } from '../docId';
 
 describe('query', () => {
   type Contact = {

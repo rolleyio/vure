@@ -1,16 +1,16 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import all from '../../../src/firestore/all';
-import set from '../../../src/firestore/set';
-import { collection } from '../../../src/firestore/collection';
-import { Ref, ref } from '../../../src/firestore/ref';
-import get from '../../../src/firestore/get';
-import remove from '../../../src/firestore/remove';
-import { subcollection } from '../../../src/firestore/subcollection';
-import add from '../../../src/firestore/add';
-import { group } from '../../../src/firestore/group';
+import all from '../all';
+import set from '../set';
+import { collection } from '../collection';
+import { Ref, ref } from '../ref';
+import get from '../get';
+import remove from '../remove';
+import { subcollection } from '../subcollection';
+import add from '../add';
+import { group } from '../group';
 
 describe('all', () => {
   type Book = { title: string };

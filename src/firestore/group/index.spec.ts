@@ -1,9 +1,9 @@
-import '../../setup';
+import '../__test__/setup';
 
-import { group } from '../../../src/firestore/group';
-import { subcollection } from '../../../src/firestore/subcollection';
-import { Ref } from '../../../src/firestore/ref';
-import { collection } from '../../../src/firestore/collection';
+import { group } from '../group';
+import { subcollection } from '../subcollection';
+import { Ref } from '../ref';
+import { collection } from '../collection';
 
 describe('group', () => {
   type User = { name: string };

@@ -1,13 +1,13 @@
-import '../../setup';
+import '../__test__/setup';
 
 import sinon from 'sinon';
 
-import onGet from '../../../src/firestore/onGet';
-import get from '../../../src/firestore/get';
-import { collection } from '../../../src/firestore/collection';
-import { Ref, ref } from '../../../src/firestore/ref';
-import add from '../../../src/firestore/add';
-import update from '../../../src/firestore/update';
+import onGet from '../onGet';
+import get from '../get';
+import { collection } from '../collection';
+import { Ref, ref } from '../ref';
+import add from '../add';
+import update from '../update';
 
 describe('onGet', () => {
   type User = { name: string };

@@ -1,8 +1,8 @@
-import '../../setup';
+import '../__test__/setup';
 
-import { subcollection } from '../../../src/firestore/subcollection';
-import { Ref, ref } from '../../../src/firestore/ref';
-import { collection } from '../../../src/firestore/collection';
+import { subcollection } from '../subcollection';
+import { Ref, ref } from '../ref';
+import { collection } from '../collection';
 
 describe('Subcollection', () => {
   type User = { name: string };

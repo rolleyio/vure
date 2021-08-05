@@ -1,10 +1,10 @@
-import '../../setup';
+import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
 
-import { doc } from '../../../src/firestore/doc';
-import { collection } from '../../../src/firestore/collection';
-import { ref } from '../../../src/firestore/ref';
+import { doc } from '../doc';
+import { collection } from '../collection';
+import { ref } from '../ref';
 
 describe('Doc', () => {
   const users = collection<User>('users');
