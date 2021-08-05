@@ -1,4 +1,8 @@
-import { getAnalytics, Analytics } from 'firebase/analytics';
+import {
+  getAnalytics,
+  Analytics,
+  isSupported,
+} from 'firebase/analytics';
 import { markRaw } from 'vue';
 
 import { useFirebaseApp } from '../composables';
@@ -16,7 +20,9 @@ export function useAnalytics() {
 }
 
 export function initializeAnalytics() {
-  analytics = markRaw(getAnalytics(useFirebaseApp()));
+  if (isSupported()) {
+    analytics = markRaw(getAnalytics(useFirebaseApp()));
+  }
 
   return analytics;
 }
