@@ -1,7 +1,4 @@
-import {
-  collection as firebaseCollection,
-  CollectionReference,
-} from 'firebase/firestore';
+import { collection as firebaseCollection } from 'firebase/firestore';
 
 import { useFirestore } from '../composables';
 
