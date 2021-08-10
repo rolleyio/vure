@@ -27,11 +27,17 @@ export type VureConfig = {
     };
     auth?: boolean;
     firestore?: boolean;
-    functions?: boolean;
+    functions?: {
+      enabled: boolean;
+      regionOrCustomDomain: string | undefined;
+    };
     messaging?: boolean;
     performance?: boolean;
     remoteConfig?: boolean;
-    storage?: boolean;
+    storage?: {
+      enabled: boolean;
+      bucketUrl: string | undefined;
+    };
   };
   emulators?: {
     auth?: VureAuthEmulatorConfig;

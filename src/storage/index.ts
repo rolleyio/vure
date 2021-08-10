@@ -27,13 +27,14 @@ export function useStorage() {
 }
 
 export function initializeStorage(
+  bucketUrl?: string | undefined,
   emulator: VureEmulatorConfig = {
     enabled: false,
     host: 'localhost',
     port: 9199,
   },
 ) {
-  storage = markRaw(getStorage(useFirebaseApp()));
+  storage = markRaw(getStorage(useFirebaseApp(), bucketUrl));
 
   if (emulator.enabled) {
     connectStorageEmulator(
