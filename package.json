@@ -1,6 +1,6 @@
 {
   "name": "@rolley/vure",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "main": "./dist/vure.umd.js",
   "module": "./dist/vure.es.js",
   "exports": {
