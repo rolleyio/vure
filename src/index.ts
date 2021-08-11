@@ -30,18 +30,12 @@ export function defineVureConfig(options: VureConfig) {
 
 export default {
   install(_: App, options: VureConfig) {
-    const { name, features, config, emulators } = options;
+    const { name, features, config } = options;
 
     initializeFirebaseApp(config, name);
 
     if (features.analytics) {
-      if (config.measurementId) {
-        initializeAnalytics();
-      } else {
-        throw new Error(
-          'You need to provide a measurementId in your options config to enable analytics',
-        );
-      }
+      initializeAnalytics();
     }
 
     if (features.appCheck) {
@@ -58,38 +52,22 @@ export default {
     }
 
     if (features.auth) {
-      if (config.authDomain) {
-        initializeAuth(emulators?.auth);
-      } else {
-        throw new Error(
-          'You need to provide an authDomain in your options config to enable auth',
-        );
-      }
+      initializeAuth(features.auth.emulator);
     }
 
     if (features.firestore) {
-      initializeFirestore(emulators?.firestore);
+      initializeFirestore(features.firestore.emulator);
     }
 
     if (features.functions) {
-      const { enabled, regionOrCustomDomain } = features.functions;
+      const { regionOrCustomDomain, emulator: fnsEmulator } =
+        features.functions;
 
-      if (enabled) {
-        initializeFunctions(
-          regionOrCustomDomain,
-          emulators?.functions,
-        );
-      }
+      initializeFunctions(regionOrCustomDomain, fnsEmulator);
     }
 
     if (features.messaging) {
-      if (config.messagingSenderId) {
-        initializeMessaging();
-      } else {
-        throw new Error(
-          'You need to provide an messagingSenderId in your options config to enable messaging',
-        );
-      }
+      initializeMessaging();
     }
 
     if (features.performance) {
@@ -101,11 +79,10 @@ export default {
     }
 
     if (features.storage) {
-      const { enabled, bucketUrl } = features.storage;
+      const { bucketUrl, emulator: storageEmulator } =
+        features.storage;
 
-      if (enabled) {
-        initializeStorage(bucketUrl, emulators?.storage);
-      }
+      initializeStorage(bucketUrl, storageEmulator);
     }
   },
 };
