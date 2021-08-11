@@ -22,13 +22,16 @@ export function useFunctions() {
 }
 
 export function initializeFunctions(
+  regionOrCustomDomain?: string,
   emulator: VureEmulatorConfig = {
     enabled: false,
     host: 'localhost',
     port: 5001,
   },
 ) {
-  functions = markRaw(getFunctions(useFirebaseApp()));
+  functions = markRaw(
+    getFunctions(useFirebaseApp(), regionOrCustomDomain),
+  );
 
   if (emulator.enabled) {
     connectFunctionsEmulator(

@@ -1,25 +1,16 @@
-import { initializeFirebaseApp, initializeFirestore } from '../../';
+import '../__test__/setup';
+
 import { collection } from '../collection';
 import set from '../set';
-import getMany from '.';
+import getMany from '../getMany';
 import remove from '../remove';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
 
 describe('getMany', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type Fruit = { color: string };
 
   const fruits = collection<Fruit>('fruits');
 
-  beforeAll(async () => {
+  before(async () => {
     await Promise.all([
       set(fruits, 'apple', { color: 'green' }),
       set(fruits, 'banana', { color: 'yellow' }),
@@ -27,7 +18,7 @@ describe('getMany', () => {
     ]);
   });
 
-  afterAll(async () => {
+  after(async () => {
     await Promise.all([
       remove(fruits, 'apple'),
       remove(fruits, 'banana'),
@@ -37,16 +28,16 @@ describe('getMany', () => {
 
   it('returns nothing when called with empty array', async () => {
     const list = await getMany(fruits, []);
-    expect(list.length).toBe(0);
+    expect(list.length).to.equal(0);
   });
 
   it('allows to get single doc by id', async () => {
     const fruitsFromDB = await getMany(fruits, ['apple']);
-    expect(fruitsFromDB.length).toBe(1);
-    expect(fruitsFromDB[0].__type__).toBe('doc');
-    expect(fruitsFromDB[0].data.color).toBe('green');
-    expect(fruitsFromDB[0].ref.id).toBe('apple');
-    expect(fruitsFromDB[0].ref.collection.path).toBe('fruits');
+    expect(fruitsFromDB.length).to.equal(1);
+    expect(fruitsFromDB[0].__type__).to.equal('doc');
+    expect(fruitsFromDB[0].data.color).to.equal('green');
+    expect(fruitsFromDB[0].ref.id).to.equal('apple');
+    expect(fruitsFromDB[0].ref.collection.path).to.equal('fruits');
   });
 
   it('allows to get multiple docs by id', async () => {
@@ -56,11 +47,11 @@ describe('getMany', () => {
       'banana',
       'orange',
     ]);
-    expect(fruitsFromDB.length).toBe(4);
-    expect(fruitsFromDB[0].ref.id).toBe('banana');
-    expect(fruitsFromDB[1].ref.id).toBe('apple');
-    expect(fruitsFromDB[2].ref.id).toBe('banana');
-    expect(fruitsFromDB[3].ref.id).toBe('orange');
+    expect(fruitsFromDB.length).to.equal(4);
+    expect(fruitsFromDB[0].ref.id).to.equal('banana');
+    expect(fruitsFromDB[1].ref.id).to.equal('apple');
+    expect(fruitsFromDB[2].ref.id).to.equal('banana');
+    expect(fruitsFromDB[3].ref.id).to.equal('orange');
   });
 
   it('throws an error when an id is missing', () =>
@@ -69,7 +60,7 @@ describe('getMany', () => {
         throw new Error('The promise should be rejected');
       })
       .catch((err) => {
-        expect(err.message).toBe(
+        expect(err.message).to.equal(
           'Missing document with id nonexistant',
         );
       }));
@@ -78,8 +69,8 @@ describe('getMany', () => {
     const list = await getMany(fruits, ['nonexistant'], (id) => ({
       color: `${id} is missing but I filled it in`,
     }));
-    expect(list.length).toBe(1);
-    expect(list[0].data.color).toBe(
+    expect(list.length).to.equal(1);
+    expect(list[0].data.color).to.equal(
       'nonexistant is missing but I filled it in',
     );
   });
@@ -90,6 +81,6 @@ describe('getMany', () => {
       ['apple', 'nonexistant', 'banana'],
       'ignore',
     );
-    expect(list.length).toBe(2);
+    expect(list.length).to.equal(2);
   });
 });

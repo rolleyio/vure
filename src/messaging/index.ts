@@ -1,4 +1,8 @@
-import { getMessaging, FirebaseMessaging } from 'firebase/messaging';
+import {
+  getMessaging,
+  FirebaseMessaging,
+  isSupported,
+} from 'firebase/messaging';
 import { markRaw } from 'vue';
 
 import { useFirebaseApp } from '../composables';
@@ -16,7 +20,9 @@ export function useMessaging() {
 }
 
 export function initializeMessaging() {
-  messaging = markRaw(getMessaging(useFirebaseApp()));
+  if (isSupported()) {
+    messaging = markRaw(getMessaging(useFirebaseApp()));
+  }
 
   return messaging;
 }

@@ -1,7 +1,6 @@
 import {
   FirebaseApp,
   initializeApp,
-  getApp,
   FirebaseOptions,
 } from 'firebase/app';
 import { markRaw } from 'vue';

@@ -1,29 +1,16 @@
-import { initializeFirebaseApp, initializeFirestore } from '../../';
+import '../__test__/setup';
+
 import { nanoid } from 'nanoid';
 
-import { transaction } from '.';
+import { transaction } from '../transaction';
 import { collection } from '../collection';
 import set from '../set';
 import { ref, Ref } from '../ref';
 import get from '../get';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
 
 describe('transaction', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type Counter = { count: number; optional?: true };
   const counters = collection<Counter>('counters');
-
-  beforeEach(() => {
-    typeof jest !== 'undefined' && jest.setTimeout(20000);
-  });
 
   const plusOne = async (
     counter: Ref<Counter>,
@@ -31,10 +18,8 @@ describe('transaction', () => {
   ) =>
     transaction(
       async ({ get }) => {
-        const {
-          data: { count },
-        } = await get(counter);
-        return count;
+        const item = await get(counter);
+        return item!.data.count;
       },
       async ({ data: count, set, update }) => {
         const newCount = count + 1;
@@ -57,10 +42,8 @@ describe('transaction', () => {
       plusOne(counter),
       plusOne(counter),
     ]);
-    const {
-      data: { count },
-    } = await get(counter);
-    expect(count).toBe(3);
+    const item = await get(counter);
+    expect(item!.data.count).to.equal(3);
   });
 
   it('returns the value from the write function', async () => {
@@ -72,7 +55,7 @@ describe('transaction', () => {
       plusOne(counter),
       plusOne(counter),
     ]);
-    expect(results.sort()).toStrictEqual([1, 2, 3]);
+    expect(results.sort()).to.eql([1, 2, 3]);
   });
 
   it('allows upsetting', async () => {
@@ -82,14 +65,11 @@ describe('transaction', () => {
     await transaction(
       ({ get }) => get(counter),
       async ({ data: counterFromDB, upset }) =>
-        upset(counter, { count: counterFromDB.data.count + 1 }),
+        upset(counter, { count: counterFromDB!.data.count + 1 }),
     );
-    const {
-      data: { count, optional },
-    } = await get(counter);
+    const item = await get(counter);
 
-    expect(count).toBe(1);
-    expect(optional).toBeTruthy();
+    expect(item!.data.count).to.equal(1);
   });
 
   it('allows updating', async () => {
@@ -102,16 +82,14 @@ describe('transaction', () => {
         ({ get }) => get(counter),
         async ({ data: counterFromDB, update }) =>
           update(counter, {
-            count: counterFromDB.data.count + 1,
+            count: counterFromDB!.data.count + 1,
             optional: true,
           }),
       ),
     ]);
-    const {
-      data: { count, optional },
-    } = await get(counter);
-    expect(count).toBe(2);
-    expect(optional).toBeTruthy();
+    const item = await get(counter);
+    expect(item!.data.count).to.equal(2);
+    expect(item!.data.optional).to.be.true;
   });
 
   it('allows removing', async () => {
@@ -126,6 +104,6 @@ describe('transaction', () => {
       ),
     ]);
     const counterFromDB = await get(counter);
-    expect(!counterFromDB).toBeTruthy();
+    expect(!counterFromDB).to.be.true;
   });
 });

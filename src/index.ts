@@ -72,7 +72,14 @@ export default {
     }
 
     if (features.functions) {
-      initializeFunctions(emulators?.functions);
+      const { enabled, regionOrCustomDomain } = features.functions;
+
+      if (enabled) {
+        initializeFunctions(
+          regionOrCustomDomain,
+          emulators?.functions,
+        );
+      }
     }
 
     if (features.messaging) {
@@ -94,12 +101,10 @@ export default {
     }
 
     if (features.storage) {
-      if (config.storageBucket) {
-        initializeStorage(emulators?.storage);
-      } else {
-        throw new Error(
-          'You need to provide an storageBucket in your options config to enable storage',
-        );
+      const { enabled, bucketUrl } = features.storage;
+
+      if (enabled) {
+        initializeStorage(bucketUrl, emulators?.storage);
       }
     }
   },

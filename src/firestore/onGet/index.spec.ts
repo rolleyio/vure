@@ -1,23 +1,15 @@
-import onGet from '.';
+import '../__test__/setup';
+
+import sinon from 'sinon';
+
+import onGet from '../onGet';
 import get from '../get';
 import { collection } from '../collection';
 import { Ref, ref } from '../ref';
 import add from '../add';
 import update from '../update';
 
-import { initializeFirebaseApp, initializeFirestore } from '../../';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
-
 describe('onGet', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type User = { name: string };
   type Post = { author: Ref<User>; text: string; date?: Date };
 
@@ -33,7 +25,7 @@ describe('onGet', () => {
 
   it('returns nothing if document is not present', (done) => {
     off = onGet(collection('nope'), 'nah', (nothing) => {
-      expect(nothing === null);
+      assert(nothing === null);
       done();
     });
   });
@@ -42,8 +34,8 @@ describe('onGet', () => {
     const user = await add(users, { name: 'Sasha' });
     return new Promise((resolve) => {
       off = onGet(user, (userFromDB) => {
-        expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
-        resolve(true);
+        assert.deepEqual(userFromDB!.data, { name: 'Sasha' });
+        resolve();
       });
     });
   });
@@ -56,13 +48,13 @@ describe('onGet', () => {
     });
     return new Promise((resolve) => {
       off = onGet(posts, post.id, async (postFromDB) => {
-        expect(postFromDB.data.author.__type__ === 'ref');
+        assert(postFromDB!.data.author.__type__ === 'ref');
         const userFromDB = await get(
           users,
-          postFromDB.data.author.id,
+          postFromDB!.data.author.id,
         );
-        expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
-        resolve(true);
+        assert.deepEqual(userFromDB!.data, { name: 'Sasha' });
+        resolve();
       });
     });
   });
@@ -77,26 +69,26 @@ describe('onGet', () => {
     });
     return new Promise((resolve) => {
       off = onGet(posts, post.id, (postFromDB) => {
-        expect(postFromDB.data.date.getTime() === date.getTime());
-        resolve(true);
+        assert(postFromDB!.data.date!.getTime() === date.getTime());
+        resolve();
       });
     });
   });
 
   describe('real-time', () => {
     it('subscribes to updates', async () => {
-      const spy = jest.fn();
+      const spy = sinon.spy();
       const user = await add(users, { name: 'Sasha' });
       return new Promise((resolve) => {
         off = onGet(user, async (doc) => {
-          const { name } = doc.data;
+          const { name } = doc!.data;
           spy(name);
           if (name === 'Sasha') {
             await update(user, { name: 'Sasha Koss' });
           } else if (name === 'Sasha Koss') {
-            expect(spy).toBeCalledWith('Sasha');
-            expect(spy).toBeCalledWith('Sasha Koss');
-            resolve(true);
+            assert(spy.calledWith('Sasha'));
+            assert(spy.calledWith('Sasha Koss'));
+            resolve();
           }
         });
       });
@@ -106,22 +98,22 @@ describe('onGet', () => {
     if (typeof window === undefined) {
       it('returns function that unsubscribes from the updates', () => {
         return new Promise(async (resolve) => {
-          const spy = jest.fn();
+          const spy = sinon.spy();
           const user = await add(users, { name: 'Sasha' });
           const on = () => {
             off = onGet(user, (doc) => {
-              const { name } = doc.data;
+              const { name } = doc!.data;
               spy(name);
               if (name === 'Sasha Koss') {
-                off();
-                expect(spy).not.toBeCalledWith('Sashka');
-                expect(spy).toBeCalledWith('Sasha Koss');
+                off!();
+                assert(spy.neverCalledWith('Sashka'));
+                assert(spy.calledWith('Sasha Koss'));
                 resolve(true);
               }
             });
           };
           on();
-          off();
+          off!();
           await update(user, { name: 'Sashka' });
           await update(user, { name: 'Sasha Koss' });
           on();

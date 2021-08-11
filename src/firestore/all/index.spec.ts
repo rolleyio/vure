@@ -1,4 +1,5 @@
-import { initializeFirebaseApp, initializeFirestore } from '../../';
+import '../__test__/setup';
+
 import { nanoid } from 'nanoid';
 
 import all from '../all';
@@ -10,18 +11,8 @@ import remove from '../remove';
 import { subcollection } from '../subcollection';
 import add from '../add';
 import { group } from '../group';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
 
 describe('all', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type Book = { title: string };
   type Order = { book: Ref<Book>; quantity: number; date?: Date };
 
@@ -44,7 +35,7 @@ describe('all', () => {
     const docs = await all(books);
     expect(
       docs.map(({ data: { title } }) => title).sort(),
-    ).toStrictEqual([
+    ).to.deep.equal([
       'Sapiens',
       'The 22 Immutable Laws of Marketing',
       'The Mom Test',
@@ -63,13 +54,13 @@ describe('all', () => {
       }),
     ]);
     const docs = await all(orders);
-    expect(docs[0].data.book.__type__).toBe('ref');
+    expect(docs[0].data.book.__type__).to.equal('ref');
     const orderedBooks = await Promise.all(
       docs.map((doc) => get(books, doc.data.book.id)),
     );
     expect(
-      orderedBooks.map(({ data: { title } }) => title).sort(),
-    ).toStrictEqual([
+      orderedBooks.map((book) => book!.data.title).sort(),
+    ).to.deep.equal([
       'Sapiens',
       'The 22 Immutable Laws of Marketing',
     ]);
@@ -90,11 +81,11 @@ describe('all', () => {
       }),
     ]);
     const docs = await all(orders);
-    expect(docs[0].data.date.getTime()).toEqual(date.getTime());
-    expect(docs[1].data.date.getTime()).toEqual(date.getTime());
+    expect(docs[0]!.data.date!.getTime()).to.equal(date.getTime());
+    expect(docs[1]!.data.date!.getTime()).to.equal(date.getTime());
   });
 
-  it('allows to get all data from collection groups', async () => {
+  it.only('allows to get all data from collection groups', async () => {
     const commentsGroupName = `comments-${nanoid()}`;
     type Comment = { text: string };
 
@@ -126,7 +117,7 @@ describe('all', () => {
       orderComments,
     ]);
     const comments = await all(allComments);
-    expect(comments.map((c) => c.data.text).sort()).toStrictEqual([
+    expect(comments.map((c) => c.data.text).sort()).to.deep.equal([
       'cruel',
       'hello',
       'world',

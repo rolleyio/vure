@@ -1,5 +1,8 @@
+import '../__test__/setup';
+
 import { nanoid } from 'nanoid';
-import { doc } from '.';
+
+import { doc } from '../doc';
 import { collection } from '../collection';
 import { ref } from '../ref';
 
@@ -9,7 +12,7 @@ describe('Doc', () => {
   describe('doc', () => {
     it('creates doc object', () => {
       const userRef = ref(users, nanoid());
-      expect(doc(userRef, { name: 'Sasha' })).toStrictEqual({
+      expect(doc(userRef, { name: 'Sasha' })).to.deep.equal({
         __type__: 'doc',
         meta: undefined,
         ref: userRef,

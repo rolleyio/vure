@@ -4,7 +4,7 @@
  */
 
 export default {
-  // setupFilesAfterEnv: ['<rootDir>src/__test__/setup.ts'],
+  globalSetup: '<rootDir>src/__test__/setup.spec.ts',
   // All imported modules in your tests should be mocked automatically
   // automock: false,
   // Stop running tests after `n` failures
@@ -100,7 +100,7 @@ export default {
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
   // snapshotSerializers: [],
   // The test environment that will be used for testing
-  // testEnvironment: "jest-environment-node",
+  testEnvironment: 'jsdom',
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
   // Adds a location field to test results
@@ -121,7 +121,7 @@ export default {
   // This option allows use of a custom test runner
   // testRunner: "jest-circus/runner",
   // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
-  // testURL: "http://localhost",
+  testURL: 'http://localhost',
   // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
   // timers: "real",
   // A map from regular expressions to paths to transformers

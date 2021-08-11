@@ -1,4 +1,6 @@
-import { group } from '.';
+import '../__test__/setup';
+
+import { group } from '../group';
 import { subcollection } from '../subcollection';
 import { Ref } from '../ref';
 import { collection } from '../collection';
@@ -24,7 +26,7 @@ describe('group', () => {
         userPosts,
         companyPosts,
       ]);
-      expect(allPosts).toStrictEqual({
+      expect(allPosts).to.deep.equal({
         __type__: 'collectionGroup',
         path: 'posts',
       });

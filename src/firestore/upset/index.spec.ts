@@ -1,25 +1,16 @@
-import { initializeFirebaseApp, initializeFirestore } from '../../';
+import '../__test__/setup';
+
 import { nanoid } from 'nanoid';
 
 import get from '../get';
-import upset from '.';
+import upset from '../upset';
 import { collection } from '../collection';
 import { Ref, ref } from '../ref';
 import { value } from '../value';
 import set from '../set';
 import update from '../update';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
 
 describe('merge', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   type User = { name: string; deleted?: boolean };
   type Post = { author: Ref<User>; text: string; date?: Date };
 
@@ -33,10 +24,10 @@ describe('merge', () => {
   it('creates a document if it does not exist', async () => {
     const id = nanoid();
     const initialUser = await get(users, id);
-    expect(initialUser).toBe(null);
+    expect(initialUser).to.equal(null);
     await upset(users, id, { name: 'Sasha' });
     const user = await get(users, id);
-    expect(user.data).toStrictEqual({ name: 'Sasha' });
+    expect(user!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('merges data if the document does exits', async () => {
@@ -45,7 +36,7 @@ describe('merge', () => {
     await update(users, id, { deleted: true });
     await upset(users, id, { name: 'Sasha Koss' });
     const user = await get(users, id);
-    expect(user.data).toStrictEqual({
+    expect(user!.data).to.deep.equal({
       name: 'Sasha Koss',
       deleted: true,
     });
@@ -56,7 +47,7 @@ describe('merge', () => {
     const userRef = ref(users, id);
     await upset(userRef, { name: 'Sasha' });
     const user = await get(users, id);
-    expect(user.data).toStrictEqual({ name: 'Sasha' });
+    expect(user!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('supports references', async () => {
@@ -68,8 +59,8 @@ describe('merge', () => {
       text: 'Hello!',
     });
     const postFromDB = await get(posts, postId);
-    const userFromDB = await get(users, postFromDB.data.author.id);
-    expect(userFromDB.data).toStrictEqual({ name: 'Sasha' });
+    const userFromDB = await get(users, postFromDB!.data.author.id);
+    expect(userFromDB!.data).to.deep.equal({ name: 'Sasha' });
   });
 
   it('supports dates', async () => {
@@ -82,7 +73,7 @@ describe('merge', () => {
       date,
     });
     const postFromDB = await get(posts, postId);
-    expect(postFromDB.data.date.getTime()).toBe(date.getTime());
+    expect(postFromDB!.data.date!.getTime()).to.equal(date.getTime());
   });
 
   it('supports server dates', async () => {
@@ -95,14 +86,14 @@ describe('merge', () => {
     });
     const now = Date.now();
     const post = await get(posts, postId);
-    const returnedDate = post.data.date;
+    const returnedDate = post!.data.date!;
     expect(returnedDate instanceof Date);
     expect(
       returnedDate.getTime() < now &&
         returnedDate.getTime() > now - 10000,
     );
-    const postFromDB = await get(posts, post.ref.id);
-    const dateFromDB = postFromDB.data.date;
+    const postFromDB = await get(posts, post!.ref.id);
+    const dateFromDB = postFromDB!.data.date!;
     expect(dateFromDB instanceof Date);
     expect(
       dateFromDB.getTime() < now &&
@@ -118,14 +109,14 @@ describe('merge', () => {
       count: value('increment', 5),
     });
     const counter5 = await get(counters, id);
-    expect(counter5.data.count).toBe(5);
+    expect(counter5!.data.count).to.equal(5);
     await update(counters, id, { flagged: true });
     await upset(counters, id, {
       count: value('increment', 5),
     });
     const counter10 = await get(counters, id);
-    expect(counter10.data.count).toBe(10);
-    expect(counter10.data.flagged);
+    expect(counter10!.data.count).to.equal(10);
+    expect(counter10!.data.flagged);
   });
 
   describe('updating arrays', () => {
@@ -148,7 +139,7 @@ describe('merge', () => {
         ]),
       });
       const favFromDB = await get(favorites, id);
-      expect(favFromDB.data).toStrictEqual({
+      expect(favFromDB!.data).to.deep.equal({
         favorites: [
           'Sapiens',
           'The 22 Immutable Laws of Marketing',
@@ -175,7 +166,7 @@ describe('merge', () => {
         ]),
       });
       const favFromDB = await get(favorites, id);
-      expect(favFromDB.data).toStrictEqual({
+      expect(favFromDB!.data).to.deep.equal({
         favorites: ['The Mom Test'],
       });
     });

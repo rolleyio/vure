@@ -1,19 +1,9 @@
-import { getRefPath, ref, pathToRef, id } from '.';
+import '../__test__/setup';
+
+import { getRefPath, ref, pathToRef, id } from '../ref';
 import { collection } from '../collection';
 
-import { initializeFirebaseApp, initializeFirestore } from '../../';
-import { clearFirestoreData } from '@firebase/rules-unit-testing';
-
-initializeFirebaseApp({
-  projectId: 'vure',
-});
-initializeFirestore({ enabled: true });
-
 describe('Ref', () => {
-  afterAll(() => {
-    clearFirestoreData({ projectId: 'vure' });
-  });
-
   interface User {
     name: string;
   }
@@ -21,7 +11,7 @@ describe('Ref', () => {
 
   describe('ref', () => {
     it('creates ref object', () => {
-      expect(ref(users, '42')).toStrictEqual({
+      expect(ref(users, '42')).to.deep.equal({
         __type__: 'ref',
         id: '42',
         collection: users,
@@ -32,8 +22,8 @@ describe('Ref', () => {
   describe('id', () => {
     it('generates random id', async () => {
       const userId = id();
-      expect(typeof userId).toBe('string');
-      expect(userId.length > 10).toBeTruthy();
+      expect(typeof userId).to.equal('string');
+      expect(userId.length > 10).to.be.true;
     });
   });
 
@@ -45,13 +35,13 @@ describe('Ref', () => {
           id: '42',
           collection: users,
         }),
-      ).toBe('users/42');
+      ).to.equal('users/42');
     });
   });
 
   describe('pathToRef', () => {
     it('returns full document path', () => {
-      expect(pathToRef('users/42')).toStrictEqual({
+      expect(pathToRef('users/42')).to.deep.equal({
         __type__: 'ref',
         id: '42',
         collection: users,
