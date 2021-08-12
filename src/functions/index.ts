@@ -3,6 +3,8 @@ import {
   Functions,
   getFunctions,
   connectFunctionsEmulator,
+  httpsCallable as callable,
+  HttpsCallableOptions,
 } from 'firebase/functions';
 
 import { useFirebaseApp } from '../composables';
@@ -42,4 +44,15 @@ export function initializeFunctions(
   }
 
   return functions;
+}
+
+export function httpsCallable<
+  RequestData = unknown,
+  ResponseData = unknown,
+>(functionName: string, options: HttpsCallableOptions | undefined) {
+  return callable<RequestData, ResponseData>(
+    useFunctions(),
+    functionName,
+    options,
+  );
 }
