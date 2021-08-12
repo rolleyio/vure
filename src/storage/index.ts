@@ -64,7 +64,7 @@ export async function uploadFile(
   const snapshot = shallowRef<UploadTaskSnapshot | null>(null);
   const error = shallowRef<Error | null>(null);
 
-  const uploadTask = uploadBytesResumable(r, file, metadata);
+  const uploadTask = markRaw(uploadBytesResumable(r, file, metadata));
 
   uploadTask.on(
     'state_changed',
@@ -81,6 +81,7 @@ export async function uploadFile(
   );
 
   return {
+    uploadTask,
     progress,
     snapshot,
     result,
