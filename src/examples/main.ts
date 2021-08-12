@@ -9,10 +9,10 @@ app.use(
   Vure,
   defineVureConfig({
     features: {
-      auth: true,
-      firestore: true,
-      functions: true,
-      storage: true,
+      auth: {},
+      firestore: {},
+      functions: {},
+      storage: {},
     },
     config: {
       apiKey: import.meta.env.VITE_API_KEY as string,

@@ -6,5 +6,5 @@ export type Pet = { name: string };
 
 export const usePets = useModel<Pet>(
   'Pets',
-  z.object({ name: z.string().min(3) }),
+  z.object({ name: z.string() }) as z.Schema<Pet>,
 );
