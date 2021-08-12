@@ -1,5 +1,5 @@
 import {
-  FirebaseFirestore,
+  Firestore,
   initializeFirestore as firestoreInitialize,
   connectFirestoreEmulator,
 } from 'firebase/firestore';
@@ -9,7 +9,7 @@ import { useFirebaseApp } from '../../composables';
 
 import type { VureEmulatorConfig } from '../../types';
 
-let firestore: FirebaseFirestore | null = null;
+let firestore: Firestore | null = null;
 
 export function useFirestore() {
   if (!firestore) {

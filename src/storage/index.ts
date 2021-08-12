@@ -1,5 +1,5 @@
 import {
-  StorageService,
+  FirebaseStorage,
   connectStorageEmulator,
   getStorage,
   uploadBytesResumable,
@@ -14,7 +14,7 @@ import { useFirebaseApp } from '../composables';
 
 import type { VureEmulatorConfig } from '../types';
 
-let storage: StorageService | null = null;
+let storage: FirebaseStorage | null = null;
 
 export function useStorage() {
   if (!storage) {
@@ -59,6 +59,7 @@ export async function uploadFile(
   const storage = useStorage();
   const r = storageRef(storage, path);
 
+  const progress = ref(0);
   const result = ref('');
   const snapshot = shallowRef<UploadTaskSnapshot | null>(null);
   const error = shallowRef<Error | null>(null);
@@ -69,6 +70,7 @@ export async function uploadFile(
     'state_changed',
     (s) => {
       snapshot.value = s;
+      progress.value = getUploadProgress(snapshot.value);
     },
     (e) => {
       error.value = e;
@@ -79,6 +81,7 @@ export async function uploadFile(
   );
 
   return {
+    progress,
     snapshot,
     result,
     error,
