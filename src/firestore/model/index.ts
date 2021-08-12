@@ -8,10 +8,7 @@ import {
 } from 'vue';
 import { z } from 'zod';
 
-import {
-  Collection,
-  collection as vureCollection,
-} from '../collection';
+import { Collection, collection } from '../collection';
 import add from '../add';
 import all from '../all';
 import { Doc } from '../doc';
@@ -28,9 +25,14 @@ import set, { SetModel } from '../set';
 import update, { UpdateModel } from '../update';
 import upset, { UpsetModel } from '../upset';
 
+type Nullable<T> = T | null;
 type MaybeRef<T> = T | Ref<T>;
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-type Nullable<T> = T | null;
+
+type ToRefsOptions<T> = {
+  default: T;
+  isResultRef?: boolean;
+};
 
 export function createRefs<T>(defaultValue: T) {
   return {
@@ -39,11 +41,6 @@ export function createRefs<T>(defaultValue: T) {
     error: shallowRef<Error | null>(null),
   };
 }
-
-type ToRefsOptions<T> = {
-  default: T;
-  isResultRef?: boolean;
-};
 
 export function toRefs<
   T extends Promise<any>,
@@ -76,7 +73,7 @@ export class Model<T> {
     public collectionName: string,
     public schema?: z.Schema<T>,
   ) {
-    this.collection = vureCollection<T>(collectionName);
+    this.collection = collection<T>(collectionName);
   }
 
   public add(data: T) {
