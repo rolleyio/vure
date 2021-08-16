@@ -44,26 +44,34 @@ export default {
 
       if (provider) {
         initializeAppCheck(provider, isTokenAutoRefreshEnabled);
-      } else {
-        throw new Error(
-          'You need to provide a provider in features.appCheck config to enable appCheck',
-        );
       }
     }
 
     if (features.auth) {
-      initializeAuth(features.auth.emulator);
+      if (typeof features.auth === 'boolean') {
+        initializeAuth();
+      } else {
+        initializeAuth(features.auth.emulator);
+      }
     }
 
     if (features.firestore) {
-      initializeFirestore(features.firestore.emulator);
+      if (typeof features.firestore === 'boolean') {
+        initializeFirestore();
+      } else {
+        initializeFirestore(features.firestore.emulator);
+      }
     }
 
     if (features.functions) {
-      const { regionOrCustomDomain, emulator: fnsEmulator } =
-        features.functions;
-
-      initializeFunctions(regionOrCustomDomain, fnsEmulator);
+      if (typeof features.functions === 'boolean') {
+        initializeFunctions();
+      } else {
+        initializeFunctions(
+          features.functions.regionOrCustomDomain,
+          features.functions.emulator,
+        );
+      }
     }
 
     if (features.messaging) {
@@ -79,10 +87,14 @@ export default {
     }
 
     if (features.storage) {
-      const { bucketUrl, emulator: storageEmulator } =
-        features.storage;
+      if (typeof features.storage === 'boolean') {
+        initializeStorage();
+      } else {
+        const { bucketUrl, emulator: storageEmulator } =
+          features.storage;
 
-      initializeStorage(bucketUrl, storageEmulator);
+        initializeStorage(bucketUrl, storageEmulator);
+      }
     }
   },
 };
