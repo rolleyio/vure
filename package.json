@@ -1,6 +1,6 @@
 {
   "name": "@rolley/vure",
-  "version": "0.1.11",
+  "version": "0.2.2",
   "main": "./dist/vure.umd.js",
   "module": "./dist/vure.es.js",
   "exports": {
@@ -32,7 +32,7 @@
     "@types/sinon": "^10.0.2",
     "@typescript-eslint/parser": "^4.17.0",
     "@vitejs/plugin-vue": "^1.2.3",
-    "@vue/compiler-sfc": "next",
+    "@vue/compiler-sfc": "3.2.2",
     "@vuedx/typecheck": "^0.6.0",
     "@vuedx/typescript-plugin-vue": "^0.6.0",
     "cypress": "^8.2.0",
@@ -40,7 +40,7 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^7.7.0",
-    "firebase": "^9.0.0-beta.7",
+    "firebase": "^9.0.0-beta.8",
     "geofire-common": "^5.2.0",
     "jest": "^27.0.4",
     "prettier": "^2.2.1",
@@ -48,8 +48,8 @@
     "ts-node": "^10.0.0",
     "typescript": "^4.3.5",
     "vite": "^2.4.4",
-    "vue": "next",
-    "zod": "^3.5.1"
+    "vue": "3.2.2",
+    "zod": "3.7.1"
   },
   "volta": {
     "node": "15.6.0",

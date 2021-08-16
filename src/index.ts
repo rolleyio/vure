@@ -28,73 +28,78 @@ export function defineVureConfig(options: VureConfig) {
   return options;
 }
 
+// Currently don't need the Vue app to inject so basic function
+export function setupFirebaseApp(options: VureConfig) {
+  const { name, features, config } = options;
+
+  initializeFirebaseApp(config, name);
+
+  if (features.analytics) {
+    initializeAnalytics();
+  }
+
+  if (features.appCheck) {
+    const { provider, isTokenAutoRefreshEnabled } = features.appCheck;
+
+    if (provider) {
+      initializeAppCheck(provider, isTokenAutoRefreshEnabled);
+    }
+  }
+
+  if (features.auth) {
+    if (typeof features.auth === 'boolean') {
+      initializeAuth();
+    } else {
+      initializeAuth(features.auth.emulator);
+    }
+  }
+
+  if (features.firestore) {
+    if (typeof features.firestore === 'boolean') {
+      initializeFirestore();
+    } else {
+      initializeFirestore(features.firestore.emulator);
+    }
+  }
+
+  if (features.functions) {
+    if (typeof features.functions === 'boolean') {
+      initializeFunctions();
+    } else {
+      initializeFunctions(
+        features.functions.regionOrCustomDomain,
+        features.functions.emulator,
+      );
+    }
+  }
+
+  if (features.messaging) {
+    initializeMessaging();
+  }
+
+  if (features.performance) {
+    initializePerformance();
+  }
+
+  if (features.remoteConfig) {
+    initializeRemoteConfig();
+  }
+
+  if (features.storage) {
+    if (typeof features.storage === 'boolean') {
+      initializeStorage();
+    } else {
+      const { bucketUrl, emulator: storageEmulator } =
+        features.storage;
+
+      initializeStorage(bucketUrl, storageEmulator);
+    }
+  }
+}
+
+// Export a basic vue plugin, just in case
 export default {
   install(_: App, options: VureConfig) {
-    const { name, features, config } = options;
-
-    initializeFirebaseApp(config, name);
-
-    if (features.analytics) {
-      initializeAnalytics();
-    }
-
-    if (features.appCheck) {
-      const { provider, isTokenAutoRefreshEnabled } =
-        features.appCheck;
-
-      if (provider) {
-        initializeAppCheck(provider, isTokenAutoRefreshEnabled);
-      }
-    }
-
-    if (features.auth) {
-      if (typeof features.auth === 'boolean') {
-        initializeAuth();
-      } else {
-        initializeAuth(features.auth.emulator);
-      }
-    }
-
-    if (features.firestore) {
-      if (typeof features.firestore === 'boolean') {
-        initializeFirestore();
-      } else {
-        initializeFirestore(features.firestore.emulator);
-      }
-    }
-
-    if (features.functions) {
-      if (typeof features.functions === 'boolean') {
-        initializeFunctions();
-      } else {
-        initializeFunctions(
-          features.functions.regionOrCustomDomain,
-          features.functions.emulator,
-        );
-      }
-    }
-
-    if (features.messaging) {
-      initializeMessaging();
-    }
-
-    if (features.performance) {
-      initializePerformance();
-    }
-
-    if (features.remoteConfig) {
-      initializeRemoteConfig();
-    }
-
-    if (features.storage) {
-      if (typeof features.storage === 'boolean') {
-        initializeStorage();
-      } else {
-        const { bucketUrl, emulator: storageEmulator } =
-          features.storage;
-
-        initializeStorage(bucketUrl, storageEmulator);
-      }
-    }
+    setupFirebaseApp(options);
   },
 };
