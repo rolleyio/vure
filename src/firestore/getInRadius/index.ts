@@ -7,12 +7,14 @@ import { order } from '../order';
 import { endAt, startAt } from '../cursor';
 import { limit } from '../limit';
 
+export type Location = {
+  geohash: string;
+  lat: number;
+  lng: number;
+};
+
 export type LocationModel = {
-  location: {
-    geohash: string;
-    lat: number;
-    lng: number;
-  };
+  location: Location;
 };
 
 /**
