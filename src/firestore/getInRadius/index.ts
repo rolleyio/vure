@@ -64,8 +64,7 @@ async function getInRadius<Model extends LocationModel>(
 
     for (const snap of snapshots) {
       for (const doc of snap) {
-        const lat = doc.data.location.lat;
-        const lng = doc.data.location.lng;
+        const { lat, lng } = doc.data.location;
 
         // We have to filter out a few false positives due to GeoHash
         // accuracy, but most will match
