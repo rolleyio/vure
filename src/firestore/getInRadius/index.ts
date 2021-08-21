@@ -7,12 +7,14 @@ import { order } from '../order';
 import { endAt, startAt } from '../cursor';
 import { limit } from '../limit';
 
+export type Location = {
+  geohash: string;
+  lat: number;
+  lng: number;
+};
+
 export type LocationModel = {
-  location: {
-    geohash: string;
-    lat: number;
-    lng: number;
-  };
+  location: Location;
 };
 
 /**
@@ -62,8 +64,7 @@ async function getInRadius<Model extends LocationModel>(
 
     for (const snap of snapshots) {
       for (const doc of snap) {
-        const lat = doc.data.location.lat;
-        const lng = doc.data.location.lng;
+        const { lat, lng } = doc.data.location;
 
         // We have to filter out a few false positives due to GeoHash
         // accuracy, but most will match

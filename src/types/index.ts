@@ -25,22 +25,30 @@ export type VureConfig = {
       provider: CustomProvider | ReCaptchaV3Provider;
       isTokenAutoRefreshEnabled?: boolean;
     };
-    auth?: {
-      emulator?: VureAuthEmulatorConfig;
-    };
-    firestore?: {
-      emulator?: VureEmulatorConfig;
-    };
-    functions?: {
-      regionOrCustomDomain?: string;
-      emulator?: VureEmulatorConfig;
-    };
+    auth?:
+      | {
+          emulator?: VureAuthEmulatorConfig;
+        }
+      | boolean;
+    firestore?:
+      | {
+          emulator?: VureEmulatorConfig;
+        }
+      | boolean;
+    functions?:
+      | {
+          regionOrCustomDomain?: string;
+          emulator?: VureEmulatorConfig;
+        }
+      | boolean;
     messaging?: boolean;
     performance?: boolean;
     remoteConfig?: boolean;
-    storage?: {
-      bucketUrl?: string;
-      emulator?: VureEmulatorConfig;
-    };
+    storage?:
+      | {
+          bucketUrl?: string;
+          emulator?: VureEmulatorConfig;
+        }
+      | boolean;
   };
 };
