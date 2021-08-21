@@ -17,6 +17,8 @@ export type LocationModel = {
   location: Location;
 };
 
+// TODO: test this
+
 /**
  * Retrieves a document from a collection.
  *
