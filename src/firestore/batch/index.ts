@@ -235,10 +235,7 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
       firestoreBatch.set(
-        firestoreDoc(
-          collectionToFirestoreCollection(collection),
-          id,
-        ),
+        firestoreDoc(collectionToFirestoreCollection(collection), id),
         unwrapData(data),
       );
     });
@@ -268,10 +265,7 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
       firestoreBatch.set(
-        firestoreDoc(
-          collectionToFirestoreCollection(collection),
-          id,
-        ),
+        firestoreDoc(collectionToFirestoreCollection(collection), id),
         unwrapData(data),
         {
           merge: true,
@@ -310,10 +304,7 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular update function
       firestoreBatch.update(
-        firestoreDoc(
-          collectionToFirestoreCollection(collection),
-          id,
-        ),
+        firestoreDoc(collectionToFirestoreCollection(collection), id),
         unwrapData(updateData),
       );
     });
@@ -339,10 +330,7 @@ export function batch(): Batch {
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular remove function
       firestoreBatch.delete(
-        firestoreDoc(
-          collectionToFirestoreCollection(collection),
-          id,
-        ),
+        firestoreDoc(collectionToFirestoreCollection(collection), id),
       );
     });
   }

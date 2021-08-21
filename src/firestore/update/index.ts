@@ -114,10 +114,7 @@ async function update<Model>(
       }, {} as { [key: string]: any })
     : data;
   await updateDoc(
-    firestoreDoc(
-      collectionToFirestoreCollection(collection),
-      id,
-    ),
+    firestoreDoc(collectionToFirestoreCollection(collection), id),
     unwrapData(updateData),
   );
 }

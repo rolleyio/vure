@@ -78,10 +78,7 @@ export default async function upset<Model>(
   }
 
   await setDoc(
-    firestoreDoc(
-      collectionToFirestoreCollection(collection),
-      id,
-    ),
+    firestoreDoc(collectionToFirestoreCollection(collection), id),
     unwrapData(data),
     {
       merge: true,

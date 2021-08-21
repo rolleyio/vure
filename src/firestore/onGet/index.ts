@@ -87,10 +87,7 @@ export default function onGet<Model>(
   }
 
   firebaseUnsub = onSnapshot(
-    firestoreDoc(
-      collectionToFirestoreCollection(collection),
-      id,
-    ),
+    firestoreDoc(collectionToFirestoreCollection(collection), id),
     (snap) => {
       const firestoreData = snap.data();
       const data =

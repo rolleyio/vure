@@ -73,10 +73,7 @@ async function set<Model>(
   }
 
   await setDoc(
-    firestoreDoc(
-      collectionToFirestoreCollection(collection),
-      id,
-    ),
+    firestoreDoc(collectionToFirestoreCollection(collection), id),
     unwrapData(data),
   );
 }

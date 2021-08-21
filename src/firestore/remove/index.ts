@@ -51,10 +51,7 @@ async function remove<Model>(
   }
 
   await deleteDoc(
-    firestoreDoc(
-      collectionToFirestoreCollection(collection),
-      id,
-    ),
+    firestoreDoc(collectionToFirestoreCollection(collection), id),
   );
 }
 
