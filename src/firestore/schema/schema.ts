@@ -1,317 +1,104 @@
-import { onBeforeUnmount, ref, getCurrentInstance, watch } from 'vue';
 import { z } from 'zod';
 
-import { createRefs, MaybeRef, toRefs } from './helpers';
-import { useAsyncSchema } from './async';
+import { collection as vCollection } from '../collection';
+import add from '../add';
+import all from '../all';
+import { Doc } from '../doc';
+import { Field } from '../field';
+import get from '../get';
+import getMany from '../getMany';
+import onAll from '../onAll';
+import onGet from '../onGet';
+import onGetMany from '../onGetMany';
+import onQuery, { Query } from '../onQuery';
+import { query } from '../query';
+import remove from '../remove';
+import set, { SetModel } from '../set';
+import update, { UpdateModel } from '../update';
+import upset, { UpsetModel } from '../upset';
+import { SnapshotInfo } from '../snapshot';
+import getInRadius from '../getInRadius';
 
-import type { Doc } from '../doc';
-import type { Field } from '../field';
-import type { Query } from '../onQuery';
-import type { SetModel } from '../set';
-import type { UpdateModel } from '../update';
-import type { UpsetModel } from '../upset';
-
-// FIX: A lot of repetitive code
-// TEST: this
+// TODO: Add zod schema definitions
 export function useSchema<T>(
   collectionName: string,
-  schema?: z.Schema<T>,
+  zod?: z.Schema<T>,
 ) {
   return () => {
-    const async = useAsyncSchema(collectionName, schema)();
+    const collection = vCollection<T>(collectionName);
 
     return {
-      async,
-      collection: async.collection,
-      collectionName: async.collectionName,
-      schema: async.schema,
+      collectionName,
+      collection,
+      zod,
       add(data: T) {
-        return toRefs(async.add(data), {
-          default: null as Nullable<Doc<T>>,
-        });
+        return add(this.collection, data);
       },
       all() {
-        return toRefs(async.all(), {
-          default: [] as Doc<T>[],
-        });
+        return all(this.collection);
       },
-      get(id: MaybeRef<string>) {
-        const { loading, result, error } = createRefs<Doc<T> | null>(
-          null,
+      get(id: string) {
+        return get(this.collection, id);
+      },
+      getInRadius(
+        center: [number, number],
+        radiusInM: number,
+        maxLimit = 5,
+      ) {
+        return getInRadius(
+          this.collection,
+          center,
+          radiusInM,
+          maxLimit,
         );
-
-        const unwatch = watch(
-          ref(id),
-          async (watchedId) => {
-            loading.value = true;
-            try {
-              result.value = await async.get(watchedId);
-              error.value = null;
-            } catch (e) {
-              result.value = null;
-              error.value = e;
-            } finally {
-              loading.value = false;
-            }
-          },
-          { immediate: true },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
       },
       getMany(
-        ids: MaybeRef<string[]>,
+        ids: string[],
         onMissing?: 'ignore' | ((id: string) => T),
       ) {
-        const { loading, result, error } = createRefs<Doc<T>[]>([]);
-
-        const unwatch = watch(
-          ref(ids),
-          async (watchedIds) => {
-            loading.value = true;
-            try {
-              result.value = await async.getMany(
-                watchedIds,
-                onMissing,
-              );
-              error.value = null;
-            } catch (e) {
-              result.value = [];
-              error.value = e;
-            } finally {
-              loading.value = false;
-            }
-          },
-          { immediate: true },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
+        return getMany(this.collection, ids, onMissing);
       },
-      onAll() {
-        const { loading, result, error } = createRefs<Doc<T>[]>([]);
-
-        const unwatch = async.onAll(
-          (r) => {
-            loading.value = false;
-            result.value = r;
-            error.value = null;
-          },
-          (e) => {
-            loading.value = false;
-            result.value = [];
-            error.value = e;
-          },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
+      onAll(
+        onResult: (docs: Doc<T>[], info: SnapshotInfo<T>) => any,
+        onError?: (error: Error) => any,
+      ) {
+        return onAll(this.collection, onResult, onError);
       },
-      onGet(id: MaybeRef<string>) {
-        const { loading, result, error } =
-          createRefs<Nullable<Doc<T>>>(null);
-
-        let unwatchOnGet: (() => void) | null = null;
-
-        const unwatch = watch(
-          ref(id),
-          async (watchedId) => {
-            if (unwatchOnGet) {
-              unwatchOnGet();
-            }
-
-            unwatchOnGet = async.onGet(
-              watchedId,
-              (r) => {
-                loading.value = false;
-                result.value = r;
-                error.value = null;
-              },
-              (e) => {
-                loading.value = false;
-                result.value = null;
-                error.value = e;
-              },
-            );
-          },
-          { immediate: true },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            if (unwatchOnGet) {
-              unwatchOnGet();
-            }
-
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
+      onGet(
+        id: string,
+        onResult: (doc: Doc<T> | null) => any,
+        onError?: (error: Error) => any,
+      ) {
+        return onGet(this.collection, id, onResult, onError);
       },
-      onGetMany(ids: MaybeRef<string[]>) {
-        const { loading, result, error } = createRefs<Doc<T>[]>([]);
-
-        let unwatchOnGetMany: (() => void) | null = null;
-
-        const unwatch = watch(
-          ref(ids),
-          async (watchedIds) => {
-            if (unwatchOnGetMany) {
-              unwatchOnGetMany();
-            }
-
-            unwatchOnGetMany = async.onGetMany(
-              watchedIds,
-              (r) => {
-                loading.value = false;
-                result.value = r;
-                error.value = null;
-              },
-              (e) => {
-                loading.value = false;
-                result.value = [];
-                error.value = e;
-              },
-            );
-          },
-          { immediate: true },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            if (unwatchOnGetMany) {
-              unwatchOnGetMany();
-            }
-
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
+      onGetMany(
+        ids: string[],
+        onResult: (docs: Doc<T>[]) => any,
+        onError?: (error: Error) => any,
+      ) {
+        return onGetMany(this.collection, ids, onResult, onError);
       },
-      onQuery(queries: MaybeRef<Query<T, keyof T>[]>) {
-        const { loading, result, error } = createRefs<Doc<T>[]>([]);
-
-        let unwatchOnQuery: (() => void) | null = null;
-
-        const unwatch = watch(
-          ref(queries),
-          async (watchedQueries) => {
-            if (unwatchOnQuery) {
-              unwatchOnQuery();
-            }
-
-            unwatchOnQuery = async.onQuery(
-              watchedQueries as any,
-              (r) => {
-                loading.value = false;
-                result.value = r;
-                error.value = null;
-              },
-              (e) => {
-                loading.value = false;
-                result.value = [];
-                error.value = e;
-              },
-            );
-          },
-          { immediate: true },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            if (unwatchOnQuery) {
-              unwatchOnQuery();
-            }
-
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
+      onQuery(
+        queries: Query<T, keyof T>[],
+        onResult: (docs: Doc<T>[]) => any,
+        onError?: (error: Error) => any,
+      ) {
+        return onQuery(this.collection, queries, onResult, onError);
       },
-      query(queries: MaybeRef<Query<T, keyof T>[]>) {
-        const { loading, result, error } = createRefs<Doc<T>[]>([]);
-
-        const unwatch = watch(
-          ref(queries),
-          async (watchedQueries) => {
-            loading.value = true;
-            try {
-              result.value = await async.query(watchedQueries as any);
-              error.value = null;
-            } catch (e) {
-              result.value = [];
-              error.value = e;
-            } finally {
-              loading.value = false;
-            }
-          },
-          { immediate: true },
-        );
-
-        const currentInstance = getCurrentInstance();
-
-        if (currentInstance) {
-          onBeforeUnmount(() => {
-            unwatch();
-          }, currentInstance);
-        }
-
-        return { loading, result, error };
+      query(queries: Query<T, keyof T>[]) {
+        return query(this.collection, queries);
       },
       remove(id: string) {
-        return toRefs(async.remove(id), {
-          default: false,
-          isResultRef: true,
-        });
+        return remove(this.collection, id);
       },
       set(id: string, data: SetModel<T>) {
-        return toRefs(async.set(id, data), {
-          default: false,
-          isResultRef: true,
-        });
+        return set(this.collection, id, data);
       },
       update(id: string, data: UpdateModel<T> | Field<T>[]) {
-        return toRefs(async.update(id, data), {
-          default: false,
-          isResultRef: true,
-        });
+        return update(this.collection, id, data);
       },
       upset(id: string, data: UpsetModel<T>) {
-        return toRefs(async.upset(id, data), {
-          default: false,
-          isResultRef: true,
-        });
+        return upset(this.collection, id, data);
       },
     };
   };
