@@ -14,15 +14,15 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands';
+// import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-beforeEach(() => {
-  // cy.exec('npm run clear:db');
-});
+// beforeEach(() => {
+//   cy.exec('npm run clear:db');
+// });
 
-after(() => {
-  // return cy.exec('npm run clear:db');
-});
+// after(() => {
+//   return cy.exec('npm run clear:db');
+// });
