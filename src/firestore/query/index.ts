@@ -6,6 +6,11 @@ import {
   Query as FirestoreQuery,
   query as fQuery,
   getDocs,
+  QueryConstraint,
+  startAfter,
+  startAt,
+  endBefore,
+  endAt,
 } from 'firebase/firestore';
 
 import {
@@ -23,8 +28,6 @@ import { CollectionGroup } from '../group';
 import { DocId } from '../docId';
 import { documentId } from 'firebase/firestore';
 import { getDocMeta } from '../utils';
-
-type FirebaseQuery = CollectionReference | FirestoreQuery;
 
 // TODO: Refactor with onQuery
 
@@ -66,14 +69,13 @@ export async function query<Model>(
   collection: Collection<Model> | CollectionGroup<Model>,
   queries: Query<Model, keyof Model>[],
 ): Promise<Doc<Model>[]> {
-  const { firestoreQuery, cursors } = queries.reduce(
+  const { firestoreQueries, cursors } = queries.reduce(
     (acc, q) => {
       switch (q.type) {
         case 'order': {
-          const { field, method, cursors } = q;
+          const { field, method } = q;
 
-          acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection),
+          acc.firestoreQueries.push(
             orderBy(
               field instanceof DocId
                 ? documentId()
@@ -82,21 +84,41 @@ export async function query<Model>(
             ),
           );
 
-          if (cursors)
-            acc.cursors = acc.cursors.concat(
-              cursors.map(({ method, value }) => ({
-                method,
-                value:
-                  typeof value === 'object' &&
-                  value !== null &&
-                  '__type__' in value &&
-                  value.__type__ == 'doc'
-                    ? field instanceof DocId
-                      ? value.ref.id
-                      : value.data[field]
-                    : value,
-              })),
-            );
+          if (q.cursors) {
+            const c = q.cursors.reduce((accum, { method, value }) => {
+              const val =
+                typeof value === 'object' &&
+                value !== null &&
+                '__type__' in value &&
+                value.__type__ == 'doc'
+                  ? field instanceof DocId
+                    ? value.ref.id
+                    : value.data[field]
+                  : value;
+
+              // TODO: This can be done better - done to get working, not sure need cursors?
+              if (val) {
+                switch (method) {
+                  case 'startAfter':
+                    accum.push(startAfter(val));
+                    break;
+                  case 'startAt':
+                    accum.push(startAt(val));
+                    break;
+                  case 'endBefore':
+                    accum.push(endBefore(val));
+                    break;
+                  case 'endAt':
+                    accum.push(endAt(val));
+                    break;
+                }
+              }
+
+              return accum;
+            }, [] as QueryConstraint[]);
+
+            acc.cursors.push(...c);
+          }
           break;
         }
 
@@ -106,8 +128,7 @@ export async function query<Model>(
             ? field.join('.')
             : field;
 
-          acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection),
+          acc.firestoreQueries.push(
             where(
               fieldName instanceof DocId ? documentId() : fieldName,
               filter,
@@ -119,10 +140,7 @@ export async function query<Model>(
 
         case 'limit': {
           const { number } = q;
-          acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection),
-            limit(number),
-          );
+          acc.firestoreQueries.push(limit(number));
           break;
         }
       }
@@ -130,38 +148,18 @@ export async function query<Model>(
       return acc;
     },
     {
-      firestoreQuery: collectionToFirestoreCollection(
-        collection,
-      ) as unknown as FirebaseQuery,
-      cursors: [],
-    } as {
-      firestoreQuery: FirebaseQuery;
-      cursors: Cursor<Model, keyof Model>[];
+      firestoreQueries: [] as QueryConstraint[],
+      cursors: [] as QueryConstraint[],
     },
   );
 
-  const groupedCursors = cursors.reduce((acc, cursor) => {
-    let methodValues = acc.find(
-      ([method]) => method === cursor.method,
-    );
-    if (!methodValues) {
-      methodValues = [cursor.method, []];
-      acc.push(methodValues);
-    }
-    methodValues[1].push(unwrapData(cursor.value));
-    return acc;
-  }, [] as [CursorMethod, any[]][]);
+  const q = fQuery.apply(null, [
+    collectionToFirestoreCollection(collection),
+    ...firestoreQueries,
+    ...cursors,
+  ]);
 
-  const paginatedFirestoreQuery =
-    cursors.length &&
-    cursors.every((cursor) => cursor.value !== undefined)
-      ? groupedCursors.reduce((acc, [method, values]) => {
-          // TODO: Fix
-          return (acc as any)[method](...values);
-        }, firestoreQuery)
-      : firestoreQuery;
-
-  const firebaseSnap = await getDocs(paginatedFirestoreQuery);
+  const firebaseSnap = await getDocs(q);
 
   return firebaseSnap.docs.map((snap) =>
     doc(

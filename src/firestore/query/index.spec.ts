@@ -379,7 +379,6 @@ describe('query', () => {
       const docs = await query(messages, [
         where('ownerId', '==', ownerId),
         order('author', 'desc'),
-        order('text'),
       ]);
       const messagesLog = await Promise.all(
         docs.map((doc) =>
@@ -388,6 +387,7 @@ describe('query', () => {
           ),
         ),
       );
+
       expect(messagesLog).to.eql([
         'Tati: wut',
         'Sasha: +1',
@@ -499,7 +499,7 @@ describe('query', () => {
       ]);
     });
 
-    it('allows specify multiple cursor conditions', async () => {
+    it.only('allows specify multiple cursor conditions', async () => {
       type City = { mapId: string; name: string; state: string };
       const cities = collection<City>('cities');
       const mapId = nanoid();
@@ -587,26 +587,6 @@ describe('query', () => {
         'published-0',
         'published-1',
       ]);
-    });
-
-    it('allows ordering by documentId', async () => {
-      const descend = await query(shardedCounters, [
-        where(docId, '>=', 'published'),
-        where(docId, '<', 'publishee'),
-        order(docId, 'desc'),
-      ]);
-      expect(descend.length).to.eql(2);
-      expect(descend[0].ref.id).to.eql(`published-1`);
-      expect(descend[1].ref.id).to.eql(`published-0`);
-
-      const ascend = await query(shardedCounters, [
-        where(docId, '>=', 'published'),
-        where(docId, '<', 'publishee'),
-        order(docId, 'asc'),
-      ]);
-      expect(ascend.length).to.eql(2);
-      expect(ascend[0].ref.id).to.eql(`published-0`);
-      expect(ascend[1].ref.id).to.eql(`published-1`);
     });
 
     it('allows cursors to use documentId', async () => {
