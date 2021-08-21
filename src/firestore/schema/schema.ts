@@ -2,7 +2,7 @@ import { onBeforeUnmount, ref, getCurrentInstance, watch } from 'vue';
 import { z } from 'zod';
 
 import { createRefs, MaybeRef, toRefs } from './helpers';
-import { useAsyncSchema } from './asyncSchema';
+import { useAsyncSchema } from './async';
 
 import type { Doc } from '../doc';
 import type { Field } from '../field';
@@ -18,20 +18,20 @@ export function useSchema<T>(
   schema?: z.Schema<T>,
 ) {
   return () => {
-    const asyncSchema = useAsyncSchema(collectionName, schema)();
+    const async = useAsyncSchema(collectionName, schema)();
 
     return {
-      collection: asyncSchema.collection,
-      collectionName: asyncSchema.collectionName,
-      schema: asyncSchema.schema,
-      async: asyncSchema,
+      async,
+      collection: async.collection,
+      collectionName: async.collectionName,
+      schema: async.schema,
       add(data: T) {
-        return toRefs(asyncSchema.add(data), {
+        return toRefs(async.add(data), {
           default: null as Nullable<Doc<T>>,
         });
       },
       all() {
-        return toRefs(asyncSchema.all(), {
+        return toRefs(async.all(), {
           default: [] as Doc<T>[],
         });
       },
@@ -45,7 +45,7 @@ export function useSchema<T>(
           async (watchedId) => {
             loading.value = true;
             try {
-              result.value = await asyncSchema.get(watchedId);
+              result.value = await async.get(watchedId);
               error.value = null;
             } catch (e) {
               result.value = null;
@@ -78,7 +78,7 @@ export function useSchema<T>(
           async (watchedIds) => {
             loading.value = true;
             try {
-              result.value = await asyncSchema.getMany(
+              result.value = await async.getMany(
                 watchedIds,
                 onMissing,
               );
@@ -106,7 +106,7 @@ export function useSchema<T>(
       onAll() {
         const { loading, result, error } = createRefs<Doc<T>[]>([]);
 
-        const unwatch = asyncSchema.onAll(
+        const unwatch = async.onAll(
           (r) => {
             loading.value = false;
             result.value = r;
@@ -142,7 +142,7 @@ export function useSchema<T>(
               unwatchOnGet();
             }
 
-            unwatchOnGet = asyncSchema.onGet(
+            unwatchOnGet = async.onGet(
               watchedId,
               (r) => {
                 loading.value = false;
@@ -185,7 +185,7 @@ export function useSchema<T>(
               unwatchOnGetMany();
             }
 
-            unwatchOnGetMany = asyncSchema.onGetMany(
+            unwatchOnGetMany = async.onGetMany(
               watchedIds,
               (r) => {
                 loading.value = false;
@@ -228,7 +228,7 @@ export function useSchema<T>(
               unwatchOnQuery();
             }
 
-            unwatchOnQuery = asyncSchema.onQuery(
+            unwatchOnQuery = async.onQuery(
               watchedQueries as any,
               (r) => {
                 loading.value = false;
@@ -267,9 +267,7 @@ export function useSchema<T>(
           async (watchedQueries) => {
             loading.value = true;
             try {
-              result.value = await asyncSchema.query(
-                watchedQueries as any,
-              );
+              result.value = await async.query(watchedQueries as any);
               error.value = null;
             } catch (e) {
               result.value = [];
@@ -292,25 +290,25 @@ export function useSchema<T>(
         return { loading, result, error };
       },
       remove(id: string) {
-        return toRefs(asyncSchema.remove(id), {
+        return toRefs(async.remove(id), {
           default: false,
           isResultRef: true,
         });
       },
       set(id: string, data: SetModel<T>) {
-        return toRefs(asyncSchema.set(id, data), {
+        return toRefs(async.set(id, data), {
           default: false,
           isResultRef: true,
         });
       },
       update(id: string, data: UpdateModel<T> | Field<T>[]) {
-        return toRefs(asyncSchema.update(id, data), {
+        return toRefs(async.update(id, data), {
           default: false,
           isResultRef: true,
         });
       },
       upset(id: string, data: UpsetModel<T>) {
-        return toRefs(asyncSchema.upset(id, data), {
+        return toRefs(async.upset(id, data), {
           default: false,
           isResultRef: true,
         });

@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
@@ -7,7 +8,7 @@ import add from '../add';
 import { collection } from '../collection';
 import field from '../field';
 import get from '../get';
-import { ref, Ref, id } from '../ref';
+import { ref, Ref } from '../ref';
 import set from '../set';
 import { value } from '../value';
 
@@ -235,8 +236,8 @@ describe('update', () => {
     });
 
     it('union update references', async () => {
-      const user1 = ref(users, await id());
-      const user2 = ref(users, await id());
+      const user1 = ref(users, nanoid());
+      const user2 = ref(users, nanoid());
       const movie = await add(movies, {
         title: "Harry Potter and the Sorcerer's Stone",
         likedBy: [user1],
@@ -253,8 +254,8 @@ describe('update', () => {
     });
 
     it('remove update references', async () => {
-      const user1 = ref(users, await id());
-      const user2 = ref(users, await id());
+      const user1 = ref(users, nanoid());
+      const user2 = ref(users, nanoid());
       const movie = await add(movies, {
         title: 'Harry Potter and the Chamber of Secrets',
         likedBy: [user1, user2],

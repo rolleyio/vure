@@ -19,7 +19,7 @@
     "indexes": "firebase firestore:indexes",
     "clear:db": "FIRESTORE_EMULATOR_HOST=localhost:8080 node ./scripts/clear-db.js",
     "cy:open": "cypress open-ct",
-    "cy:run": "cypress run-ct",
+    "cy:run": "firebase emulators:exec --only firestore 'cypress run-ct'",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
@@ -28,7 +28,6 @@
     "@cypress/vite-dev-server": "^2.0.5",
     "@firebase/rules-unit-testing": "^1.3.7",
     "@rollup/plugin-typescript": "^8.2.3",
-    "@types/jest": "^26.0.23",
     "@types/sinon": "^10.0.2",
     "@typescript-eslint/parser": "^4.17.0",
     "@vitejs/plugin-vue": "^1.2.3",
@@ -42,7 +41,6 @@
     "eslint-plugin-vue": "^7.7.0",
     "firebase": "^9.0.0-beta.8",
     "geofire-common": "^5.2.0",
-    "jest": "^27.0.4",
     "prettier": "^2.2.1",
     "sinon": "^11.1.2",
     "ts-node": "^10.0.0",

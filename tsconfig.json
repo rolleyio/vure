@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "types": ["vite/client", "cypress"]
+    "types": ["cypress"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "cypress/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/examples/**/*", "lib", "node_modules", "test"]

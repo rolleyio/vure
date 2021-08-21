@@ -88,7 +88,7 @@ export default function onGet<Model>(
 
   firebaseUnsub = onSnapshot(
     firestoreDoc(
-      collectionToFirestoreCollection(collection.path),
+      collectionToFirestoreCollection(collection),
       id,
     ),
     (snap) => {

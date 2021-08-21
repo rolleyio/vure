@@ -74,7 +74,7 @@ async function set<Model>(
 
   await setDoc(
     firestoreDoc(
-      collectionToFirestoreCollection(collection.path),
+      collectionToFirestoreCollection(collection),
       id,
     ),
     unwrapData(data),

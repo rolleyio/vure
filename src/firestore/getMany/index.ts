@@ -47,7 +47,7 @@ export default async function getMany<Model>(
   const firestoreSnaps = await getAll(
     ...ids.map((id) =>
       firestoreDoc(
-        collectionToFirestoreCollection(collection.path),
+        collectionToFirestoreCollection(collection),
         id,
       ),
     ),

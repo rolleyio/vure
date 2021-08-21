@@ -85,7 +85,7 @@ export default function onQuery<Model>(
           const { field, method, cursors } = q;
 
           acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection.path),
+            collectionToFirestoreCollection(collection),
             orderBy(
               field instanceof DocId
                 ? documentId()
@@ -119,7 +119,7 @@ export default function onQuery<Model>(
             : field;
 
           acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection.path),
+            collectionToFirestoreCollection(collection),
             where(
               fieldName instanceof DocId ? documentId() : fieldName,
               filter,
@@ -132,7 +132,7 @@ export default function onQuery<Model>(
         case 'limit': {
           const { number } = q;
           acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection.path),
+            collectionToFirestoreCollection(collection),
             limit(number),
           );
           break;
@@ -143,7 +143,7 @@ export default function onQuery<Model>(
     },
     {
       firestoreQuery: collectionToFirestoreCollection(
-        collection.path,
+        collection,
       ) as unknown as FirebaseQuery,
       cursors: [],
     } as {

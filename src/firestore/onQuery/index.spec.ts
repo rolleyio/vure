@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
@@ -933,73 +934,62 @@ describe('onQuery', () => {
 
     // TODO: WTF browser Firebase returns elements gradually unlike Node.js version.
     // TODO: For whatever reason this test fails within the emulator environment
-    if (
-      typeof window === 'undefined' &&
-      !process.env.FIRESTORE_EMULATOR_HOST
-    ) {
-      it('returns function that unsubscribes from the updates', () => {
-        return new Promise(async (resolve) => {
-          const spy = sinon.spy();
-          const on = () => {
-            off = onQuery(
-              contacts,
-              [
-                where('ownerId', '==', ownerId),
-                // TODO: Figure out why when a timestamp is used, the order is incorrect
-                // order('birthday', 'asc', [startAt(new Date(1989, 6, 10))]),
-                order('year', 'asc', [startAt(1989)]),
-                limit(3),
-              ],
-              async (docs) => {
-                const names = docs.map(({ data: { name } }) => name);
-                spy(names);
+    it('returns function that unsubscribes from the updates', () => {
+      return new Promise(async (resolve) => {
+        const spy = sinon.spy();
+        const on = () => {
+          off = onQuery(
+            contacts,
+            [
+              where('ownerId', '==', ownerId),
+              // TODO: Figure out why when a timestamp is used, the order is incorrect
+              // order('birthday', 'asc', [startAt(new Date(1989, 6, 10))]),
+              order('year', 'asc', [startAt(1989)]),
+              limit(3),
+            ],
+            async (docs) => {
+              const names = docs.map(({ data: { name } }) => name);
+              spy(names);
 
-                if (
-                  spy.calledWithMatch(['Tati', 'Theodor']) &&
-                  spy.neverCalledWithMatch([
-                    'Tati',
-                    'Lesha',
-                    'Theodor',
-                  ])
-                )
-                  resolve(true);
-              },
-            );
-          };
-          on();
-          off();
-          await remove(contacts, leshaId);
-          on();
-        });
+              if (
+                spy.calledWithMatch(['Tati', 'Theodor']) &&
+                spy.neverCalledWithMatch(['Tati', 'Lesha', 'Theodor'])
+              )
+                resolve(true);
+            },
+          );
+        };
+        on();
+        off();
+        await remove(contacts, leshaId);
+        on();
       });
-    }
+    });
 
     // TODO: For whatever reason this test fails within the emulator environment
-    if (!process.env.FIRESTORE_EMULATOR_HOST) {
-      it('calls onError when query is invalid', (done) => {
-        const onResult = sinon.spy();
-        off = onQuery(
-          contacts,
-          [
-            where('ownerId', '==', ownerId),
-            where('year', '>', 1989),
-            where('birthday', '>', new Date(1989, 6, 10)),
-          ],
-          onResult,
-          (err) => {
-            assert(!onResult.called);
-            assert(
-              // Node.js:
-              err.message.match(
-                /Cannot have inequality filters on multiple properties: birthday/,
-              ) ||
-                // Browser:
-                err.message.match(/Invalid query/),
-            );
-            done();
-          },
-        );
-      });
-    }
+    it('calls onError when query is invalid', (done) => {
+      const onResult = sinon.spy();
+      off = onQuery(
+        contacts,
+        [
+          where('ownerId', '==', ownerId),
+          where('year', '>', 1989),
+          where('birthday', '>', new Date(1989, 6, 10)),
+        ],
+        onResult,
+        (err) => {
+          assert(!onResult.called);
+          assert(
+            // Node.js:
+            err.message.match(
+              /Cannot have inequality filters on multiple properties: birthday/,
+            ) ||
+              // Browser:
+              err.message.match(/Invalid query/),
+          );
+          done();
+        },
+      );
+    });
   });
 });

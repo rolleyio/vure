@@ -53,10 +53,6 @@ export function ref<Model>(
   return { __type__: 'ref', collection, id };
 }
 
-export function id() {
-  return doc(useFirestore(), 'nope').id;
-}
-
 /**
  * Generates Firestore path from a reference.
  *

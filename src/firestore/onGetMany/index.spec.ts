@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import '../__test__/setup';
 
 import onGetMany from '../onGetMany';

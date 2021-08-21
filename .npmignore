@@ -19,7 +19,6 @@ firestore-debug.log
 firestore.indexes.json
 firestore.rules
 index.html
-jest.config.ts
 package-lock.json
 package.json
 pubsub-debug.log

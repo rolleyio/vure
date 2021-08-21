@@ -41,7 +41,7 @@ export default async function add<Model>(
   data: AddModel<Model>,
 ) {
   const firebaseDoc = await addDoc(
-    collectionToFirestoreCollection(collection.path),
+    collectionToFirestoreCollection(collection),
     unwrapData(data),
   );
   return ref(collection, firebaseDoc.id);

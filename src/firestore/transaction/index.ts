@@ -282,7 +282,7 @@ export async function transaction<ReadResult, WriteResult>(
       // TODO: Refactor code above and below because is all the same as in the regular get function
       const firestoreSnap = await t.get(
         firestoreDoc(
-          collectionToFirestoreCollection(collection.path),
+          collectionToFirestoreCollection(collection),
           id,
         ),
       );
@@ -319,7 +319,7 @@ export async function transaction<ReadResult, WriteResult>(
       // TODO: Refactor code above and below because is all the same as in the regular set function
       t.set(
         firestoreDoc(
-          collectionToFirestoreCollection(collection.path),
+          collectionToFirestoreCollection(collection),
           id,
         ),
         unwrapData(data),
@@ -350,7 +350,7 @@ export async function transaction<ReadResult, WriteResult>(
       // TODO: Refactor code above and below because is all the same as in the regular set function
       t.set(
         firestoreDoc(
-          collectionToFirestoreCollection(collection.path),
+          collectionToFirestoreCollection(collection),
           id,
         ),
         unwrapData(data),
@@ -390,7 +390,7 @@ export async function transaction<ReadResult, WriteResult>(
       // TODO: Refactor code above because is all the same as in the regular update function
       t.update(
         firestoreDoc(
-          collectionToFirestoreCollection(collection.path),
+          collectionToFirestoreCollection(collection),
           id,
         ),
         unwrapData(updateData),
@@ -417,7 +417,7 @@ export async function transaction<ReadResult, WriteResult>(
       // TODO: Refactor code above because is all the same as in the regular update function
       t.delete(
         firestoreDoc(
-          collectionToFirestoreCollection(collection.path),
+          collectionToFirestoreCollection(collection),
           id,
         ),
       );

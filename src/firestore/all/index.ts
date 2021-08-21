@@ -36,7 +36,7 @@ export default async function all<Model>(
   collection: Collection<Model> | CollectionGroup<Model>,
 ): Promise<Doc<Model>[]> {
   const firebaseSnap = await getDocs(
-    collectionToFirestoreCollection(collection.path),
+    collectionToFirestoreCollection(collection),
   );
 
   return firebaseSnap.docs.map((snap) => {

@@ -115,7 +115,7 @@ async function update<Model>(
     : data;
   await updateDoc(
     firestoreDoc(
-      collectionToFirestoreCollection(collection.path),
+      collectionToFirestoreCollection(collection),
       id,
     ),
     unwrapData(updateData),

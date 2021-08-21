@@ -79,7 +79,7 @@ export default async function upset<Model>(
 
   await setDoc(
     firestoreDoc(
-      collectionToFirestoreCollection(collection.path),
+      collectionToFirestoreCollection(collection),
       id,
     ),
     unwrapData(data),

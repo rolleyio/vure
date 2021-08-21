@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 import '../__test__/setup';
 
 import { nanoid } from 'nanoid';
@@ -85,7 +86,7 @@ describe('all', () => {
     expect(docs[1]!.data.date!.getTime()).to.equal(date.getTime());
   });
 
-  it.only('allows to get all data from collection groups', async () => {
+  it('allows to get all data from collection groups', async () => {
     const commentsGroupName = `comments-${nanoid()}`;
     type Comment = { text: string };
 

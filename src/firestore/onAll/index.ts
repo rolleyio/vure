@@ -46,7 +46,7 @@ export default function onAll<Model>(
   };
 
   firebaseUnsub = onSnapshot(
-    collectionToFirestoreCollection(collection.path),
+    collectionToFirestoreCollection(collection),
     (firestoreSnap) => {
       const docs = firestoreSnap.docs.map((snap) =>
         doc<Model>(

@@ -1,6 +1,11 @@
-import { collection as firebaseCollection } from 'firebase/firestore';
+import {
+  collection as firebaseCollection,
+  collectionGroup,
+  CollectionReference,
+} from 'firebase/firestore';
 
 import { useFirestore } from '../composables';
+import { CollectionGroup } from '../group';
 
 /**
  * The collection type. It contains the path in Firestore.
@@ -33,6 +38,14 @@ export function collection<Model>(path: string): Collection<Model> {
   };
 }
 
-export function collectionToFirestoreCollection(path: string) {
-  return firebaseCollection(useFirestore(), path);
+// TODO: Test and move this
+export function collectionToFirestoreCollection(
+  collection: Collection<any> | CollectionGroup<any>,
+) {
+  return collection.__type__ === 'collection'
+    ? firebaseCollection(useFirestore(), collection.path)
+    : (collectionGroup(
+        useFirestore(),
+        collection.path,
+      ) as CollectionReference);
 }

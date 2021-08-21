@@ -61,10 +61,7 @@ async function get<Model>(
   }
 
   const firestoreSnap = await getDoc(
-    firestoreDoc(
-      collectionToFirestoreCollection(collection.path),
-      id,
-    ),
+    firestoreDoc(collectionToFirestoreCollection(collection), id),
   );
   const firestoreData = firestoreSnap.data();
   const data = firestoreData && (wrapData(firestoreData) as Model);

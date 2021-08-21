@@ -1,6 +1,7 @@
+/// <reference types="cypress" />
 import '../__test__/setup';
 
-import { getRefPath, ref, pathToRef, id } from '../ref';
+import { getRefPath, ref, pathToRef } from '../ref';
 import { collection } from '../collection';
 
 describe('Ref', () => {
@@ -16,14 +17,6 @@ describe('Ref', () => {
         id: '42',
         collection: users,
       });
-    });
-  });
-
-  describe('id', () => {
-    it('generates random id', async () => {
-      const userId = id();
-      expect(typeof userId).to.equal('string');
-      expect(userId.length > 10).to.be.true;
     });
   });
 
