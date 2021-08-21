@@ -1,23 +1,8 @@
-import {
-  documentId,
-  limit,
-  where,
-  orderBy,
-  CollectionReference,
-  Query as FirestoreQuery,
-  query as fQuery,
-  onSnapshot,
-  QuerySnapshot,
-} from 'firebase/firestore';
+import { onSnapshot, QuerySnapshot } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
-import { Cursor, CursorMethod } from '../cursor';
-import { unwrapData, wrapData } from '../data';
+import { Collection } from '../collection';
+import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
-import { DocId } from '../docId';
 import { CollectionGroup } from '../group';
 import { LimitQuery } from '../limit';
 import { OrderQuery } from '../order';
@@ -25,10 +10,7 @@ import { pathToRef, ref } from '../ref';
 import { WhereQuery } from '../where';
 import { SnapshotInfo } from '../snapshot';
 import { getDocMeta } from '../utils';
-
-type FirebaseQuery = CollectionReference | FirestoreQuery;
-
-// TODO: Refactor with query
+import { processQueries } from '../query';
 
 /**
  * The query type.
@@ -78,103 +60,10 @@ export default function onQuery<Model>(
     firebaseUnsub && firebaseUnsub();
   };
 
-  const { firestoreQuery, cursors } = queries.reduce(
-    (acc, q) => {
-      switch (q.type) {
-        case 'order': {
-          const { field, method, cursors } = q;
-
-          acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection),
-            orderBy(
-              field instanceof DocId
-                ? documentId()
-                : field.toString(),
-              method,
-            ),
-          );
-
-          if (cursors)
-            acc.cursors = acc.cursors.concat(
-              cursors.map(({ method, value }) => ({
-                method,
-                value:
-                  typeof value === 'object' &&
-                  value !== null &&
-                  '__type__' in value &&
-                  value.__type__ === 'doc'
-                    ? field instanceof DocId
-                      ? value.ref.id
-                      : value.data[field]
-                    : value,
-              })),
-            );
-          break;
-        }
-
-        case 'where': {
-          const { field, filter, value } = q;
-          const fieldName = Array.isArray(field)
-            ? field.join('.')
-            : field;
-
-          acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection),
-            where(
-              fieldName instanceof DocId ? documentId() : fieldName,
-              filter,
-              unwrapData(value),
-            ),
-          );
-          break;
-        }
-
-        case 'limit': {
-          const { number } = q;
-          acc.firestoreQuery = fQuery(
-            collectionToFirestoreCollection(collection),
-            limit(number),
-          );
-          break;
-        }
-      }
-
-      return acc;
-    },
-    {
-      firestoreQuery: collectionToFirestoreCollection(
-        collection,
-      ) as unknown as FirebaseQuery,
-      cursors: [],
-    } as {
-      firestoreQuery: FirebaseQuery;
-      cursors: Cursor<Model, keyof Model>[];
-    },
-  );
-
-  const groupedCursors = cursors.reduce((acc, cursor) => {
-    let methodValues = acc.find(
-      ([method]) => method === cursor.method,
-    );
-    if (!methodValues) {
-      methodValues = [cursor.method, []];
-      acc.push(methodValues);
-    }
-    methodValues[1].push(unwrapData(cursor.value));
-    return acc;
-  }, [] as [CursorMethod, any[]][]);
-
-  const paginatedFirestoreQuery =
-    cursors.length &&
-    cursors.every((cursor) => cursor.value !== undefined)
-      ? groupedCursors.reduce((acc, [method, values]) => {
-          // TODO: Fix
-          return (acc as any)[method](...values);
-        }, firestoreQuery)
-      : firestoreQuery;
+  const query = processQueries<Model>(collection, queries);
 
   firebaseUnsub = onSnapshot(
-    paginatedFirestoreQuery,
+    query,
     (firestoreSnap: QuerySnapshot) => {
       const docs: Doc<Model>[] = firestoreSnap.docs.map((snap) =>
         doc(

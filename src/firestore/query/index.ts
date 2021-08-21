@@ -2,9 +2,7 @@ import {
   limit,
   where,
   orderBy,
-  CollectionReference,
-  Query as FirestoreQuery,
-  query as fQuery,
+  query as firestoreQuery,
   getDocs,
   QueryConstraint,
   startAfter,
@@ -22,14 +20,12 @@ import { ref, pathToRef } from '../ref';
 import { WhereQuery } from '../where';
 import { OrderQuery } from '../order';
 import { LimitQuery } from '../limit';
-import { Cursor, CursorMethod } from '../cursor';
+import { CursorMethod } from '../cursor';
 import { wrapData, unwrapData } from '../data';
 import { CollectionGroup } from '../group';
 import { DocId } from '../docId';
 import { documentId } from 'firebase/firestore';
 import { getDocMeta } from '../utils';
-
-// TODO: Refactor with onQuery
 
 /**
  * The query type.
@@ -69,6 +65,25 @@ export async function query<Model>(
   collection: Collection<Model> | CollectionGroup<Model>,
   queries: Query<Model, keyof Model>[],
 ): Promise<Doc<Model>[]> {
+  const query = processQueries<Model>(collection, queries);
+  const firebaseSnap = await getDocs(query);
+
+  return firebaseSnap.docs.map((snap) =>
+    doc(
+      collection.__type__ === 'collectionGroup'
+        ? pathToRef(snap.ref.path)
+        : ref(collection, snap.id),
+      wrapData(snap.data()) as Model,
+      getDocMeta(snap as any),
+    ),
+  );
+}
+
+// TODO: test
+export function processQueries<Model>(
+  collection: Collection<Model> | CollectionGroup<Model>,
+  queries: Query<Model, keyof Model>[],
+) {
   const { firestoreQueries, cursors } = queries.reduce(
     (acc, q) => {
       switch (q.type) {
@@ -85,7 +100,7 @@ export async function query<Model>(
           );
 
           if (q.cursors) {
-            const c = q.cursors.reduce((accum, { method, value }) => {
+            q.cursors.forEach(({ method, value }) => {
               const val =
                 typeof value === 'object' &&
                 value !== null &&
@@ -96,28 +111,14 @@ export async function query<Model>(
                     : value.data[field]
                   : value;
 
-              // TODO: This can be done better - done to get working, not sure need cursors?
               if (val) {
-                switch (method) {
-                  case 'startAfter':
-                    accum.push(startAfter(val));
-                    break;
-                  case 'startAt':
-                    accum.push(startAt(val));
-                    break;
-                  case 'endBefore':
-                    accum.push(endBefore(val));
-                    break;
-                  case 'endAt':
-                    accum.push(endAt(val));
-                    break;
+                if (!acc.cursors[method]) {
+                  acc.cursors[method] = [];
                 }
+
+                acc.cursors[method].push(val);
               }
-
-              return accum;
-            }, [] as QueryConstraint[]);
-
-            acc.cursors.push(...c);
+            });
           }
           break;
         }
@@ -149,25 +150,40 @@ export async function query<Model>(
     },
     {
       firestoreQueries: [] as QueryConstraint[],
-      cursors: [] as QueryConstraint[],
+      cursors: {} as Record<
+        CursorMethod,
+        (string | Model[keyof Model] | Doc<Model>)[]
+      >,
     },
   );
 
-  const q = fQuery.apply(null, [
+  const firestoreCursors = Object.keys(cursors).reduce((acc, k) => {
+    const key = k as unknown as CursorMethod;
+    const values = cursors[key];
+
+    if (values.length > 0) {
+      switch (key) {
+        case 'startAfter':
+          acc.push(startAfter(...values));
+          break;
+        case 'startAt':
+          acc.push(startAt(...values));
+          break;
+        case 'endBefore':
+          acc.push(endBefore(...values));
+          break;
+        case 'endAt':
+          acc.push(endAt(...values));
+          break;
+      }
+    }
+
+    return acc;
+  }, [] as QueryConstraint[]);
+
+  return firestoreQuery(
     collectionToFirestoreCollection(collection),
     ...firestoreQueries,
-    ...cursors,
-  ]);
-
-  const firebaseSnap = await getDocs(q);
-
-  return firebaseSnap.docs.map((snap) =>
-    doc(
-      collection.__type__ === 'collectionGroup'
-        ? pathToRef(snap.ref.path)
-        : ref(collection, snap.id),
-      wrapData(snap.data()) as Model,
-      getDocMeta(snap as any),
-    ),
+    ...firestoreCursors,
   );
 }

@@ -499,7 +499,7 @@ describe('query', () => {
       ]);
     });
 
-    it.only('allows specify multiple cursor conditions', async () => {
+    it('allows specify multiple cursor conditions', async () => {
       type City = { mapId: string; name: string; state: string };
       const cities = collection<City>('cities');
       const mapId = nanoid();

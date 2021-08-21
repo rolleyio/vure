@@ -19,7 +19,7 @@
     "indexes": "firebase firestore:indexes",
     "clear:db": "FIRESTORE_EMULATOR_HOST=localhost:8080 node ./scripts/clear-db.js",
     "cy:open": "cypress open-ct",
-    "cy:run": "firebase emulators:exec --only firestore 'cypress run-ct'",
+    "cy:run": "firebase emulators:exec --only firestore 'npm run clear:db && cypress run-ct'",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

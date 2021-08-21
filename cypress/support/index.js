@@ -24,5 +24,5 @@ beforeEach(() => {
 });
 
 after(() => {
-  return cy.exec('npm run clear:db');
+  // return cy.exec('npm run clear:db');
 });
