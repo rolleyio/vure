@@ -49,7 +49,7 @@ export function initializeFunctions(
 export function httpsCallable<
   RequestData = unknown,
   ResponseData = unknown,
->(functionName: string, options: HttpsCallableOptions | undefined) {
+>(functionName: string, options?: HttpsCallableOptions) {
   return callable<RequestData, ResponseData>(
     useFunctions(),
     functionName,
