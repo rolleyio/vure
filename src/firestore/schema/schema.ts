@@ -18,8 +18,9 @@ import update, { UpdateModel } from '../update';
 import upset, { UpsetModel } from '../upset';
 import { SnapshotInfo } from '../snapshot';
 import getInRadius from '../getInRadius';
+import { useRefSchema } from './ref';
 
-// TODO: Add zod schema definitions
+// TODO: Add zod schema definitions (better to add validation to methods like add, set etc now)
 export function useSchema<T>(
   collectionName: string,
   zod?: z.Schema<T>,
@@ -31,74 +32,70 @@ export function useSchema<T>(
       collectionName,
       collection,
       zod,
+      refs: useRefSchema<T>(collectionName, zod),
       add(data: T) {
-        return add(this.collection, data);
+        return add(collection, data);
       },
       all() {
-        return all(this.collection);
+        return all(collection);
       },
       get(id: string) {
-        return get(this.collection, id);
+        return get(collection, id);
       },
       getInRadius(
         center: [number, number],
         radiusInM: number,
         maxLimit = 5,
       ) {
-        return getInRadius(
-          this.collection,
-          center,
-          radiusInM,
-          maxLimit,
-        );
+        return getInRadius(collection, center, radiusInM, maxLimit);
       },
       getMany(
         ids: string[],
         onMissing?: 'ignore' | ((id: string) => T),
       ) {
-        return getMany(this.collection, ids, onMissing);
+        return getMany(collection, ids, onMissing);
       },
       onAll(
         onResult: (docs: Doc<T>[], info: SnapshotInfo<T>) => any,
         onError?: (error: Error) => any,
       ) {
-        return onAll(this.collection, onResult, onError);
+        return onAll(collection, onResult, onError);
       },
       onGet(
         id: string,
         onResult: (doc: Doc<T> | null) => any,
         onError?: (error: Error) => any,
       ) {
-        return onGet(this.collection, id, onResult, onError);
+        return onGet(collection, id, onResult, onError);
       },
       onGetMany(
         ids: string[],
         onResult: (docs: Doc<T>[]) => any,
         onError?: (error: Error) => any,
       ) {
-        return onGetMany(this.collection, ids, onResult, onError);
+        return onGetMany(collection, ids, onResult, onError);
       },
       onQuery(
         queries: Query<T, keyof T>[],
         onResult: (docs: Doc<T>[]) => any,
         onError?: (error: Error) => any,
       ) {
-        return onQuery(this.collection, queries, onResult, onError);
+        return onQuery(collection, queries, onResult, onError);
       },
       query(queries: Query<T, keyof T>[]) {
-        return query(this.collection, queries);
+        return query(collection, queries);
       },
       remove(id: string) {
-        return remove(this.collection, id);
+        return remove(collection, id);
       },
       set(id: string, data: SetModel<T>) {
-        return set(this.collection, id, data);
+        return set(collection, id, data);
       },
       update(id: string, data: UpdateModel<T> | Field<T>[]) {
-        return update(this.collection, id, data);
+        return update(collection, id, data);
       },
       upset(id: string, data: UpsetModel<T>) {
-        return upset(this.collection, id, data);
+        return upset(collection, id, data);
       },
     };
   };
