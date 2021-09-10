@@ -7,7 +7,7 @@ export interface Doc<Model> {
   __type__: 'doc';
   data: Model;
   ref: Ref<Model>;
-  meta: Metadata | undefined;
+  meta?: Metadata;
 }
 
 /**
@@ -46,7 +46,7 @@ export type Metadata = {
 export function doc<Model>(
   ref: Ref<Model>,
   data: Model,
-  meta: Metadata | undefined = undefined,
+  meta?: Metadata,
 ): Doc<Model> {
   return { __type__: 'doc', ref, data, meta };
 }

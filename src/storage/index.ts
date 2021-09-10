@@ -27,7 +27,7 @@ export function useStorage() {
 }
 
 export function initializeStorage(
-  bucketUrl?: string | undefined,
+  bucketUrl?: string,
   emulator: VureEmulatorConfig = {
     enabled: false,
     host: 'localhost',

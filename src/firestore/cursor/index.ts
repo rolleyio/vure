@@ -15,7 +15,7 @@ export type CursorMethod =
  */
 export interface Cursor<Model, Key extends keyof Model> {
   method: CursorMethod;
-  value: Model[Key] | Doc<Model> | typeofDocId | undefined;
+  value?: Model[Key] | Doc<Model> | typeofDocId;
 }
 
 /**
@@ -38,7 +38,7 @@ export interface Cursor<Model, Key extends keyof Model> {
  * @returns The cursor object
  */
 export function startAfter<Model, Key extends keyof Model>(
-  value: Model[Key] | Doc<Model> | typeofDocId | undefined,
+  value?: Model[Key] | Doc<Model> | typeofDocId,
 ): Cursor<Model, Key> {
   return {
     method: 'startAfter',
@@ -66,7 +66,7 @@ export function startAfter<Model, Key extends keyof Model>(
  * @returns The cursor object
  */
 export function startAt<Model, Key extends keyof Model>(
-  value: Model[Key] | Doc<Model> | typeofDocId | undefined,
+  value?: Model[Key] | Doc<Model> | typeofDocId,
 ): Cursor<Model, Key> {
   return {
     method: 'startAt',
@@ -94,7 +94,7 @@ export function startAt<Model, Key extends keyof Model>(
  * @returns The cursor object
  */
 export function endBefore<Model, Key extends keyof Model>(
-  value: Model[Key] | Doc<Model> | typeofDocId | undefined,
+  value?: Model[Key] | Doc<Model> | typeofDocId,
 ): Cursor<Model, Key> {
   return {
     method: 'endBefore',
@@ -122,7 +122,7 @@ export function endBefore<Model, Key extends keyof Model>(
  * @returns The cursor object
  */
 export function endAt<Model, Key extends keyof Model>(
-  value: Model[Key] | Doc<Model> | typeofDocId | undefined,
+  value?: Model[Key] | Doc<Model> | typeofDocId,
 ): Cursor<Model, Key> {
   return {
     method: 'endAt',

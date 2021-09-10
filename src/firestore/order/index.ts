@@ -10,7 +10,7 @@ export interface OrderQuery<Model, Key extends keyof Model> {
   type: 'order';
   field: Key | DocId;
   method: OrderByDirection;
-  cursors: Cursor<Model, Key>[] | undefined;
+  cursors?: Cursor<Model, Key>[];
 }
 
 /**
