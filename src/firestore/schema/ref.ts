@@ -1,15 +1,25 @@
 import { onBeforeUnmount, ref, getCurrentInstance, watch } from 'vue';
 import { z } from 'zod';
 
-import { createRefs, MaybeRef, toRefs } from './helpers';
-import { useSchema } from './schema';
+import { collection as vCollection } from '../collection';
+import add from '../add';
+import all from '../all';
+import { Doc } from '../doc';
+import { Field } from '../field';
+import get from '../get';
+import getMany from '../getMany';
+import onAll from '../onAll';
+import onGet from '../onGet';
+import onGetMany from '../onGetMany';
+import onQuery, { Query } from '../onQuery';
+import { query } from '../query';
+import remove from '../remove';
+import set, { SetModel } from '../set';
+import update, { UpdateModel } from '../update';
+import upset, { UpsetModel } from '../upset';
+import getInRadius from '../getInRadius';
 
-import type { Doc } from '../doc';
-import type { Field } from '../field';
-import type { Query } from '../onQuery';
-import type { SetModel } from '../set';
-import type { UpdateModel } from '../update';
-import type { UpsetModel } from '../upset';
+import { createRefs, MaybeRef, toRefs } from './helpers';
 
 // FIX: A lot of repetitive code
 // TODO: test this
@@ -18,20 +28,19 @@ export function useRefSchema<T>(
   zod?: z.Schema<T>,
 ) {
   return () => {
-    const schema = useSchema(collectionName, zod)();
+    const collection = vCollection<T>(collectionName);
 
     return {
-      schema,
-      collection: schema.collection,
-      collectionName: schema.collectionName,
-      zod: schema.zod,
+      collection: collection,
+      collectionName: collectionName,
+      zod: zod,
       add(data: T) {
-        return toRefs(schema.add(data), {
+        return toRefs(add(collection, data), {
           default: null as Nullable<Doc<T>>,
         });
       },
       all() {
-        return toRefs(schema.all(), {
+        return toRefs(all(collection), {
           default: [] as Doc<T>[],
         });
       },
@@ -45,7 +54,7 @@ export function useRefSchema<T>(
           async (watchedId) => {
             loading.value = true;
             try {
-              result.value = await schema.get(watchedId);
+              result.value = await get(collection, watchedId);
               error.value = null;
             } catch (e) {
               result.value = null;
@@ -79,7 +88,8 @@ export function useRefSchema<T>(
           async ([watchedCenter, watchRadius]) => {
             loading.value = true;
             try {
-              result.value = (await schema.getInRadius(
+              result.value = (await getInRadius(
+                collection,
                 watchedCenter,
                 watchRadius,
                 maxLimit,
@@ -116,7 +126,8 @@ export function useRefSchema<T>(
           async (watchedIds) => {
             loading.value = true;
             try {
-              result.value = await schema.getMany(
+              result.value = await getMany(
+                collection,
                 watchedIds,
                 onMissing,
               );
@@ -144,7 +155,8 @@ export function useRefSchema<T>(
       onAll() {
         const { loading, result, error } = createRefs<Doc<T>[]>([]);
 
-        const unwatch = schema.onAll(
+        const unwatch = onAll(
+          collection,
           (r) => {
             loading.value = false;
             result.value = r;
@@ -180,7 +192,8 @@ export function useRefSchema<T>(
               unwatchOnGet();
             }
 
-            unwatchOnGet = schema.onGet(
+            unwatchOnGet = onGet(
+              collection,
               watchedId,
               (r) => {
                 loading.value = false;
@@ -223,7 +236,8 @@ export function useRefSchema<T>(
               unwatchOnGetMany();
             }
 
-            unwatchOnGetMany = schema.onGetMany(
+            unwatchOnGetMany = onGetMany(
+              collection,
               watchedIds,
               (r) => {
                 loading.value = false;
@@ -266,8 +280,9 @@ export function useRefSchema<T>(
               unwatchOnQuery();
             }
 
-            unwatchOnQuery = schema.onQuery(
-              watchedQueries as any,
+            unwatchOnQuery = onQuery(
+              collection,
+              watchedQueries as Query<T, keyof T>[],
               (r) => {
                 loading.value = false;
                 result.value = r;
@@ -305,8 +320,9 @@ export function useRefSchema<T>(
           async (watchedQueries) => {
             loading.value = true;
             try {
-              result.value = await schema.query(
-                watchedQueries as any,
+              result.value = await query(
+                collection,
+                watchedQueries as Query<T, keyof T>[],
               );
               error.value = null;
             } catch (e) {
@@ -330,25 +346,25 @@ export function useRefSchema<T>(
         return { loading, result, error };
       },
       remove(id: string) {
-        return toRefs(schema.remove(id), {
+        return toRefs(remove(collection, id), {
           default: false,
           isResultRef: true,
         });
       },
       set(id: string, data: SetModel<T>) {
-        return toRefs(schema.set(id, data), {
+        return toRefs(set(collection, id, data), {
           default: false,
           isResultRef: true,
         });
       },
       update(id: string, data: UpdateModel<T> | Field<T>[]) {
-        return toRefs(schema.update(id, data), {
+        return toRefs(update(collection, id, data), {
           default: false,
           isResultRef: true,
         });
       },
       upset(id: string, data: UpsetModel<T>) {
-        return toRefs(schema.upset(id, data), {
+        return toRefs(upset(collection, id, data), {
           default: false,
           isResultRef: true,
         });
