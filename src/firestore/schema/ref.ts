@@ -1,15 +1,26 @@
 import { z } from 'zod';
-import { onBeforeUnmount, ref, getCurrentInstance, watch } from 'vue';
+import {
+  onBeforeUnmount,
+  ref,
+  getCurrentInstance,
+  watch,
+  shallowRef,
+  Ref,
+} from 'vue';
 
 import { useSchema } from '..';
 import { Doc } from '../doc';
-import { Field } from '../field';
 import { Query } from '../onQuery';
-import { SetModel } from '../set';
-import { UpdateModel } from '../update';
-import { UpsetModel } from '../upset';
 
-import { createRefs, MaybeRef, toRefs } from './helpers';
+type MaybeRef<T> = T | Ref<T>;
+
+export function createRefs<T>(defaultValue: T) {
+  return {
+    loading: ref(true),
+    result: shallowRef<T>(defaultValue),
+    error: shallowRef<Error | null>(null),
+  };
+}
 
 // FIX: A lot of repetitive code
 // TODO: Write tests
@@ -25,15 +36,29 @@ export function useRefSchema<T>(
       collection: schema.collection,
       collectionName: schema.collectionName,
       zod: schema.zod,
-      add(data: T) {
-        return toRefs(schema.add(data), {
-          default: null as Nullable<Doc<T>>,
-        });
-      },
+      add: schema.add,
+      remove: schema.remove,
+      set: schema.set,
+      update: schema.update,
+      upset: schema.upset,
       all() {
-        return toRefs(schema.all(), {
-          default: [] as Doc<T>[],
-        });
+        const { loading, result, error } = createRefs<Doc<T>[]>([]);
+
+        schema
+          .all()
+          .then((r) => {
+            result.value = r;
+            error.value = null;
+          })
+          .catch((e) => {
+            result.value = [];
+            error.value = e;
+          })
+          .finally(() => {
+            loading.value = false;
+          });
+
+        return { loading, result, error };
       },
       get(id: MaybeRef<string>) {
         const { loading, result, error } = createRefs<Doc<T> | null>(
@@ -168,8 +193,9 @@ export function useRefSchema<T>(
         return { loading, result, error };
       },
       onGet(id: MaybeRef<string>) {
-        const { loading, result, error } =
-          createRefs<Nullable<Doc<T>>>(null);
+        const { loading, result, error } = createRefs<Doc<T> | null>(
+          null,
+        );
 
         let unwatchOnGet: (() => void) | null = null;
 
@@ -328,33 +354,6 @@ export function useRefSchema<T>(
         }
 
         return { loading, result, error };
-      },
-      remove(id: string | Doc<T>) {
-        return toRefs(schema.remove(id), {
-          default: false,
-          isResultRef: true,
-        });
-      },
-      set(id: string | Doc<T>, data?: SetModel<T>) {
-        return toRefs(schema.set(id, data), {
-          default: false,
-          isResultRef: true,
-        });
-      },
-      update(
-        id: string | Doc<T>,
-        data?: UpdateModel<T> | Field<T>[],
-      ) {
-        return toRefs(schema.update(id, data), {
-          default: false,
-          isResultRef: true,
-        });
-      },
-      upset(id: string | Doc<T>, data?: UpsetModel<T>) {
-        return toRefs(schema.upset(id, data), {
-          default: false,
-          isResultRef: true,
-        });
       },
     };
   };
