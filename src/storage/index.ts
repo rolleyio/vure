@@ -1,5 +1,5 @@
 import {
-  StorageService,
+  FirebaseStorage,
   connectStorageEmulator,
   getStorage,
   uploadBytesResumable,
@@ -14,7 +14,7 @@ import { useFirebaseApp } from '../composables';
 
 import type { VureEmulatorConfig } from '../types';
 
-let storage: StorageService | null = null;
+let storage: FirebaseStorage | null = null;
 
 export function useStorage() {
   if (!storage) {
