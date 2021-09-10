@@ -6,6 +6,7 @@ import all from '../all';
 import { Doc } from '../doc';
 import { Field } from '../field';
 import get from '../get';
+import getInRadius from '../getInRadius';
 import getMany from '../getMany';
 import onAll from '../onAll';
 import onGet from '../onGet';
@@ -13,12 +14,10 @@ import onGetMany from '../onGetMany';
 import onQuery, { Query } from '../onQuery';
 import { query } from '../query';
 import remove from '../remove';
+import { SnapshotInfo } from '../snapshot';
 import set, { SetModel } from '../set';
 import update, { UpdateModel } from '../update';
 import upset, { UpsetModel } from '../upset';
-import { SnapshotInfo } from '../snapshot';
-import getInRadius from '../getInRadius';
-import { useRefSchema } from './ref';
 
 // TODO: Add zod schema definitions (better to add validation to methods like add, set etc now)
 export function useSchema<T>(
@@ -32,7 +31,6 @@ export function useSchema<T>(
       collectionName,
       collection,
       zod,
-      refs: useRefSchema<T>(collectionName, zod),
       add(data: T) {
         return add(collection, data);
       },
@@ -90,17 +88,54 @@ export function useSchema<T>(
       query(queries: Query<T, keyof T>[]) {
         return query(collection, queries);
       },
-      remove(id: string) {
-        return remove(collection, id);
+      remove(id: string | Doc<T>) {
+        if (typeof id === 'string') {
+          return remove(collection, id);
+        } else {
+          return remove(id.ref);
+        }
       },
-      set(id: string, data: SetModel<T>) {
-        return set(collection, id, data);
+      set(id: string | Doc<T>, data?: SetModel<T>) {
+        if (typeof id === 'string') {
+          if (!data) {
+            throw new Error(
+              'Need to pass data if only passing ID as string',
+            );
+          }
+
+          return set(collection, id, data);
+        } else {
+          return set(id.ref, id.data);
+        }
       },
-      update(id: string, data: UpdateModel<T> | Field<T>[]) {
-        return update(collection, id, data);
+      update(
+        id: string | Doc<T>,
+        data?: UpdateModel<T> | Field<T>[],
+      ) {
+        if (typeof id === 'string') {
+          if (!data) {
+            throw new Error(
+              'Need to pass data if only passing ID as string',
+            );
+          }
+
+          return update(collection, id, data);
+        } else {
+          return update(id.ref, id.data);
+        }
       },
-      upset(id: string, data: UpsetModel<T>) {
-        return upset(collection, id, data);
+      upset(id: string | Doc<T>, data?: UpsetModel<T>) {
+        if (typeof id === 'string') {
+          if (!data) {
+            throw new Error(
+              'Need to pass data if only passing ID as string',
+            );
+          }
+
+          return upset(collection, id, data);
+        } else {
+          return upset(id.ref, id.data);
+        }
       },
     };
   };
