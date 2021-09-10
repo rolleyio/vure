@@ -17,7 +17,7 @@ export type LocationModel = {
   location: Location;
 };
 
-// TODO: test this
+// TODO: Write tests
 
 /**
  * Retrieves a document from a collection.
@@ -47,19 +47,16 @@ async function getInRadius<Model extends LocationModel>(
   // a separate query for each pair. There can be up to 9 pairs of bounds
   // depending on overlap, but in most cases there are 4.
   const bounds = geohashQueryBounds(center, radiusInM);
-  const promises: Promise<Doc<Model>[]>[] = [];
 
-  for (const b of bounds) {
-    const q = query(collection, [
-      order(['location', 'geohash'], 'asc', [
+  const promises = bounds.map((b) => {
+    return query(collection, [
+      order(['location.geohash'], 'asc', [
         startAt(b[0]),
         endAt(b[1]),
       ]),
       limit(maxLimit),
     ]);
-
-    promises.push(q);
-  }
+  });
 
   // Collect all the query results together into a single list
   return Promise.all(promises).then((snapshots) => {

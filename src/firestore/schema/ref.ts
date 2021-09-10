@@ -58,7 +58,7 @@ export function useRefSchema<T>(
               error.value = null;
             } catch (e) {
               result.value = null;
-              error.value = e;
+              error.value = e as Error;
             } finally {
               loading.value = false;
             }
@@ -93,11 +93,11 @@ export function useRefSchema<T>(
                 watchedCenter,
                 watchRadius,
                 maxLimit,
-              )) as any;
+              )) as unknown as Doc<T>[];
               error.value = null;
             } catch (e) {
               result.value = [];
-              error.value = e;
+              error.value = e as Error;
             } finally {
               loading.value = false;
             }
@@ -134,7 +134,7 @@ export function useRefSchema<T>(
               error.value = null;
             } catch (e) {
               result.value = [];
-              error.value = e;
+              error.value = e as Error;
             } finally {
               loading.value = false;
             }
@@ -165,7 +165,7 @@ export function useRefSchema<T>(
           (e) => {
             loading.value = false;
             result.value = [];
-            error.value = e;
+            error.value = e as Error;
           },
         );
 
@@ -203,7 +203,7 @@ export function useRefSchema<T>(
               (e) => {
                 loading.value = false;
                 result.value = null;
-                error.value = e;
+                error.value = e as Error;
               },
             );
           },
@@ -247,7 +247,7 @@ export function useRefSchema<T>(
               (e) => {
                 loading.value = false;
                 result.value = [];
-                error.value = e;
+                error.value = e as Error;
               },
             );
           },
@@ -291,7 +291,7 @@ export function useRefSchema<T>(
               (e) => {
                 loading.value = false;
                 result.value = [];
-                error.value = e;
+                error.value = e as Error;
               },
             );
           },
@@ -327,7 +327,7 @@ export function useRefSchema<T>(
               error.value = null;
             } catch (e) {
               result.value = [];
-              error.value = e;
+              error.value = e as Error;
             } finally {
               loading.value = false;
             }

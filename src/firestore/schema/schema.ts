@@ -47,7 +47,12 @@ export function useSchema<T>(
         radiusInM: number,
         maxLimit = 5,
       ) {
-        return getInRadius(collection, center, radiusInM, maxLimit);
+        return getInRadius(
+          collection,
+          center,
+          radiusInM,
+          maxLimit,
+        ) as unknown as Promise<Doc<T>[]>;
       },
       getMany(
         ids: string[],
