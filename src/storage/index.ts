@@ -11,7 +11,6 @@ import {
 import { markRaw, ref, shallowRef } from 'vue';
 
 import { useFirebaseApp } from '../composables';
-
 import type { VureEmulatorConfig } from '../types';
 
 let storage: FirebaseStorage | null = null;
@@ -47,29 +46,34 @@ export function initializeStorage(
   return storage;
 }
 
-export function getUploadProgress(snapshot: UploadTaskSnapshot) {
-  return (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+export function uploadFile(
+  path: string,
+  file: File | Blob,
+  metadata?: UploadMetadata,
+) {
+  return markRaw(
+    uploadBytesResumable(
+      storageRef(useStorage(), path),
+      file,
+      metadata,
+    ),
+  );
 }
 
 export function useFileUpload(path: string) {
-  const storage = useStorage();
-  const r = storageRef(storage, path);
-
   const progress = ref(0);
   const result = ref('');
   const snapshot = shallowRef<UploadTaskSnapshot | null>(null);
   const error = shallowRef<Error | null>(null);
 
   function upload(file: File | Blob, metadata?: UploadMetadata) {
-    const uploadTask = markRaw(
-      uploadBytesResumable(r, file, metadata),
-    );
+    const uploadTask = uploadFile(path, file, metadata);
 
     uploadTask.on(
       'state_changed',
       (s) => {
         snapshot.value = s;
-        progress.value = getUploadProgress(snapshot.value);
+        progress.value = (s.bytesTransferred / s.totalBytes) * 100;
       },
       (e) => {
         error.value = e;
