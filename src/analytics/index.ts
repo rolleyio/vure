@@ -12,7 +12,7 @@ let analytics: Analytics | null;
 export function useAnalytics() {
   if (!analytics) {
     throw new Error(
-      'You need to enable the analytics feature before calling useAnalytics',
+      "You need to enable the analytics feature before calling useAnalytics or your environment isn't supported",
     );
   }
 
@@ -20,9 +20,11 @@ export function useAnalytics() {
 }
 
 export function initializeAnalytics() {
-  if (isSupported()) {
-    analytics = markRaw(getAnalytics(useFirebaseApp()));
-  }
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = markRaw(getAnalytics(useFirebaseApp()));
+    }
+  });
 
   return analytics;
 }

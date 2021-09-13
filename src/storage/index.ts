@@ -51,11 +51,7 @@ export function getUploadProgress(snapshot: UploadTaskSnapshot) {
   return (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 }
 
-export async function uploadFile(
-  path: string,
-  file: File | Blob,
-  metadata?: UploadMetadata,
-) {
+export function useFileUpload(path: string) {
   const storage = useStorage();
   const r = storageRef(storage, path);
 
@@ -64,24 +60,30 @@ export async function uploadFile(
   const snapshot = shallowRef<UploadTaskSnapshot | null>(null);
   const error = shallowRef<Error | null>(null);
 
-  const uploadTask = markRaw(uploadBytesResumable(r, file, metadata));
+  function upload(file: File | Blob, metadata?: UploadMetadata) {
+    const uploadTask = markRaw(
+      uploadBytesResumable(r, file, metadata),
+    );
 
-  uploadTask.on(
-    'state_changed',
-    (s) => {
-      snapshot.value = s;
-      progress.value = getUploadProgress(snapshot.value);
-    },
-    (e) => {
-      error.value = e;
-    },
-    async () => {
-      result.value = await getDownloadURL(uploadTask.snapshot.ref);
-    },
-  );
+    uploadTask.on(
+      'state_changed',
+      (s) => {
+        snapshot.value = s;
+        progress.value = getUploadProgress(snapshot.value);
+      },
+      (e) => {
+        error.value = e;
+      },
+      async () => {
+        result.value = await getDownloadURL(uploadTask.snapshot.ref);
+      },
+    );
+
+    return uploadTask;
+  }
 
   return {
-    uploadTask,
+    upload,
     progress,
     snapshot,
     result,

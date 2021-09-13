@@ -12,7 +12,7 @@ let messaging: Messaging | null = null;
 export function useMessaging() {
   if (!messaging) {
     throw new Error(
-      'You need to enable the messaging feature before calling useMessaging',
+      "You need to enable the messaging feature before calling useMessaging or your environment isn't supported",
     );
   }
 
@@ -20,9 +20,11 @@ export function useMessaging() {
 }
 
 export function initializeMessaging() {
-  if (isSupported()) {
-    messaging = markRaw(getMessaging(useFirebaseApp()));
-  }
+  isSupported().then((supported) => {
+    if (supported) {
+      messaging = markRaw(getMessaging(useFirebaseApp()));
+    }
+  });
 
   return messaging;
 }
