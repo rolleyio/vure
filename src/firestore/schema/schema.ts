@@ -27,6 +27,84 @@ export function useSchema<T>(
   return () => {
     const collection = vCollection<T>(collectionName);
 
+    /* TODO: these should probably be moved */
+    function instanceRemove(id: string): Promise<void>;
+    function instanceRemove(id: Doc<T>): Promise<void>;
+    function instanceRemove(id: string | Doc<T>) {
+      if (typeof id === 'string') {
+        return remove(collection, id);
+      } else {
+        return remove(id.ref);
+      }
+    }
+
+    function instanceSet(
+      id: string,
+      data: SetModel<T>,
+    ): Promise<void>;
+    function instanceSet(model: Doc<T>): Promise<void>;
+    function instanceSet(
+      modelOrId: string | Doc<T>,
+      data?: SetModel<T>,
+    ) {
+      if (typeof modelOrId === 'string') {
+        if (!data) {
+          throw new Error(
+            'Need to pass data if only passing ID as string',
+          );
+        }
+
+        return set(collection, modelOrId, data);
+      } else {
+        return set(modelOrId.ref, modelOrId.data);
+      }
+    }
+
+    function instanceUpdate(
+      id: string,
+      data: SetModel<T>,
+    ): Promise<void>;
+    function instanceUpdate(model: Doc<T>): Promise<void>;
+    function instanceUpdate(
+      modelOrId: string | Doc<T>,
+      data?: UpdateModel<T> | Field<T>[],
+    ) {
+      if (typeof modelOrId === 'string') {
+        if (!data) {
+          throw new Error(
+            'Need to pass data if only passing ID as string',
+          );
+        }
+
+        return update(collection, modelOrId, data);
+      } else {
+        return update(modelOrId.ref, modelOrId.data);
+      }
+    }
+
+    function instanceUpset(
+      id: string,
+      data: SetModel<T>,
+    ): Promise<void>;
+    function instanceUpset(model: Doc<T>): Promise<void>;
+    function instanceUpset(
+      modelOrId: string | Doc<T>,
+      data?: UpsetModel<T>,
+    ) {
+      if (typeof modelOrId === 'string') {
+        if (!data) {
+          throw new Error(
+            'Need to pass data if only passing ID as string',
+          );
+        }
+
+        return upset(collection, modelOrId, data);
+      } else {
+        return upset(modelOrId.ref, modelOrId.data);
+      }
+    }
+    /* TODO: end */
+
     return {
       collectionName,
       collection,
@@ -88,55 +166,10 @@ export function useSchema<T>(
       query(queries: Query<T, keyof T>[]) {
         return query(collection, queries);
       },
-      remove(id: string | Doc<T>) {
-        if (typeof id === 'string') {
-          return remove(collection, id);
-        } else {
-          return remove(id.ref);
-        }
-      },
-      set(id: string | Doc<T>, data?: SetModel<T>) {
-        if (typeof id === 'string') {
-          if (!data) {
-            throw new Error(
-              'Need to pass data if only passing ID as string',
-            );
-          }
-
-          return set(collection, id, data);
-        } else {
-          return set(id.ref, id.data);
-        }
-      },
-      update(
-        id: string | Doc<T>,
-        data?: UpdateModel<T> | Field<T>[],
-      ) {
-        if (typeof id === 'string') {
-          if (!data) {
-            throw new Error(
-              'Need to pass data if only passing ID as string',
-            );
-          }
-
-          return update(collection, id, data);
-        } else {
-          return update(id.ref, id.data);
-        }
-      },
-      upset(id: string | Doc<T>, data?: UpsetModel<T>) {
-        if (typeof id === 'string') {
-          if (!data) {
-            throw new Error(
-              'Need to pass data if only passing ID as string',
-            );
-          }
-
-          return upset(collection, id, data);
-        } else {
-          return upset(id.ref, id.data);
-        }
-      },
+      remove: instanceRemove,
+      set: instanceSet,
+      update: instanceUpdate,
+      upset: instanceUpset,
     };
   };
 }
