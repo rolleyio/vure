@@ -27,7 +27,7 @@ export function useSchema<T>(
   return () => {
     const collection = vCollection<T>(collectionName);
 
-    /* TODO: these need to be moved - just made it easier to gain access to collection etc */
+    // methods to allow function overloading
     function instanceRemove(id: string): Promise<void>;
     function instanceRemove(id: Doc<T>): Promise<void>;
     function instanceRemove(id: string | Doc<T>) {
@@ -102,7 +102,6 @@ export function useSchema<T>(
         return upset(modelOrId.ref, modelOrId.data);
       }
     }
-    /* TODO: end */
 
     return {
       collectionName,
