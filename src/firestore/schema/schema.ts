@@ -27,7 +27,7 @@ export function useSchema<T>(
   return () => {
     const collection = vCollection<T>(collectionName);
 
-    /* TODO: these should probably be moved */
+    /* TODO: these need to be moved - just made it easier to gain access to collection etc */
     function instanceRemove(id: string): Promise<void>;
     function instanceRemove(id: Doc<T>): Promise<void>;
     function instanceRemove(id: string | Doc<T>) {
@@ -53,7 +53,6 @@ export function useSchema<T>(
             'Need to pass data if only passing ID as string',
           );
         }
-
         return set(collection, modelOrId, data);
       } else {
         return set(modelOrId.ref, modelOrId.data);
@@ -62,7 +61,7 @@ export function useSchema<T>(
 
     function instanceUpdate(
       id: string,
-      data: SetModel<T>,
+      data: UpdateModel<T> | Field<T>[],
     ): Promise<void>;
     function instanceUpdate(model: Doc<T>): Promise<void>;
     function instanceUpdate(
@@ -84,7 +83,7 @@ export function useSchema<T>(
 
     function instanceUpset(
       id: string,
-      data: SetModel<T>,
+      data: UpsetModel<T>,
     ): Promise<void>;
     function instanceUpset(model: Doc<T>): Promise<void>;
     function instanceUpset(
