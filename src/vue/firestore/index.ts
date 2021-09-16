@@ -26,13 +26,13 @@ export function createRefs<T>(defaultValue: T) {
 // TODO: Write tests
 export default function <T>(
   collectionName: string,
-  zod?: z.Schema<T>,
+  zodSchema?: Record<keyof T, z.Schema<T[keyof T]>>,
 ) {
   return () => {
-    const schema = firestoreSchema(collectionName, zod)();
+    const schema = firestoreSchema(collectionName, zodSchema)();
 
     return {
-      async: schema,
+      schema: schema,
       collection: schema.collection,
       collectionName: schema.collectionName,
       zod: schema.zod,
