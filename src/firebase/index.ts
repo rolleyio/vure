@@ -3,7 +3,6 @@ import {
   initializeApp,
   FirebaseOptions,
 } from 'firebase/app';
-import { markRaw } from 'vue';
 
 let firebaseApp: FirebaseApp | null = null;
 
@@ -21,7 +20,7 @@ export function initializeFirebaseApp(
   options: FirebaseOptions,
   name?: string,
 ) {
-  firebaseApp = markRaw(initializeApp(options, name));
+  firebaseApp = initializeApp(options, name);
 
   return firebaseApp;
 }

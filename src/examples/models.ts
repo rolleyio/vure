@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
-import { useSchema } from '../firestore';
+import { schema } from '../firestore';
 
-export type Pet = { name: string };
+export type Pet = { name: string; age?: number };
 
-export const usePets = useSchema<Pet>(
-  'Pets',
-  z.object({ name: z.string() }) as z.Schema<Pet>,
-);
+export const usePets = schema<Pet>('Pets', {
+  name: z.string(),
+  age: z.optional(z.number().min(0).max(20)),
+});
+
+const pet = usePets().parse({
+  name: 'Hello world',
+  age: 10,
+});

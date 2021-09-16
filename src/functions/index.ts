@@ -1,4 +1,3 @@
-import { markRaw } from 'vue';
 import {
   Functions,
   getFunctions,
@@ -7,8 +6,7 @@ import {
   HttpsCallableOptions,
 } from 'firebase/functions';
 
-import { useFirebaseApp } from '../composables';
-
+import { useFirebaseApp } from '../firebase';
 import type { VureEmulatorConfig } from '../types';
 
 let functions: Functions | null = null;
@@ -31,9 +29,7 @@ export function initializeFunctions(
     port: 5001,
   },
 ) {
-  functions = markRaw(
-    getFunctions(useFirebaseApp(), regionOrCustomDomain),
-  );
+  functions = getFunctions(useFirebaseApp(), regionOrCustomDomain);
 
   if (emulator.enabled) {
     connectFunctionsEmulator(

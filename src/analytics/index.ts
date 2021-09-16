@@ -3,9 +3,8 @@ import {
   Analytics,
   isSupported,
 } from 'firebase/analytics';
-import { markRaw } from 'vue';
 
-import { useFirebaseApp } from '../composables';
+import { useFirebaseApp } from '../firebase';
 
 let analytics: Analytics | null;
 
@@ -22,7 +21,7 @@ export function useAnalytics() {
 export function initializeAnalytics() {
   isSupported().then((supported) => {
     if (supported) {
-      analytics = markRaw(getAnalytics(useFirebaseApp()));
+      analytics = getAnalytics(useFirebaseApp());
     }
   });
 

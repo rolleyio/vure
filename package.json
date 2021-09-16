@@ -1,6 +1,6 @@
 {
   "name": "@rolley/vure",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "main": "./dist/vure.umd.js",
   "module": "./dist/vure.es.js",
   "exports": {
@@ -47,13 +47,13 @@
     "typescript": "^4.3.5",
     "vite": "^2.4.4",
     "vue": "3.2.2",
-    "zod": "3.7.1"
+    "zod": "3.8.2"
   },
   "volta": {
     "node": "15.6.0",
     "npm": "7.20.2"
   },
-  "description": "A library to integrate the new modular firebase with vue 3",
+  "description": "A library of helper functions to make using Firebase v9 easier",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rolleyio/vure.git"

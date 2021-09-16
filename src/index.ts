@@ -1,9 +1,7 @@
-import type { App } from 'vue';
-
 import { initializeAnalytics } from './analytics';
 import { initializeAppCheck } from './app-check';
 import { initializeAuth } from './auth';
-import { initializeFirebaseApp } from './composables';
+import { initializeFirebaseApp } from './firebase';
 import { initializeFirestore } from './firestore';
 import { initializeFunctions } from './functions';
 import { initializeMessaging } from './messaging';
@@ -16,7 +14,7 @@ import type { VureConfig } from './types';
 export * from './analytics';
 export * from './app-check';
 export * from './auth';
-export * from './composables';
+export * from './firebase';
 export * from './firestore';
 export * from './functions';
 export * from './messaging';
@@ -24,12 +22,7 @@ export * from './performance';
 export * from './remote-config';
 export * from './storage';
 
-export function defineVureConfig(options: VureConfig) {
-  return options;
-}
-
-// Currently don't need the Vue app to inject so basic function
-export function setupFirebaseApp(options: VureConfig) {
+export default function (options: VureConfig) {
   const { name, features, config } = options;
 
   initializeFirebaseApp(config, name);
@@ -96,10 +89,3 @@ export function setupFirebaseApp(options: VureConfig) {
     }
   }
 }
-
-// Export a basic vue plugin, just in case
-export default {
-  install(_: App, options: VureConfig) {
-    setupFirebaseApp(options);
-  },
-};

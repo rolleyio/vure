@@ -20,7 +20,7 @@ export * from './order';
 export * from './query';
 export * from './ref';
 export { default as remove } from './remove';
-export { useSchema, useRefSchema } from './schema';
+export { default as schema } from './schema';
 export { default as set } from './set';
 export * from './subcollection';
 export * from './transaction';

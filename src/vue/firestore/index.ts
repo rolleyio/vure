@@ -8,9 +8,9 @@ import {
   Ref,
 } from 'vue';
 
-import { useSchema } from '..';
-import { Doc } from '../doc';
-import { Query } from '../onQuery';
+import firestoreSchema from '../../firestore/schema';
+import { Doc } from '../../firestore/doc';
+import { Query } from '../../firestore/onQuery';
 
 type MaybeRef<T> = T | Ref<T>;
 
@@ -24,21 +24,23 @@ export function createRefs<T>(defaultValue: T) {
 
 // FIX: A lot of repetitive code
 // TODO: Write tests
-export function useRefSchema<T>(
+export default function <T>(
   collectionName: string,
   zod?: z.Schema<T>,
 ) {
   return () => {
-    const schema = useSchema(collectionName, zod)();
+    const schema = firestoreSchema(collectionName, zod)();
 
     return {
       async: schema,
       collection: schema.collection,
       collectionName: schema.collectionName,
       zod: schema.zod,
+      parse: schema.parse,
       add: schema.add,
       remove: schema.remove,
       set: schema.set,
+      save: schema.save,
       update: schema.update,
       upset: schema.upset,
       all() {

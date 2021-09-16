@@ -3,9 +3,8 @@ import {
   Messaging,
   isSupported,
 } from 'firebase/messaging';
-import { markRaw } from 'vue';
 
-import { useFirebaseApp } from '../composables';
+import { useFirebaseApp } from '../firebase';
 
 let messaging: Messaging | null = null;
 
@@ -22,7 +21,7 @@ export function useMessaging() {
 export function initializeMessaging() {
   isSupported().then((supported) => {
     if (supported) {
-      messaging = markRaw(getMessaging(useFirebaseApp()));
+      messaging = getMessaging(useFirebaseApp());
     }
   });
 

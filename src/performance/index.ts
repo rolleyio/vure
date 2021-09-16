@@ -2,9 +2,8 @@ import {
   getPerformance,
   FirebasePerformance,
 } from 'firebase/performance';
-import { markRaw } from 'vue';
 
-import { useFirebaseApp } from '../composables';
+import { useFirebaseApp } from '../firebase';
 
 let performance: FirebasePerformance | null = null;
 
@@ -19,7 +18,7 @@ export function usePerformance() {
 }
 
 export function initializePerformance() {
-  performance = markRaw(getPerformance(useFirebaseApp()));
+  performance = getPerformance(useFirebaseApp());
 
   return performance;
 }

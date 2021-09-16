@@ -1,4 +1,3 @@
-import { markRaw } from 'vue';
 import {
   initializeAppCheck as getAppCheck,
   AppCheck,
@@ -6,7 +5,7 @@ import {
   ReCaptchaV3Provider,
 } from 'firebase/app-check';
 
-import { useFirebaseApp } from '../composables';
+import { useFirebaseApp } from '../firebase';
 
 let appCheck: AppCheck | null = null;
 
@@ -24,12 +23,10 @@ export function initializeAppCheck(
   provider: CustomProvider | ReCaptchaV3Provider,
   isTokenAutoRefreshEnabled?: boolean,
 ) {
-  appCheck = markRaw(
-    getAppCheck(useFirebaseApp(), {
-      provider,
-      isTokenAutoRefreshEnabled,
-    }),
-  );
+  appCheck = getAppCheck(useFirebaseApp(), {
+    provider,
+    isTokenAutoRefreshEnabled,
+  });
 
   return appCheck;
 }

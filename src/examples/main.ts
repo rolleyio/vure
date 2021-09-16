@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 
 import App from './App.vue';
-import Vure, { defineVureConfig } from '..';
+import Vure, { defineVureConfig } from '../vue';
 
 const app = createApp(App);
 

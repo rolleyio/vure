@@ -2,9 +2,8 @@ import {
   RemoteConfig,
   getRemoteConfig,
 } from 'firebase/remote-config';
-import { markRaw } from 'vue';
 
-import { useFirebaseApp } from '../composables';
+import { useFirebaseApp } from '../firebase';
 
 let remoteConfig: RemoteConfig | null = null;
 
@@ -19,7 +18,7 @@ export function useRemoteConfig() {
 }
 
 export function initializeRemoteConfig() {
-  remoteConfig = markRaw(getRemoteConfig(useFirebaseApp()));
+  remoteConfig = getRemoteConfig(useFirebaseApp());
 
   return remoteConfig;
 }
