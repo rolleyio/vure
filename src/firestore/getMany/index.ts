@@ -1,4 +1,5 @@
 import { doc as firestoreDoc } from 'firebase/firestore';
+
 import {
   Collection,
   collectionToFirestoreCollection,
@@ -6,7 +7,7 @@ import {
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref } from '../ref';
-import { getAll } from '../utils';
+import { getAll, getDocMeta } from '../utils';
 
 /**
  * Retrieves multiple documents from a collection.
@@ -59,6 +60,7 @@ export default async function getMany<Model>(
           return doc(
             ref(collection, firestoreSnap.id),
             onMissing(firestoreSnap.id),
+            getDocMeta(firestoreSnap),
           );
         }
       }
@@ -66,7 +68,11 @@ export default async function getMany<Model>(
       const firestoreData = firestoreSnap.data();
       const data =
         firestoreData && (wrapData(firestoreData) as Model);
-      return doc(ref(collection, firestoreSnap.id), data);
+      return doc(
+        ref(collection, firestoreSnap.id),
+        data,
+        getDocMeta(firestoreSnap),
+      );
     })
     .filter((doc) => doc != null) as Doc<Model>[];
 }

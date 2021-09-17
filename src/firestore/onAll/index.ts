@@ -9,6 +9,7 @@ import { doc, Doc } from '../doc';
 import { CollectionGroup } from '../group';
 import { pathToRef, ref } from '../ref';
 import { SnapshotInfo } from '../snapshot';
+import { getDocMeta } from '../utils';
 
 /**
  * Subscribes to all documents in a collection.
@@ -53,6 +54,7 @@ export default function onAll<Model>(
             ? pathToRef(snap.ref.path)
             : ref(collection, snap.id),
           wrapData(snap.data()) as Model,
+          getDocMeta(snap),
         ),
       );
       const changes = () =>
@@ -73,6 +75,7 @@ export default function onAll<Model>(
                 ? pathToRef(change.doc.ref.path)
                 : ref(collection, change.doc.id),
               wrapData(change.doc.data()) as Model,
+              getDocMeta(change.doc),
             ),
         }));
       onResult(docs, {

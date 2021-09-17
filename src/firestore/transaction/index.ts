@@ -15,6 +15,7 @@ import { Ref, ref } from '../ref';
 import { SetModel } from '../set';
 import { UpdateModel } from '../update';
 import { UpsetModel } from '../upset';
+import { getDocMeta } from '../utils';
 
 /**
  * The transaction read API object. It contains {@link TransactionRead.get|get}
@@ -288,7 +289,9 @@ export async function transaction<ReadResult, WriteResult>(
       const firestoreData = firestoreSnap.data();
       const data =
         firestoreData && (wrapData(firestoreData) as Model);
-      return data ? doc(ref(collection, id), data) : null;
+      return data
+        ? doc(ref(collection, id), data, getDocMeta(firestoreSnap))
+        : null;
     }
 
     function set<Model>(

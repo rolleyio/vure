@@ -4,6 +4,7 @@ import {
   Collection,
   collectionToFirestoreCollection,
 } from '../collection';
+import { getDocMeta } from '../utils';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { CollectionGroup } from '../group';
@@ -44,6 +45,7 @@ export default async function all<Model>(
         ? pathToRef(snap.ref.path)
         : ref(collection, snap.id),
       wrapData(snap.data()) as Model,
+      getDocMeta(snap),
     );
   });
 }
