@@ -7,6 +7,9 @@
     ".": {
       "import": "./dist/vure.es.js",
       "require": "./dist/vure.umd.js"
+    },
+    "vue": {
+      
     }
   },
   "types": "./dist/index.d.ts",

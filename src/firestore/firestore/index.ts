@@ -2,7 +2,7 @@ import {
   Firestore,
   initializeFirestore as firestoreInitialize,
   connectFirestoreEmulator,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 
 import { useFirebaseApp } from '../../firebase';
 
@@ -28,7 +28,7 @@ export function initializeFirestore(
   },
 ) {
   firestore = firestoreInitialize(useFirebaseApp(), {
-    // experimentalAutoDetectLongPolling: true,
+    experimentalAutoDetectLongPolling: true,
   });
 
   if (emulator.enabled) {
