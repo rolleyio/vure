@@ -51,28 +51,19 @@ describe('batch', () => {
     expect(sasha).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-sasha` },
-      meta: {
-        fromCache: false,
-        hasPendingWrites: false,
-      },
+
       data: { name: 'Sasha' },
     });
     expect(tati).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-tati` },
-      meta: {
-        fromCache: false,
-        hasPendingWrites: false,
-      },
+
       data: { name: 'Tati' },
     });
     expect(ed).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-ed` },
-      meta: {
-        fromCache: false,
-        hasPendingWrites: false,
-      },
+
       data: { name: 'Ed' },
     });
   });

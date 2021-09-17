@@ -2,7 +2,7 @@ import {
   WriteBatch,
   writeBatch,
   doc as firestoreDoc,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 
 import {
   Collection,

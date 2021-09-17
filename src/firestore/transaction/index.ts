@@ -1,7 +1,7 @@
 import {
   doc as firestoreDoc,
   runTransaction,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 
 import {
   Collection,

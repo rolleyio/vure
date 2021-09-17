@@ -1,4 +1,4 @@
-import { getDocs } from 'firebase/firestore/lite';
+import { getDocs } from 'firebase/firestore';
 
 import {
   Collection,

@@ -15,7 +15,6 @@ describe('Doc', () => {
       const userRef = ref(users, nanoid());
       expect(doc(userRef, { name: 'Sasha' })).to.deep.equal({
         __type__: 'doc',
-        meta: undefined,
         ref: userRef,
         data: { name: 'Sasha' },
       });

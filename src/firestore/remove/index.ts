@@ -1,7 +1,4 @@
-import {
-  doc as firestoreDoc,
-  deleteDoc,
-} from 'firebase/firestore/lite';
+import { doc as firestoreDoc, deleteDoc } from 'firebase/firestore';
 
 import {
   Collection,

@@ -10,7 +10,7 @@ import {
   endBefore,
   endAt,
   documentId,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 
 import {
   Collection,
