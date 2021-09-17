@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import {
   onBeforeUnmount,
   ref,
@@ -7,6 +6,7 @@ import {
   shallowRef,
   Ref,
 } from 'vue';
+import { z } from 'zod';
 
 import firestoreSchema from '../../firestore/schema';
 import { Doc } from '../../firestore/doc';
@@ -24,7 +24,7 @@ export function createRefs<T>(defaultValue: T) {
 
 // FIX: A lot of repetitive code
 // TODO: Write tests
-export default function <T>(
+export function refSchema<T>(
   collectionName: string,
   zodSchema?: Record<keyof T, z.Schema<T[keyof T]>>,
 ) {
