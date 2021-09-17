@@ -1,10 +1,9 @@
-import { doc as firestoreDoc, getDoc } from '@firebase/firestore';
+import { doc as firestoreDoc, getDoc } from 'firebase/firestore/lite';
 
 import {
   Collection,
   collectionToFirestoreCollection,
 } from '../collection';
-import { getDocMeta } from '../utils';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref, Ref } from '../ref';
@@ -65,9 +64,7 @@ async function get<Model>(
   );
   const firestoreData = firestoreSnap.data();
   const data = firestoreData && (wrapData(firestoreData) as Model);
-  return data
-    ? doc(ref(collection, id), data, getDocMeta(firestoreSnap))
-    : null;
+  return data ? doc(ref(collection, id), data) : null;
 }
 
 export default get;

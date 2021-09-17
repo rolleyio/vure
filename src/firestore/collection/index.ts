@@ -2,9 +2,9 @@ import {
   collection as firebaseCollection,
   collectionGroup,
   CollectionReference,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 
-import { useFirestore } from '../composables';
+import { useFirestore } from '../firestore';
 import { CollectionGroup } from '../group';
 
 /**

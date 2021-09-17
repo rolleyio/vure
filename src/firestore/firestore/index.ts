@@ -2,10 +2,9 @@ import {
   Firestore,
   initializeFirestore as firestoreInitialize,
   connectFirestoreEmulator,
-} from 'firebase/firestore';
-import { markRaw } from 'vue';
+} from 'firebase/firestore/lite';
 
-import { useFirebaseApp } from '../../composables';
+import { useFirebaseApp } from '../../firebase';
 
 import type { VureEmulatorConfig } from '../../types';
 
@@ -28,11 +27,9 @@ export function initializeFirestore(
     port: 8080,
   },
 ) {
-  firestore = markRaw(
-    firestoreInitialize(useFirebaseApp(), {
-      experimentalAutoDetectLongPolling: true,
-    }),
-  );
+  firestore = firestoreInitialize(useFirebaseApp(), {
+    // experimentalAutoDetectLongPolling: true,
+  });
 
   if (emulator.enabled) {
     connectFirestoreEmulator(

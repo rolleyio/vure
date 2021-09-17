@@ -1,4 +1,4 @@
-import { WhereFilterOp } from 'firebase/firestore';
+import { WhereFilterOp } from 'firebase/firestore/lite';
 import { DocId } from '../docId';
 
 export interface WhereQuery<_Model> {

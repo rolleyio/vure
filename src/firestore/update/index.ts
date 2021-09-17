@@ -1,4 +1,7 @@
-import { doc as firestoreDoc } from 'firebase/firestore';
+import {
+  doc as firestoreDoc,
+  updateDoc,
+} from 'firebase/firestore/lite';
 
 import {
   Collection,
@@ -8,7 +11,6 @@ import { UpdateValue } from '../value';
 import { Field } from '../field';
 import { unwrapData } from '../data';
 import { Ref } from '../ref';
-import { updateDoc } from 'firebase/firestore';
 
 /**
  * Type of the data passed to the update function. It extends the model

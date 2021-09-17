@@ -9,7 +9,8 @@ import {
   startAt,
   endBefore,
   endAt,
-} from 'firebase/firestore';
+  documentId,
+} from 'firebase/firestore/lite';
 
 import {
   Collection,
@@ -24,8 +25,6 @@ import { CursorMethod } from '../cursor';
 import { wrapData, unwrapData } from '../data';
 import { CollectionGroup } from '../group';
 import { DocId } from '../docId';
-import { documentId } from 'firebase/firestore';
-import { getDocMeta } from '../utils';
 
 /**
  * The query type.
@@ -74,7 +73,6 @@ export async function query<Model>(
         ? pathToRef(snap.ref.path)
         : ref(collection, snap.id),
       wrapData(snap.data()) as Model,
-      getDocMeta(snap as any),
     ),
   );
 }

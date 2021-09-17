@@ -1,4 +1,4 @@
-import { OrderByDirection } from 'firebase/firestore';
+import { OrderByDirection } from 'firebase/firestore/lite';
 
 import { Cursor } from '../cursor';
 import { DocId } from '../docId';

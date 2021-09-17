@@ -6,7 +6,6 @@ import {
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref, Ref } from '../ref';
-import { getDocMeta } from '../utils';
 
 type OnResult<Model> = (doc: Doc<Model> | null) => any;
 
@@ -92,10 +91,7 @@ export default function onGet<Model>(
       const firestoreData = snap.data();
       const data =
         firestoreData && (wrapData(firestoreData) as Model);
-      onResult(
-        (data && doc(ref(collection, id), data, getDocMeta(snap))) ||
-          null,
-      );
+      onResult((data && doc(ref(collection, id), data)) || null);
     },
     onError,
   );

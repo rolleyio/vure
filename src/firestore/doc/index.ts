@@ -7,16 +7,7 @@ export interface Doc<Model> {
   __type__: 'doc';
   data: Model;
   ref: Ref<Model>;
-  meta?: Metadata;
 }
-
-/**
- * The document metadata type. Exists only in the web environment.
- */
-export type Metadata = {
-  fromCache: boolean;
-  hasPendingWrites: boolean;
-};
 
 /**
  * Creates a document object.
@@ -43,10 +34,6 @@ export type Metadata = {
  * @param data - The model data
  * @returns The document object
  */
-export function doc<Model>(
-  ref: Ref<Model>,
-  data: Model,
-  meta?: Metadata,
-): Doc<Model> {
-  return { __type__: 'doc', ref, data, meta };
+export function doc<Model>(ref: Ref<Model>, data: Model): Doc<Model> {
+  return { __type__: 'doc', ref, data };
 }

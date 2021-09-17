@@ -6,7 +6,7 @@ import {
   serverTimestamp,
   Timestamp,
   DocumentReference,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 
 import { pathToRef, Ref, refToFirestoreDocument } from '../ref';
 import { UpdateValue } from '../value';

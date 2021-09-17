@@ -1,7 +1,7 @@
-import { doc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore/lite';
 
 import { Collection, collection } from '../collection';
-import { useFirestore } from '../composables';
+import { useFirestore } from '../firestore';
 
 /**
  * The document reference type.

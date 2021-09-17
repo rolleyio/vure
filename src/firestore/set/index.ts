@@ -1,4 +1,4 @@
-import { setDoc, doc as firestoreDoc } from 'firebase/firestore';
+import { setDoc, doc as firestoreDoc } from 'firebase/firestore/lite';
 import {
   Collection,
   collectionToFirestoreCollection,

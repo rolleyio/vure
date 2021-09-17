@@ -2,7 +2,7 @@ import {
   WriteBatch,
   writeBatch,
   doc as firestoreDoc,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 
 import {
   Collection,
@@ -14,7 +14,7 @@ import { UpdateModel } from '../update';
 import { Field } from '../field';
 import { SetModel } from '../set';
 import { UpsetModel } from '../upset';
-import { useFirestore } from '../composables';
+import { useFirestore } from '../firestore';
 
 /**
  * The batch API object. It unions a set of functions ({@link Batch.set|set},

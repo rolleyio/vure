@@ -1,11 +1,13 @@
-import { doc as firestoreDoc } from 'firebase/firestore';
+import {
+  doc as firestoreDoc,
+  runTransaction,
+} from 'firebase/firestore/lite';
 
-import { runTransaction } from 'firebase/firestore';
 import {
   Collection,
   collectionToFirestoreCollection,
 } from '../collection';
-import { useFirestore } from '../composables';
+import { useFirestore } from '../firestore';
 import { unwrapData, wrapData } from '../data';
 import { Doc, doc } from '../doc';
 import { Field } from '../field';
@@ -13,7 +15,6 @@ import { Ref, ref } from '../ref';
 import { SetModel } from '../set';
 import { UpdateModel } from '../update';
 import { UpsetModel } from '../upset';
-import { getDocMeta } from '../utils';
 
 /**
  * The transaction read API object. It contains {@link TransactionRead.get|get}
@@ -287,9 +288,7 @@ export async function transaction<ReadResult, WriteResult>(
       const firestoreData = firestoreSnap.data();
       const data =
         firestoreData && (wrapData(firestoreData) as Model);
-      return data
-        ? doc(ref(collection, id), data, getDocMeta(firestoreSnap))
-        : null;
+      return data ? doc(ref(collection, id), data) : null;
     }
 
     function set<Model>(
