@@ -27,7 +27,7 @@ export default function <T>(
     const collection = vCollection<T>(collectionName);
     const zod = zodSchema ? z.object(zodSchema) : null;
 
-    function parse(data: T): T {
+    function instanceParse(data: T): T {
       if (zod) {
         return zod.parse(data as T) as T;
       } else {
@@ -60,9 +60,9 @@ export default function <T>(
             'Need to pass data if only passing ID as string',
           );
         }
-        return set(collection, modelOrId, parse(data as T));
+        return set(collection, modelOrId, instanceParse(data as T));
       } else {
-        return set(modelOrId.ref, parse(modelOrId.data));
+        return set(modelOrId.ref, instanceParse(modelOrId.data));
       }
     }
 
@@ -82,9 +82,13 @@ export default function <T>(
           );
         }
 
-        return update(collection, modelOrId, parse(data as T));
+        return update(
+          collection,
+          modelOrId,
+          instanceParse(data as T),
+        );
       } else {
-        return update(modelOrId.ref, parse(modelOrId.data));
+        return update(modelOrId.ref, instanceParse(modelOrId.data));
       }
     }
 
@@ -104,9 +108,9 @@ export default function <T>(
           );
         }
 
-        return upset(collection, modelOrId, parse(data as T));
+        return upset(collection, modelOrId, instanceParse(data as T));
       } else {
-        return upset(modelOrId.ref, parse(modelOrId.data));
+        return upset(modelOrId.ref, instanceParse(modelOrId.data));
       }
     }
 
@@ -114,12 +118,20 @@ export default function <T>(
       collectionName,
       collection,
       zod,
-      parse,
       remove: instanceRemove,
       set: instanceSet,
       save: instanceUpdate,
       update: instanceUpdate,
       upset: instanceUpset,
+      parse(data: T): T {
+        if (!zod) {
+          throw new Error(
+            'You must pass a validator to schema before calling parse',
+          );
+        }
+
+        return instanceParse(data);
+      },
       add(data: T) {
         return add(collection, data);
       },
