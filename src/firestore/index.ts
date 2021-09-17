@@ -2,7 +2,7 @@ export { default as add } from './add';
 export { default as all } from './all';
 export * from './batch';
 export * from './collection';
-export { initializeFirestore, useFirestore } from './composables';
+export { initializeFirestore, useFirestore } from './firestore';
 export * from './cursor';
 export * from './doc';
 export { DocId, docId } from './docId';

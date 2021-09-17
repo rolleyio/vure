@@ -9,7 +9,6 @@ import { OrderQuery } from '../order';
 import { pathToRef, ref } from '../ref';
 import { WhereQuery } from '../where';
 import { SnapshotInfo } from '../snapshot';
-import { getDocMeta } from '../utils';
 import { processQueries } from '../query';
 
 /**
@@ -71,7 +70,6 @@ export default function onQuery<Model>(
             ? pathToRef(snap.ref.path)
             : ref(collection, snap.id),
           wrapData(snap.data()) as Model,
-          getDocMeta(snap as any),
         ),
       );
 
@@ -93,7 +91,6 @@ export default function onQuery<Model>(
                 ? pathToRef(change.doc.ref.path)
                 : ref(collection, change.doc.id),
               wrapData(change.doc.data()) as Model,
-              getDocMeta(change.doc as any),
             ),
         }));
       onResult(docs, {
