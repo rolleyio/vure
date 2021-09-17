@@ -17,6 +17,7 @@ export * from './auth';
 export * from './firebase';
 export * from './firestore';
 export * from './functions';
+export * from './helpers';
 export * from './messaging';
 export * from './performance';
 export * from './remote-config';
