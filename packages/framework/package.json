@@ -7,24 +7,27 @@
   "homepage": "",
   "license": "MIT",
   "type": "module",
-  "main": "dist/es5/lib.umd.js",
-  "module": "dist/lib.es.js",
+  "sideEffects": false,
+  "main": "dist/umd/main.js",
+  "module": "dist/esm/main.js",
   "exports": {
     ".": {
-      "import": "./dist/my-lib.es.js",
-      "require": "./dist/my-lib.umd.js"
+      "import": "./dist/esm/main.js",
+      "require": "./dist/umd/main.js"
     },
     "./": "./"
   },
-  "typings": "dist/index.d.ts",
+  "typings": "types/main.d.ts",
   "files": [
     "dist",
+    "types",
     "README.md"
   ],
   "scripts": {
-    "build": "pnpm build:lib && pnpm build:types",
-    "build:lib": "vite build",
-    "build:types": "tsc --project ./tsconfig.build.json",
+    "clean": "rm -rf ./dist && rm -rf ./types && tsc --build --clean",
+    "build": "pnpm clean && pnpm build:umd && pnpm build:esm",
+    "build:esm": "tsc --project ./tsconfig.json",
+    "build:umd": "tsc --project ./tsconfig.json --outDir dist/umd --module umd --target es6",
     "lint": "eslint 'src/**/*.{ts,vue}'",
     "prepublishOnly": "npm run build"
   },

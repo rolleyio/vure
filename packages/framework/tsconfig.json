@@ -3,8 +3,8 @@
     "rootDir": "src",
     "noEmit": false,
     "declaration": true,
+    "outDir": "dist/esm",
     "declarationDir": "types",
-    "emitDeclarationOnly": true,
     "isolatedModules": true
   },
   "extends": "../../tsconfig.json",
