@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "noEmit": false,
+    "declaration": true,
+    "declarationDir": "types"
+  },
+  "extends": "../../tsconfig.json",
+  "include": ["src/**/*.vue", "src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"],
+}
