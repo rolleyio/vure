@@ -1,4 +1,4 @@
-declare class DocId {
+export declare class DocId {
 }
 /**
  * A special sentinel to refer to the ID of a document.
@@ -19,6 +19,5 @@ declare class DocId {
  * })
  * ```
  */
-declare const docId: DocId;
-declare type typeofDocId = string;
-export { DocId, docId, typeofDocId };
+export declare const docId: DocId;
+export declare type typeofDocId = string;

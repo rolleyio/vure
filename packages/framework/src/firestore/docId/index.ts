@@ -1,4 +1,4 @@
-class DocId {}
+export class DocId {}
 
 /**
  * A special sentinel to refer to the ID of a document.
@@ -19,8 +19,6 @@ class DocId {}
  * })
  * ```
  */
-const docId = new DocId();
+export const docId = new DocId();
 
-type typeofDocId = string; // just for documenting.
-
-export { DocId, docId, typeofDocId };
+export type typeofDocId = string; // just for documenting.

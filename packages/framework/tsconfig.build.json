@@ -3,9 +3,11 @@
     "rootDir": "src",
     "noEmit": false,
     "declaration": true,
-    "declarationDir": "types"
+    "declarationDir": "types",
+    "emitDeclarationOnly": true,
+    "isolatedModules": true
   },
   "extends": "../../tsconfig.json",
-  "include": ["src/**/*.vue", "src/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts"],
 }

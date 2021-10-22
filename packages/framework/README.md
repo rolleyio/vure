@@ -5,7 +5,7 @@
 ## Usage
 
 ```js
-import createVureApp from '@rolley/vure'
+import createRolleyApp from '@rolley/framework'
 
 // TODO: DEMONSTRATE API
 ```
