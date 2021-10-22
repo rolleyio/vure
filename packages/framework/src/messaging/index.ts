@@ -1,8 +1,4 @@
-import {
-  getMessaging,
-  Messaging,
-  isSupported,
-} from 'firebase/messaging';
+import { getMessaging, Messaging, isSupported } from 'firebase/messaging';
 
 import { useFirebaseApp } from '../firebase';
 

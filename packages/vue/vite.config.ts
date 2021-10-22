@@ -1,6 +1,6 @@
-import { UserConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import ts from 'rollup-plugin-typescript2'
+import { UserConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import ts from 'rollup-plugin-typescript2';
 
 export default <UserConfig>{
   plugins: [
@@ -36,4 +36,4 @@ export default <UserConfig>{
       },
     },
   },
-}
+};

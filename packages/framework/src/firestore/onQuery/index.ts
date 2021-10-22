@@ -14,10 +14,7 @@ import { processQueries } from '../query';
 /**
  * The query type.
  */
-export type Query<Model, Key extends keyof Model> =
-  | OrderQuery<Model, Key>
-  | WhereQuery<Model>
-  | LimitQuery;
+export type Query<Model, Key extends keyof Model> = OrderQuery<Model, Key> | WhereQuery<Model> | LimitQuery;
 
 /**
  * Subscribes to a collection query built using query objects ({@link order | order}, {@link where | where}, {@link limit | limit}).
@@ -66,9 +63,7 @@ export default function onQuery<Model>(
     (firestoreSnap: QuerySnapshot) => {
       const docs: Doc<Model>[] = firestoreSnap.docs.map((snap) =>
         doc(
-          collection.__type__ === 'collectionGroup'
-            ? pathToRef(snap.ref.path)
-            : ref(collection, snap.id),
+          collection.__type__ === 'collectionGroup' ? pathToRef(snap.ref.path) : ref(collection, snap.id),
           wrapData(snap.data()) as Model,
         ),
       );
@@ -79,11 +74,7 @@ export default function onQuery<Model>(
           oldIndex: change.oldIndex,
           newIndex: change.newIndex,
           doc:
-            docs[
-              change.type === 'removed'
-                ? change.oldIndex
-                : change.newIndex
-            ] ||
+            docs[change.type === 'removed' ? change.oldIndex : change.newIndex] ||
             // If change.type indicates 'removed', sometimes(not all the time) `docs` does not
             // contain the removed document. In that case, we'll restore it from `change.doc`:
             doc(

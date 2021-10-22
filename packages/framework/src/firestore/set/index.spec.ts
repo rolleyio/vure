@@ -77,16 +77,10 @@ describe('set', () => {
     const now = Date.now();
     const returnedDate = post!.data.date!;
     expect(returnedDate).to.be.instanceOf(Date);
-    expect(
-      returnedDate.getTime() < now &&
-        returnedDate.getTime() > now - 10000,
-    ).to.be.true;
+    expect(returnedDate.getTime() < now && returnedDate.getTime() > now - 10000).to.be.true;
     const postFromDB = await get(posts, post!.ref.id);
     const dateFromDB = postFromDB!.data.date!;
     expect(dateFromDB).to.be.instanceOf(Date);
-    expect(
-      dateFromDB.getTime() < now &&
-        dateFromDB.getTime() > now - 10000,
-    ).to.be.true;
+    expect(dateFromDB.getTime() < now && dateFromDB.getTime() > now - 10000).to.be.true;
   });
 });

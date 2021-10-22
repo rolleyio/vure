@@ -44,14 +44,7 @@ describe('onAll', () => {
     const spy = sinon.spy();
     off = onAll(books, (docs) => {
       spy(docs.map(({ data: { title } }) => title).sort());
-      if (
-        spy.calledWithMatch([
-          'Sapiens',
-          'The 22 Immutable Laws of Marketing',
-          'The Mom Test',
-        ])
-      )
-        done();
+      if (spy.calledWithMatch(['Sapiens', 'The 22 Immutable Laws of Marketing', 'The Mom Test'])) done();
     });
   });
 
@@ -71,17 +64,9 @@ describe('onAll', () => {
       const spy = sinon.spy();
       off = onAll(orders, async (docs) => {
         off!();
-        const orderedBooks = await Promise.all(
-          docs.map((doc) => get(books, doc.data.book.id)),
-        );
+        const orderedBooks = await Promise.all(docs.map((doc) => get(books, doc.data.book.id)));
         spy(orderedBooks.map((book) => book!.data.title).sort());
-        if (
-          spy.calledWithMatch([
-            'Sapiens',
-            'The 22 Immutable Laws of Marketing',
-          ])
-        )
-          resolve();
+        if (spy.calledWithMatch(['Sapiens', 'The 22 Immutable Laws of Marketing'])) resolve();
       });
     });
   });
@@ -103,23 +88,15 @@ describe('onAll', () => {
 
     return new Promise((resolve) => {
       off = onAll(orders, (docs) => {
-        if (
-          docs.length === 2 &&
-          docs[0].data.date &&
-          docs[1].data.date
-        ) {
+        if (docs.length === 2 && docs[0].data.date && docs[1].data.date) {
           off!();
           if (typeof window === undefined) {
             assert(docs[0].data.date.getTime() === date.getTime());
             assert(docs[1].data.date.getTime() === date.getTime());
           } else {
             // TODO: WTF, Node.js and browser dates are processed differently
-            assert(
-              docs[0].data.date.getTime() - date.getTime() < 20000,
-            );
-            assert(
-              docs[1].data.date.getTime() - date.getTime() < 20000,
-            );
+            assert(docs[0].data.date.getTime() - date.getTime() < 20000);
+            assert(docs[1].data.date.getTime() - date.getTime() < 20000);
           }
           resolve();
         }
@@ -131,14 +108,8 @@ describe('onAll', () => {
     const commentsGroupName = `comments-${nanoid()}`;
     type Comment = { text: string };
 
-    const bookComments = subcollection<Comment, Book>(
-      commentsGroupName,
-      books,
-    );
-    const orderComments = subcollection<Comment, Order>(
-      commentsGroupName,
-      orders,
-    );
+    const bookComments = subcollection<Comment, Book>(commentsGroupName, books);
+    const orderComments = subcollection<Comment, Order>(commentsGroupName, orders);
 
     await Promise.all([
       add(bookComments('qwe'), {
@@ -154,19 +125,12 @@ describe('onAll', () => {
       }),
     ]);
 
-    const allComments = group(commentsGroupName, [
-      bookComments,
-      orderComments,
-    ]);
+    const allComments = group(commentsGroupName, [bookComments, orderComments]);
     return new Promise((resolve) => {
       off = onAll(allComments, (comments) => {
         if (comments.length === 3) {
           off!();
-          assert.deepEqual(comments.map((c) => c.data.text).sort(), [
-            'cruel',
-            'hello',
-            'world',
-          ]);
+          assert.deepEqual(comments.map((c) => c.data.text).sort(), ['cruel', 'hello', 'world']);
           resolve();
         }
       });
@@ -188,9 +152,7 @@ describe('onAll', () => {
     it('subscribes to updates', (done) => {
       let c = 0;
       off = onAll(books, async (docs, { changes }) => {
-        const titles = docs
-          .map(({ data: { title } }) => title)
-          .sort();
+        const titles = docs.map(({ data: { title } }) => title).sort();
         const docChanges = changes()
           .map(
             ({
@@ -204,11 +166,7 @@ describe('onAll', () => {
 
         switch (++c) {
           case 1:
-            expect(titles).to.eql([
-              'Sapiens',
-              'The 22 Immutable Laws of Marketing',
-              'The Mom Test',
-            ]);
+            expect(titles).to.eql(['Sapiens', 'The 22 Immutable Laws of Marketing', 'The Mom Test']);
             expect(docChanges).to.eql([
               { type: 'added', title: 'Sapiens' },
               {
@@ -246,9 +204,7 @@ describe('onAll', () => {
           const spy = sinon.spy();
           const on = () => {
             off = onAll(books, (docs) => {
-              const titles = docs
-                .map(({ data: { title } }) => title)
-                .sort();
+              const titles = docs.map(({ data: { title } }) => title).sort();
               spy(titles);
               if (titles.length === 5) {
                 off!();

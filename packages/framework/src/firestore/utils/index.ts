@@ -1,8 +1,4 @@
-import {
-  DocumentSnapshot,
-  getDoc,
-  DocumentReference,
-} from 'firebase/firestore';
+import { DocumentSnapshot, getDoc, DocumentReference } from 'firebase/firestore';
 
 export function getDocMeta(snapshot: DocumentSnapshot) {
   return {

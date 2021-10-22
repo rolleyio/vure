@@ -4,11 +4,7 @@ import { typeofDocId } from '../docId';
 /**
  * Available cursor methods.
  */
-export type CursorMethod =
-  | 'startAfter'
-  | 'startAt'
-  | 'endBefore'
-  | 'endAt';
+export type CursorMethod = 'startAfter' | 'startAt' | 'endBefore' | 'endAt';
 
 /**
  * The cursor interface, holds the method and the value for pagination.

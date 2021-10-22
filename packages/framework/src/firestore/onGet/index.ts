@@ -1,8 +1,5 @@
 import { doc as firestoreDoc, onSnapshot } from 'firebase/firestore';
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref, Ref } from '../ref';
@@ -90,12 +87,8 @@ export default function onGet<Model>(
     firestoreDoc(collectionToFirestoreCollection(collection), id),
     (snap) => {
       const firestoreData = snap.data();
-      const data =
-        firestoreData && (wrapData(firestoreData) as Model);
-      onResult(
-        (data && doc(ref(collection, id), data, getDocMeta(snap))) ||
-          null,
-      );
+      const data = firestoreData && (wrapData(firestoreData) as Model);
+      onResult((data && doc(ref(collection, id), data, getDocMeta(snap))) || null);
     },
     onError,
   );

@@ -32,16 +32,8 @@ describe('Subcollection', () => {
 
     it('allows creating nested subcollections', () => {
       const userPosts = subcollection<Post, User>('posts', users);
-      const postComments = subcollection<Comment, Post, User>(
-        'comments',
-        userPosts,
-      );
-      const commentLikes = subcollection<
-        Like,
-        Comment,
-        Post,
-        [string, string]
-      >('likes', postComments);
+      const postComments = subcollection<Comment, Post, User>('comments', userPosts);
+      const commentLikes = subcollection<Like, Comment, Post, [string, string]>('likes', postComments);
 
       const user = ref(users, '42');
       const post = ref(userPosts(user), '69');

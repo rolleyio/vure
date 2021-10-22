@@ -50,10 +50,7 @@ async function getInRadius<Model extends LocationModel>(
 
   const promises = bounds.map((b) => {
     return query(collection, [
-      order(['location.geohash'], 'asc', [
-        startAt(b[0]),
-        endAt(b[1]),
-      ]),
+      order(['location.geohash'], 'asc', [startAt(b[0]), endAt(b[1])]),
       limit(maxLimit),
     ]);
   });

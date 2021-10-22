@@ -1,9 +1,6 @@
 import { addDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { unwrapData } from '../data';
 import { ref } from '../ref';
 import { AddValue } from '../value';
@@ -36,13 +33,7 @@ export type AddModel<Model> = {
  * @param data - The data to add to
  * @returns A promise to the ref
  */
-export default async function add<Model>(
-  collection: Collection<Model>,
-  data: AddModel<Model>,
-) {
-  const firebaseDoc = await addDoc(
-    collectionToFirestoreCollection(collection),
-    unwrapData(data),
-  );
+export default async function add<Model>(collection: Collection<Model>, data: AddModel<Model>) {
+  const firebaseDoc = await addDoc(collectionToFirestoreCollection(collection), unwrapData(data));
   return ref(collection, firebaseDoc.id);
 }

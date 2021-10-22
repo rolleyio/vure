@@ -50,10 +50,7 @@ describe('onGet', () => {
     return new Promise((resolve) => {
       off = onGet(posts, post.id, async (postFromDB) => {
         assert(postFromDB!.data.author.__type__ === 'ref');
-        const userFromDB = await get(
-          users,
-          postFromDB!.data.author.id,
-        );
+        const userFromDB = await get(users, postFromDB!.data.author.id);
         assert.deepEqual(userFromDB!.data, { name: 'Sasha' });
         resolve();
       });

@@ -1,8 +1,4 @@
-import {
-  collection as firebaseCollection,
-  collectionGroup,
-  CollectionReference,
-} from 'firebase/firestore';
+import { collection as firebaseCollection, collectionGroup, CollectionReference } from 'firebase/firestore';
 
 import { useFirestore } from '../firestore';
 import { CollectionGroup } from '../group';
@@ -39,13 +35,8 @@ export function collection<Model>(path: string): Collection<Model> {
 }
 
 // TODO: Test and move this
-export function collectionToFirestoreCollection(
-  collection: Collection<any> | CollectionGroup<any>,
-) {
+export function collectionToFirestoreCollection(collection: Collection<any> | CollectionGroup<any>) {
   return collection.__type__ === 'collection'
     ? firebaseCollection(useFirestore(), collection.path)
-    : (collectionGroup(
-        useFirestore(),
-        collection.path,
-      ) as CollectionReference);
+    : (collectionGroup(useFirestore(), collection.path) as CollectionReference);
 }

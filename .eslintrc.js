@@ -8,10 +8,6 @@ module.exports = {
     parser: '@typescript-eslint/parser',
   },
   plugins: ['prettier'],
-  extends: [
-    'prettier',
-    'plugin:prettier/recommended',
-    'plugin:vue/vue3-essential',
-  ],
+  extends: ['prettier', 'plugin:prettier/recommended', 'plugin:vue/vue3-essential'],
   rules: {},
 };

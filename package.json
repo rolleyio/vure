@@ -4,7 +4,7 @@
   "description": "The Rolley monorepo",
   "author": "Matt Rollinson <matt@rolley.io>",
   "license": "MIT",
-  "private":"true",
+  "private": "true",
   "volta": {
     "node": "15.6.0",
     "npm": "7.20.2"

@@ -34,9 +34,7 @@ describe('all', () => {
 
   it('returns all documents in a collection', async () => {
     const docs = await all(books);
-    expect(
-      docs.map(({ data: { title } }) => title).sort(),
-    ).to.deep.equal([
+    expect(docs.map(({ data: { title } }) => title).sort()).to.deep.equal([
       'Sapiens',
       'The 22 Immutable Laws of Marketing',
       'The Mom Test',
@@ -56,12 +54,8 @@ describe('all', () => {
     ]);
     const docs = await all(orders);
     expect(docs[0].data.book.__type__).to.equal('ref');
-    const orderedBooks = await Promise.all(
-      docs.map((doc) => get(books, doc.data.book.id)),
-    );
-    expect(
-      orderedBooks.map((book) => book!.data.title).sort(),
-    ).to.deep.equal([
+    const orderedBooks = await Promise.all(docs.map((doc) => get(books, doc.data.book.id)));
+    expect(orderedBooks.map((book) => book!.data.title).sort()).to.deep.equal([
       'Sapiens',
       'The 22 Immutable Laws of Marketing',
     ]);
@@ -90,14 +84,8 @@ describe('all', () => {
     const commentsGroupName = `comments-${nanoid()}`;
     type Comment = { text: string };
 
-    const bookComments = subcollection<Comment, Book>(
-      commentsGroupName,
-      books,
-    );
-    const orderComments = subcollection<Comment, Order>(
-      commentsGroupName,
-      orders,
-    );
+    const bookComments = subcollection<Comment, Book>(commentsGroupName, books);
+    const orderComments = subcollection<Comment, Order>(commentsGroupName, orders);
 
     await Promise.all([
       add(bookComments('qwe'), {
@@ -113,15 +101,8 @@ describe('all', () => {
       }),
     ]);
 
-    const allComments = group(commentsGroupName, [
-      bookComments,
-      orderComments,
-    ]);
+    const allComments = group(commentsGroupName, [bookComments, orderComments]);
     const comments = await all(allComments);
-    expect(comments.map((c) => c.data.text).sort()).to.deep.equal([
-      'cruel',
-      'hello',
-      'world',
-    ]);
+    expect(comments.map((c) => c.data.text).sort()).to.deep.equal(['cruel', 'hello', 'world']);
   });
 });

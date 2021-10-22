@@ -1,9 +1,6 @@
 import { ref, shallowRef } from 'vue';
 import { getDownloadURL } from 'firebase/storage';
-import type {
-  UploadMetadata,
-  UploadTaskSnapshot,
-} from 'firebase/storage';
+import type { UploadMetadata, UploadTaskSnapshot } from 'firebase/storage';
 
 import { uploadFile } from '../../storage';
 
@@ -13,11 +10,7 @@ export function useFileUpload() {
   const snapshot = shallowRef<(UploadTaskSnapshot | null)[]>([]);
   const error = shallowRef<(Error | null)[]>([]);
 
-  function upload(
-    path: string,
-    file: File | Blob,
-    metadata?: UploadMetadata,
-  ) {
+  function upload(path: string, file: File | Blob, metadata?: UploadMetadata) {
     const uploadTask = uploadFile(path, file, metadata);
     const index = progress.value.length;
 
@@ -25,16 +18,13 @@ export function useFileUpload() {
       'state_changed',
       (s) => {
         snapshot.value[index] = s;
-        progress.value[index] =
-          (s.bytesTransferred / s.totalBytes) * 100;
+        progress.value[index] = (s.bytesTransferred / s.totalBytes) * 100;
       },
       (e) => {
         error.value[index] = e;
       },
       async () => {
-        result.value[index] = await getDownloadURL(
-          uploadTask.snapshot.ref,
-        );
+        result.value[index] = await getDownloadURL(uploadTask.snapshot.ref);
       },
     );
 

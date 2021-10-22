@@ -60,10 +60,7 @@ export default function (options: VureConfig) {
     if (typeof features.functions === 'boolean') {
       initializeFunctions();
     } else {
-      initializeFunctions(
-        features.functions.regionOrCustomDomain,
-        features.functions.emulator,
-      );
+      initializeFunctions(features.functions.regionOrCustomDomain, features.functions.emulator);
     }
   }
 
@@ -83,8 +80,7 @@ export default function (options: VureConfig) {
     if (typeof features.storage === 'boolean') {
       initializeStorage();
     } else {
-      const { bucketUrl, emulator: storageEmulator } =
-        features.storage;
+      const { bucketUrl, emulator: storageEmulator } = features.storage;
 
       initializeStorage(bucketUrl, storageEmulator);
     }

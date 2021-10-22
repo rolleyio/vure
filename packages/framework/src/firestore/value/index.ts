@@ -1,12 +1,7 @@
 /**
  * Available value kinds.
  */
-export type ValueKind =
-  | 'remove'
-  | 'increment'
-  | 'arrayUnion'
-  | 'arrayRemove'
-  | 'serverDate';
+export type ValueKind = 'remove' | 'increment' | 'arrayUnion' | 'arrayRemove' | 'serverDate';
 
 /**
  * The remove value type.
@@ -90,20 +85,11 @@ export type UpsetValue<T> = T extends number
 
 function value(kind: 'remove'): ValueRemove;
 
-function value<T extends number>(
-  kind: 'increment',
-  number: number,
-): ValueIncrement;
+function value<T extends number>(kind: 'increment', number: number): ValueIncrement;
 
-function value<T extends Array<any>>(
-  kind: 'arrayUnion',
-  payload: any[],
-): ValueArrayUnion;
+function value<T extends Array<any>>(kind: 'arrayUnion', payload: any[]): ValueArrayUnion;
 
-function value<T extends Array<any>>(
-  kind: 'arrayRemove',
-  payload: any[],
-): ValueArrayRemove;
+function value<T extends Array<any>>(kind: 'arrayRemove', payload: any[]): ValueArrayRemove;
 
 function value<T extends Date>(kind: 'serverDate'): ValueServerDate;
 
@@ -155,12 +141,7 @@ function value<T extends Date>(kind: 'serverDate'): ValueServerDate;
 function value(
   kind: ValueKind,
   payload?: any,
-):
-  | ValueRemove
-  | ValueIncrement
-  | ValueArrayUnion
-  | ValueArrayRemove
-  | ValueServerDate {
+): ValueRemove | ValueIncrement | ValueArrayUnion | ValueArrayRemove | ValueServerDate {
   switch (kind) {
     case 'remove':
       return { __type__: 'value', kind: 'remove' };

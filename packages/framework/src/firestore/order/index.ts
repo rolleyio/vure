@@ -16,9 +16,7 @@ export interface OrderQuery<Model, Key extends keyof Model> {
 /**
  * @param field - Apply ascending order on given field
  */
-function order<Model, Key extends keyof Model>(
-  field: Key | DocId,
-): OrderQuery<Model, Key>;
+function order<Model, Key extends keyof Model>(field: Key | DocId): OrderQuery<Model, Key>;
 
 /**
  * @param field - Apply ascending order on given field with given cursors

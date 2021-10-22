@@ -12,9 +12,7 @@ let firestore: Firestore | null = null;
 
 export function useFirestore() {
   if (!firestore) {
-    throw new Error(
-      'You need to enable the firestore feature before calling useFirestore',
-    );
+    throw new Error('You need to enable the firestore feature before calling useFirestore');
   }
 
   return firestore;
@@ -32,11 +30,7 @@ export function initializeFirestore(
   });
 
   if (emulator.enabled) {
-    connectFirestoreEmulator(
-      firestore,
-      emulator.host ?? 'localhost',
-      emulator.port ?? 8080,
-    );
+    connectFirestoreEmulator(firestore, emulator.host ?? 'localhost', emulator.port ?? 8080);
   }
 
   return firestore;

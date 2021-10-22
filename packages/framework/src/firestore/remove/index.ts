@@ -1,19 +1,13 @@
 import { doc as firestoreDoc, deleteDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { Ref } from '../ref';
 
 /**
  * @param collection - The collection to remove document in
  * @param id - The id of the documented to remove
  */
-async function remove<Model>(
-  collection: Collection<Model>,
-  id: string,
-): Promise<void>;
+async function remove<Model>(collection: Collection<Model>, id: string): Promise<void>;
 
 /**
  * @param ref - The reference to the document to remove
@@ -50,9 +44,7 @@ async function remove<Model>(
     id = ref.id;
   }
 
-  await deleteDoc(
-    firestoreDoc(collectionToFirestoreCollection(collection), id),
-  );
+  await deleteDoc(firestoreDoc(collectionToFirestoreCollection(collection), id));
 }
 
 export default remove;

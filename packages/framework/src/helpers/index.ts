@@ -1,9 +1,6 @@
 import { geohashForLocation } from 'geofire-common';
 
-export function geohashLocation(
-  latLng: [number, number],
-  precision?: number,
-) {
+export function geohashLocation(latLng: [number, number], precision?: number) {
   const [lat, lng] = latLng;
 
   return {

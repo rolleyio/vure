@@ -1,11 +1,4 @@
-import {
-  onBeforeUnmount,
-  ref,
-  getCurrentInstance,
-  watch,
-  shallowRef,
-  Ref,
-} from 'vue';
+import { onBeforeUnmount, ref, getCurrentInstance, watch, shallowRef, Ref } from 'vue';
 import { z } from 'zod';
 
 import firestoreSchema from '../../firestore/schema';
@@ -24,10 +17,7 @@ export function createRefs<T>(defaultValue: T) {
 
 // FIX: A lot of repetitive code
 // TODO: Write tests
-export function refSchema<T>(
-  collectionName: string,
-  zodSchema?: Record<keyof T, z.Schema<T[keyof T]>>,
-) {
+export function refSchema<T>(collectionName: string, zodSchema?: Record<keyof T, z.Schema<T[keyof T]>>) {
   return () => {
     const schema = firestoreSchema(collectionName, zodSchema)();
 
@@ -63,9 +53,7 @@ export function refSchema<T>(
         return { loading, result, error };
       },
       get(id: MaybeRef<string>) {
-        const { loading, result, error } = createRefs<Doc<T> | null>(
-          null,
-        );
+        const { loading, result, error } = createRefs<Doc<T> | null>(null);
 
         const unwatch = watch(
           ref(id),
@@ -94,11 +82,7 @@ export function refSchema<T>(
 
         return { loading, result, error };
       },
-      getInRadius(
-        center: MaybeRef<[number, number]>,
-        radiusInM: MaybeRef<number>,
-        maxLimit = 5,
-      ) {
+      getInRadius(center: MaybeRef<[number, number]>, radiusInM: MaybeRef<number>, maxLimit = 5) {
         const { loading, result, error } = createRefs<Doc<T>[]>([]);
 
         const unwatch = watch(
@@ -132,10 +116,7 @@ export function refSchema<T>(
 
         return { loading, result, error };
       },
-      getMany(
-        ids: MaybeRef<string[]>,
-        onMissing?: 'ignore' | ((id: string) => T),
-      ) {
+      getMany(ids: MaybeRef<string[]>, onMissing?: 'ignore' | ((id: string) => T)) {
         const { loading, result, error } = createRefs<Doc<T>[]>([]);
 
         const unwatch = watch(
@@ -143,10 +124,7 @@ export function refSchema<T>(
           async (watchedIds) => {
             loading.value = true;
             try {
-              result.value = await schema.getMany(
-                watchedIds,
-                onMissing,
-              );
+              result.value = await schema.getMany(watchedIds, onMissing);
               error.value = null;
             } catch (e) {
               result.value = [];
@@ -195,9 +173,7 @@ export function refSchema<T>(
         return { loading, result, error };
       },
       onGet(id: MaybeRef<string>) {
-        const { loading, result, error } = createRefs<Doc<T> | null>(
-          null,
-        );
+        const { loading, result, error } = createRefs<Doc<T> | null>(null);
 
         let unwatchOnGet: (() => void) | null = null;
 
@@ -333,9 +309,7 @@ export function refSchema<T>(
           async (watchedQueries) => {
             loading.value = true;
             try {
-              result.value = await schema.query(
-                watchedQueries as Query<T, keyof T>[],
-              );
+              result.value = await schema.query(watchedQueries as Query<T, keyof T>[]);
               error.value = null;
             } catch (e) {
               result.value = [];

@@ -1,9 +1,6 @@
 import { doc as firestoreDoc, setDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { unwrapData } from '../data';
 import { Ref } from '../ref';
 import { UpsetValue } from '../value';
@@ -14,9 +11,7 @@ import { UpsetValue } from '../value';
  */
 export type UpsetModel<Model> = {
   [Key in keyof Model]:
-    | (Model[Key] extends object
-        ? UpsetModel<Model[Key]>
-        : Model[Key])
+    | (Model[Key] extends object ? UpsetModel<Model[Key]> : Model[Key])
     | UpsetValue<Model[Key]>;
 };
 
@@ -24,10 +19,7 @@ export type UpsetModel<Model> = {
  * @param ref - the reference to the document to set or update
  * @param data - the document data
  */
-export default async function upset<Model>(
-  ref: Ref<Model>,
-  data: UpsetModel<Model>,
-): Promise<void>;
+export default async function upset<Model>(ref: Ref<Model>, data: UpsetModel<Model>): Promise<void>;
 
 /**
  * @param collection - the collection to set or update
@@ -77,11 +69,7 @@ export default async function upset<Model>(
     data = idOrData as UpsetModel<Model>;
   }
 
-  await setDoc(
-    firestoreDoc(collectionToFirestoreCollection(collection), id),
-    unwrapData(data),
-    {
-      merge: true,
-    },
-  );
+  await setDoc(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(data), {
+    merge: true,
+  });
 }

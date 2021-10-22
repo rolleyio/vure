@@ -1,9 +1,6 @@
 import { getDocs } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { getDocMeta } from '../utils';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
@@ -35,15 +32,11 @@ import { pathToRef, ref } from '../ref';
 export default async function all<Model>(
   collection: Collection<Model> | CollectionGroup<Model>,
 ): Promise<Doc<Model>[]> {
-  const firebaseSnap = await getDocs(
-    collectionToFirestoreCollection(collection),
-  );
+  const firebaseSnap = await getDocs(collectionToFirestoreCollection(collection));
 
   return firebaseSnap.docs.map((snap) => {
     return doc(
-      collection.__type__ === 'collectionGroup'
-        ? pathToRef(snap.ref.path)
-        : ref(collection, snap.id),
+      collection.__type__ === 'collectionGroup' ? pathToRef(snap.ref.path) : ref(collection, snap.id),
       wrapData(snap.data()) as Model,
       getDocMeta(snap),
     );

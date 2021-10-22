@@ -12,10 +12,7 @@ import {
   documentId,
 } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { doc, Doc } from '../doc';
 import { ref, pathToRef } from '../ref';
 import { WhereQuery } from '../where';
@@ -30,10 +27,7 @@ import { getDocMeta } from '../utils';
 /**
  * The query type.
  */
-export type Query<Model, Key extends keyof Model> =
-  | OrderQuery<Model, Key>
-  | WhereQuery<Model>
-  | LimitQuery;
+export type Query<Model, Key extends keyof Model> = OrderQuery<Model, Key> | WhereQuery<Model> | LimitQuery;
 
 /**
  * Queries passed collection using query objects ({@link order}, {@link where}, {@link limit}).
@@ -70,9 +64,7 @@ export async function query<Model>(
 
   return firebaseSnap.docs.map((snap) =>
     doc(
-      collection.__type__ === 'collectionGroup'
-        ? pathToRef(snap.ref.path)
-        : ref(collection, snap.id),
+      collection.__type__ === 'collectionGroup' ? pathToRef(snap.ref.path) : ref(collection, snap.id),
       wrapData(snap.data()) as Model,
       getDocMeta(snap as any),
     ),
@@ -91,21 +83,13 @@ export function processQueries<Model>(
           const { field, method } = q;
 
           acc.firestoreQueries.push(
-            orderBy(
-              field instanceof DocId
-                ? documentId()
-                : field.toString(),
-              method,
-            ),
+            orderBy(field instanceof DocId ? documentId() : field.toString(), method),
           );
 
           if (q.cursors) {
             q.cursors.forEach(({ method, value }) => {
               const val =
-                typeof value === 'object' &&
-                value !== null &&
-                '__type__' in value &&
-                value.__type__ == 'doc'
+                typeof value === 'object' && value !== null && '__type__' in value && value.__type__ == 'doc'
                   ? field instanceof DocId
                     ? value.ref.id
                     : value.data[field]
@@ -125,16 +109,10 @@ export function processQueries<Model>(
 
         case 'where': {
           const { field, filter, value } = q;
-          const fieldName = Array.isArray(field)
-            ? field.join('.')
-            : field;
+          const fieldName = Array.isArray(field) ? field.join('.') : field;
 
           acc.firestoreQueries.push(
-            where(
-              fieldName instanceof DocId ? documentId() : fieldName,
-              filter,
-              unwrapData(value),
-            ),
+            where(fieldName instanceof DocId ? documentId() : fieldName, filter, unwrapData(value)),
           );
           break;
         }
@@ -150,10 +128,7 @@ export function processQueries<Model>(
     },
     {
       firestoreQueries: [] as QueryConstraint[],
-      cursors: {} as Record<
-        CursorMethod,
-        (string | Model[keyof Model] | Doc<Model>)[]
-      >,
+      cursors: {} as Record<CursorMethod, (string | Model[keyof Model] | Doc<Model>)[]>,
     },
   );
 

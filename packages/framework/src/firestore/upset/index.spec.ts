@@ -89,17 +89,11 @@ describe('merge', () => {
     const post = await get(posts, postId);
     const returnedDate = post!.data.date!;
     expect(returnedDate instanceof Date);
-    expect(
-      returnedDate.getTime() < now &&
-        returnedDate.getTime() > now - 10000,
-    );
+    expect(returnedDate.getTime() < now && returnedDate.getTime() > now - 10000);
     const postFromDB = await get(posts, post!.ref.id);
     const dateFromDB = postFromDB!.data.date!;
     expect(dateFromDB instanceof Date);
-    expect(
-      dateFromDB.getTime() < now &&
-        dateFromDB.getTime() > now - 10000,
-    );
+    expect(dateFromDB.getTime() < now && dateFromDB.getTime() > now - 10000);
   });
 
   it('allows incrementing values', async () => {
@@ -127,11 +121,7 @@ describe('merge', () => {
     it('union update', async () => {
       const id = nanoid();
       await upset(favorites, id, {
-        favorites: [
-          'Sapiens',
-          'The 22 Immutable Laws of Marketing',
-          'The Mom Test',
-        ],
+        favorites: ['Sapiens', 'The 22 Immutable Laws of Marketing', 'The Mom Test'],
       });
       await upset(favorites, id, {
         favorites: value('arrayUnion', [
@@ -154,17 +144,10 @@ describe('merge', () => {
     it('remove update', async () => {
       const id = nanoid();
       await upset(favorites, id, {
-        favorites: [
-          'Sapiens',
-          'The 22 Immutable Laws of Marketing',
-          'The Mom Test',
-        ],
+        favorites: ['Sapiens', 'The 22 Immutable Laws of Marketing', 'The Mom Test'],
       });
       await upset(favorites, id, {
-        favorites: value('arrayRemove', [
-          'The 22 Immutable Laws of Marketing',
-          'Sapiens',
-        ]),
+        favorites: value('arrayRemove', ['The 22 Immutable Laws of Marketing', 'Sapiens']),
       });
       const favFromDB = await get(favorites, id);
       expect(favFromDB!.data).to.deep.equal({

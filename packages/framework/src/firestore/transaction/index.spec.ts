@@ -13,10 +13,7 @@ describe('transaction', () => {
   type Counter = { count: number; optional?: true };
   const counters = collection<Counter>('counters');
 
-  const plusOne = async (
-    counter: Ref<Counter>,
-    useUpdate?: boolean,
-  ) =>
+  const plusOne = async (counter: Ref<Counter>, useUpdate?: boolean) =>
     transaction(
       async ({ get }) => {
         const item = await get(counter);
@@ -38,11 +35,7 @@ describe('transaction', () => {
     const id = nanoid();
     const counter = ref(counters, id);
     await set(counter, { count: 0 });
-    await Promise.all([
-      plusOne(counter),
-      plusOne(counter),
-      plusOne(counter),
-    ]);
+    await Promise.all([plusOne(counter), plusOne(counter), plusOne(counter)]);
     const item = await get(counter);
     expect(item!.data.count).to.equal(3);
   });
@@ -51,11 +44,7 @@ describe('transaction', () => {
     const id = nanoid();
     const counter = ref(counters, id);
     await set(counter, { count: 0 });
-    const results = await Promise.all([
-      plusOne(counter),
-      plusOne(counter),
-      plusOne(counter),
-    ]);
+    const results = await Promise.all([plusOne(counter), plusOne(counter), plusOne(counter)]);
     expect(results.sort()).to.eql([1, 2, 3]);
   });
 
@@ -65,8 +54,7 @@ describe('transaction', () => {
     await set(counter, { count: 0, optional: true });
     await transaction(
       ({ get }) => get(counter),
-      async ({ data: counterFromDB, upset }) =>
-        upset(counter, { count: counterFromDB!.data.count + 1 }),
+      async ({ data: counterFromDB, upset }) => upset(counter, { count: counterFromDB!.data.count + 1 }),
     );
     const item = await get(counter);
 

@@ -81,14 +81,10 @@ describe('onQuery', () => {
 
   it('queries documents', (done) => {
     const spy = sinon.spy();
-    off = onQuery(
-      contacts,
-      [where('ownerId', '==', ownerId)],
-      (docs) => {
-        spy(docs.map(({ data: { name } }) => name).sort());
-        if (spy.calledWithMatch(['Lesha', 'Sasha', 'Tati'])) done();
-      },
-    );
+    off = onQuery(contacts, [where('ownerId', '==', ownerId)], (docs) => {
+      spy(docs.map(({ data: { name } }) => name).sort());
+      if (spy.calledWithMatch(['Lesha', 'Sasha', 'Tati'])) done();
+    });
   });
 
   it('allows to query by value in maps', async () => {
@@ -120,14 +116,10 @@ describe('onQuery', () => {
     return new Promise((resolve) => {
       off = onQuery(
         locations,
-        [
-          where('mapId', '==', mapId),
-          where(['address', 'city'], '==', 'New York'),
-        ],
+        [where('mapId', '==', mapId), where(['address', 'city'], '==', 'New York')],
         (docs) => {
           spy(docs.map(({ data: { name } }) => name).sort());
-          if (spy.calledWithMatch(['Bagels Tower', 'Pizza City']))
-            resolve();
+          if (spy.calledWithMatch(['Bagels Tower', 'Pizza City'])) resolve();
         },
       );
     });
@@ -159,19 +151,10 @@ describe('onQuery', () => {
     return new Promise((resolve) => {
       off = onQuery(
         posts,
-        [
-          where('blogId', '==', blogId),
-          where('tags', 'array-contains', 'pets'),
-        ],
+        [where('blogId', '==', blogId), where('tags', 'array-contains', 'pets')],
         (docs) => {
           spy(docs.map(({ data: { title } }) => title).sort());
-          if (
-            spy.calledWithMatch([
-              'Post about cats',
-              'Post about dogs',
-            ])
-          )
-            resolve();
+          if (spy.calledWithMatch(['Post about cats', 'Post about dogs'])) resolve();
         },
       );
     });
@@ -204,29 +187,16 @@ describe('onQuery', () => {
       }),
     ]);
     return new Promise((resolve) => {
-      off = onQuery(
-        pets,
-        [
-          where('ownerId', '==', ownerId),
-          where('type', 'in', ['cat', 'dog']),
-        ],
-        (docs) => {
-          spy(docs.map(({ data: { name } }) => name).sort());
-          if (spy.calledWithMatch(['Kimchi', 'Persik'])) resolve();
-        },
-      );
+      off = onQuery(pets, [where('ownerId', '==', ownerId), where('type', 'in', ['cat', 'dog'])], (docs) => {
+        spy(docs.map(({ data: { name } }) => name).sort());
+        if (spy.calledWithMatch(['Kimchi', 'Persik'])) resolve();
+      });
     });
   });
 
   it('allows to query using array-contains-any filter', async () => {
     const spy = sinon.spy();
-    type Tag =
-      | 'pets'
-      | 'cats'
-      | 'dogs'
-      | 'wildlife'
-      | 'food'
-      | 'hotdogs';
+    type Tag = 'pets' | 'cats' | 'dogs' | 'wildlife' | 'food' | 'hotdogs';
     type Post = { blogId: string; title: string; tags: Tag[] };
     const posts = collection<Post>('posts');
     const blogId = nanoid();
@@ -255,20 +225,10 @@ describe('onQuery', () => {
     return new Promise((resolve) => {
       off = onQuery(
         posts,
-        [
-          where('blogId', '==', blogId),
-          where('tags', 'array-contains-any', ['pets', 'wildlife']),
-        ],
+        [where('blogId', '==', blogId), where('tags', 'array-contains-any', ['pets', 'wildlife'])],
         (docs) => {
           spy(docs.map(({ data: { title } }) => title).sort());
-          if (
-            spy.calledWithMatch([
-              'Post about cats',
-              'Post about dogs',
-              'Post about kangaroos',
-            ])
-          )
-            resolve();
+          if (spy.calledWithMatch(['Post about cats', 'Post about dogs', 'Post about kangaroos'])) resolve();
         },
       );
     });
@@ -302,27 +262,18 @@ describe('onQuery', () => {
 
     it('expands references', (done) => {
       const spy = sinon.spy();
-      off = onQuery(
-        messages,
-        [where('ownerId', '==', ownerId), where('text', '==', '+1')],
-        async (docs) => {
-          const authors = await Promise.all(
-            docs.map((doc) => get(contacts, doc.data.author.id)),
-          );
-          spy(authors.map((item) => item!.data.name).sort());
-          if (spy.calledWithMatch(['Lesha', 'Sasha'])) done();
-        },
-      );
+      off = onQuery(messages, [where('ownerId', '==', ownerId), where('text', '==', '+1')], async (docs) => {
+        const authors = await Promise.all(docs.map((doc) => get(contacts, doc.data.author.id)));
+        spy(authors.map((item) => item!.data.name).sort());
+        if (spy.calledWithMatch(['Lesha', 'Sasha'])) done();
+      });
     });
 
     it('allows to query by reference', (done) => {
       const spy = sinon.spy();
       off = onQuery(
         messages,
-        [
-          where('ownerId', '==', ownerId),
-          where('author', '==', ref(contacts, sashaId)),
-        ],
+        [where('ownerId', '==', ownerId), where('author', '==', ref(contacts, sashaId))],
         (docs) => {
           spy(docs.map((doc) => doc.data.text).sort());
           if (spy.calledWithMatch(['+1', 'lul'])) done();
@@ -332,10 +283,7 @@ describe('onQuery', () => {
 
     it('allows querying collection groups', async () => {
       const ownerId = nanoid();
-      const contactMessages = subcollection<Message, Contact>(
-        'contactMessages',
-        contacts,
-      );
+      const contactMessages = subcollection<Message, Contact>('contactMessages', contacts);
       const sashaRef = ref(contacts, `${ownerId}-sasha`);
       const sashasContactMessages = contactMessages(sashaRef);
       add(sashasContactMessages, {
@@ -357,50 +305,30 @@ describe('onQuery', () => {
           text: 'Hello, again!',
         }),
       ]);
-      const allContactMessages = group('contactMessages', [
-        contactMessages,
-      ]);
+      const allContactMessages = group('contactMessages', [contactMessages]);
       const spy = sinon.spy();
       return new Promise((resolve) => {
-        off = onQuery(
-          allContactMessages,
-          [where('ownerId', '==', ownerId)],
-          async (messages) => {
-            spy(messages.map((m) => m.data.text).sort());
-            if (messages.length === 3) {
-              await Promise.all([
-                add(sashasContactMessages, {
-                  ownerId,
-                  author: sashaRef,
-                  text: '1',
-                }),
-                add(tatisContactMessages, {
-                  ownerId,
-                  author: tatiRef,
-                  text: '2',
-                }),
-              ]);
-            } else if (messages.length === 5) {
-              assert(
-                spy.calledWithMatch([
-                  'Hello from Sasha!',
-                  'Hello from Tati!',
-                  'Hello, again!',
-                ]),
-              );
-              assert(
-                spy.calledWithMatch([
-                  '1',
-                  '2',
-                  'Hello from Sasha!',
-                  'Hello from Tati!',
-                  'Hello, again!',
-                ]),
-              );
-              resolve();
-            }
-          },
-        );
+        off = onQuery(allContactMessages, [where('ownerId', '==', ownerId)], async (messages) => {
+          spy(messages.map((m) => m.data.text).sort());
+          if (messages.length === 3) {
+            await Promise.all([
+              add(sashasContactMessages, {
+                ownerId,
+                author: sashaRef,
+                text: '1',
+              }),
+              add(tatisContactMessages, {
+                ownerId,
+                author: tatiRef,
+                text: '2',
+              }),
+            ]);
+          } else if (messages.length === 5) {
+            assert(spy.calledWithMatch(['Hello from Sasha!', 'Hello from Tati!', 'Hello, again!']));
+            assert(spy.calledWithMatch(['1', '2', 'Hello from Sasha!', 'Hello from Tati!', 'Hello, again!']));
+            resolve();
+          }
+        });
       });
     });
   });
@@ -408,13 +336,9 @@ describe('onQuery', () => {
   it('allows to query by date', (done) => {
     off = onQuery(
       contacts,
-      [
-        where('ownerId', '==', ownerId),
-        where('birthday', '==', new Date(1987, 1, 11)),
-      ],
+      [where('ownerId', '==', ownerId), where('birthday', '==', new Date(1987, 1, 11))],
       (docs) => {
-        if (docs.length === 1 && docs[0].data.name === 'Sasha')
-          done();
+        if (docs.length === 1 && docs[0].data.name === 'Sasha') done();
       },
     );
   });
@@ -422,26 +346,18 @@ describe('onQuery', () => {
   describe('ordering', () => {
     it('allows ordering', (done) => {
       const spy = sinon.spy();
-      off = onQuery(
-        contacts,
-        [where('ownerId', '==', ownerId), order('year', 'asc')],
-        (docs) => {
-          spy(docs.map(({ data: { name } }) => name));
-          if (spy.calledWithMatch(['Sasha', 'Tati', 'Lesha'])) done();
-        },
-      );
+      off = onQuery(contacts, [where('ownerId', '==', ownerId), order('year', 'asc')], (docs) => {
+        spy(docs.map(({ data: { name } }) => name));
+        if (spy.calledWithMatch(['Sasha', 'Tati', 'Lesha'])) done();
+      });
     });
 
     it('allows ordering by desc', (done) => {
       const spy = sinon.spy();
-      off = onQuery(
-        contacts,
-        [where('ownerId', '==', ownerId), order('year', 'desc')],
-        (docs) => {
-          spy(docs.map(({ data: { name } }) => name));
-          if (spy.calledWithMatch(['Lesha', 'Tati', 'Sasha'])) done();
-        },
-      );
+      off = onQuery(contacts, [where('ownerId', '==', ownerId), order('year', 'desc')], (docs) => {
+        spy(docs.map(({ data: { name } }) => name));
+        if (spy.calledWithMatch(['Lesha', 'Tati', 'Sasha'])) done();
+      });
     });
 
     describe('with messages', () => {
@@ -474,30 +390,17 @@ describe('onQuery', () => {
         const spy = sinon.spy();
         off = onQuery(
           messages,
-          [
-            where('ownerId', '==', ownerId),
-            order('author', 'desc'),
-            order('text'),
-          ],
+          [where('ownerId', '==', ownerId), order('author', 'desc'), order('text')],
           async (docs) => {
             const messagesLog = await Promise.all(
               docs.map((doc) =>
                 get(contacts, doc.data.author.id).then(
-                  (contact) =>
-                    `${contact!.data.name}: ${doc.data.text}`,
+                  (contact) => `${contact!.data.name}: ${doc.data.text}`,
                 ),
               ),
             );
             spy(messagesLog);
-            if (
-              spy.calledWithMatch([
-                'Tati: wut',
-                'Sasha: +1',
-                'Sasha: lul',
-                'Lesha: +1',
-              ])
-            )
-              done();
+            if (spy.calledWithMatch(['Tati: wut', 'Sasha: +1', 'Sasha: lul', 'Lesha: +1'])) done();
           },
         );
       });
@@ -505,32 +408,20 @@ describe('onQuery', () => {
 
     it('allows ordering by date', (done) => {
       const spy = sinon.spy();
-      off = onQuery(
-        contacts,
-        [where('ownerId', '==', ownerId), order('birthday', 'asc')],
-        (docs) => {
-          spy(docs.map(({ data: { name } }) => name));
-          if (spy.calledWithMatch(['Sasha', 'Tati', 'Lesha'])) done();
-        },
-      );
+      off = onQuery(contacts, [where('ownerId', '==', ownerId), order('birthday', 'asc')], (docs) => {
+        spy(docs.map(({ data: { name } }) => name));
+        if (spy.calledWithMatch(['Sasha', 'Tati', 'Lesha'])) done();
+      });
     });
   });
 
   describe('limiting', () => {
     it('allows to limit response length', (done) => {
       const spy = sinon.spy();
-      off = onQuery(
-        contacts,
-        [
-          where('ownerId', '==', ownerId),
-          order('year', 'asc'),
-          limit(2),
-        ],
-        (docs) => {
-          spy(docs.map(({ data: { name } }) => name));
-          if (spy.calledWithMatch(['Sasha', 'Tati'])) done();
-        },
-      );
+      off = onQuery(contacts, [where('ownerId', '==', ownerId), order('year', 'asc'), limit(2)], (docs) => {
+        spy(docs.map(({ data: { name } }) => name));
+        if (spy.calledWithMatch(['Sasha', 'Tati'])) done();
+      });
     });
   });
 
@@ -549,11 +440,7 @@ describe('onQuery', () => {
         const spyPage2 = sinon.spy();
         page1Off = onQuery(
           contacts,
-          [
-            where('ownerId', '==', ownerId),
-            order('year', 'asc', [startAfter(undefined)]),
-            limit(2),
-          ],
+          [where('ownerId', '==', ownerId), order('year', 'asc', [startAfter(undefined)]), limit(2)],
           (page1Docs) => {
             spyPage1(page1Docs.map(({ data: { name } }) => name));
             if (spyPage1.calledWithMatch(['Sasha', 'Tati'])) {
@@ -563,15 +450,11 @@ describe('onQuery', () => {
                 contacts,
                 [
                   where('ownerId', '==', ownerId),
-                  order('year', 'asc', [
-                    startAfter(page1Docs[1].data.year),
-                  ]),
+                  order('year', 'asc', [startAfter(page1Docs[1].data.year)]),
                   limit(2),
                 ],
                 (page2Docs) => {
-                  spyPage2(
-                    page2Docs.map(({ data: { name } }) => name),
-                  );
+                  spyPage2(page2Docs.map(({ data: { name } }) => name));
                   if (spyPage2.calledWithMatch(['Lesha'])) done();
                 },
               );
@@ -586,11 +469,7 @@ describe('onQuery', () => {
         const spy = sinon.spy();
         off = onQuery(
           contacts,
-          [
-            where('ownerId', '==', ownerId),
-            order('year', 'asc', [startAt(1989)]),
-            limit(2),
-          ],
+          [where('ownerId', '==', ownerId), order('year', 'asc', [startAt(1989)]), limit(2)],
           (docs) => {
             spy(docs.map(({ data: { name } }) => name));
             if (spy.calledWithMatch(['Tati', 'Lesha'])) done();
@@ -604,11 +483,7 @@ describe('onQuery', () => {
         const spy = sinon.spy();
         off = onQuery(
           contacts,
-          [
-            where('ownerId', '==', ownerId),
-            order('year', 'asc', [endBefore(1989)]),
-            limit(2),
-          ],
+          [where('ownerId', '==', ownerId), order('year', 'asc', [endBefore(1989)]), limit(2)],
           (docs) => {
             spy(docs.map(({ data: { name } }) => name));
             if (spy.calledWithMatch(['Sasha'])) done();
@@ -622,11 +497,7 @@ describe('onQuery', () => {
         const spy = sinon.spy();
         off = onQuery(
           contacts,
-          [
-            where('ownerId', '==', ownerId),
-            order('year', 'asc', [endAt(1989)]),
-            limit(2),
-          ],
+          [where('ownerId', '==', ownerId), order('year', 'asc', [endAt(1989)]), limit(2)],
           (docs) => {
             spy(docs.map(({ data: { name } }) => name));
             if (spy.calledWithMatch(['Sasha', 'Tati'])) done();
@@ -639,11 +510,7 @@ describe('onQuery', () => {
       const spy = sinon.spy();
       off = onQuery(
         contacts,
-        [
-          where('ownerId', '==', ownerId),
-          order('year', [startAt(1989)]),
-          limit(2),
-        ],
+        [where('ownerId', '==', ownerId), order('year', [startAt(1989)]), limit(2)],
         (docs) => {
           spy(docs.map(({ data: { name } }) => name));
           if (spy.calledWithMatch(['Tati', 'Lesha'])) done();
@@ -683,18 +550,8 @@ describe('onQuery', () => {
             limit(2),
           ],
           (docs) => {
-            spy(
-              docs.map(
-                ({ data: { name, state } }) => `${name}, ${state}`,
-              ),
-            );
-            if (
-              spy.calledWithMatch([
-                'Springfield, Missouri',
-                'Springfield, Wisconsin',
-              ])
-            )
-              resolve();
+            spy(docs.map(({ data: { name, state } }) => `${name}, ${state}`));
+            if (spy.calledWithMatch(['Springfield, Missouri', 'Springfield, Wisconsin'])) resolve();
           },
         );
       });
@@ -704,11 +561,7 @@ describe('onQuery', () => {
       const spy = sinon.spy();
       off = onQuery(
         contacts,
-        [
-          where('ownerId', '==', ownerId),
-          order('year', 'asc', [startAt(1989), endAt(1989)]),
-          limit(2),
-        ],
+        [where('ownerId', '==', ownerId), order('year', 'asc', [startAt(1989), endAt(1989)]), limit(2)],
         (docs) => {
           spy(docs.map(({ data: { name } }) => name));
           if (spy.calledWithMatch(['Tati'])) done();
@@ -720,17 +573,10 @@ describe('onQuery', () => {
       get(contacts, tatiId).then((tati) => {
         off = onQuery(
           contacts,
-          [
-            where('ownerId', '==', ownerId),
-            order('year', 'asc', [startAt(tati!)]),
-            limit(2),
-          ],
+          [where('ownerId', '==', ownerId), order('year', 'asc', [startAt(tati!)]), limit(2)],
           (docs) => {
             off();
-            expect(docs.map(({ data: { name } }) => name)).to.eql([
-              'Tati',
-              'Lesha',
-            ]);
+            expect(docs.map(({ data: { name } }) => name)).to.eql(['Tati', 'Lesha']);
             done();
           },
         );
@@ -771,14 +617,10 @@ describe('onQuery', () => {
         const spy = sinon.spy();
         off = onQuery(
           shardedCounters,
-          [
-            where(docId, '>=', 'published'),
-            where(docId, '<', 'publishee'),
-          ],
+          [where(docId, '>=', 'published'), where(docId, '<', 'publishee')],
           (docs) => {
             spy(docs.map((doc) => doc.ref.id));
-            if (spy.calledWithMatch(['published-0', 'published-1']))
-              done();
+            if (spy.calledWithMatch(['published-0', 'published-1'])) done();
           },
         );
       });
@@ -793,17 +635,10 @@ describe('onQuery', () => {
           offs.push(
             onQuery(
               shardedCounters,
-              [
-                where(docId, '>=', 'published'),
-                where(docId, '<', 'publishee'),
-                order(docId, 'desc'),
-              ],
+              [where(docId, '>=', 'published'), where(docId, '<', 'publishee'), order(docId, 'desc')],
               (descend) => {
                 spy(descend.map((doc) => doc.ref.id));
-                if (
-                  spy.calledWithMatch(['published-1', 'published-0'])
-                )
-                  resolve(true);
+                if (spy.calledWithMatch(['published-1', 'published-0'])) resolve(true);
               },
             ),
           );
@@ -814,17 +649,10 @@ describe('onQuery', () => {
           offs.push(
             onQuery(
               shardedCounters,
-              [
-                where(docId, '>=', 'published'),
-                where(docId, '<', 'publishee'),
-                order(docId, 'asc'),
-              ],
+              [where(docId, '>=', 'published'), where(docId, '<', 'publishee'), order(docId, 'asc')],
               (ascend) => {
                 spy(ascend.map((doc) => doc.ref.id));
-                if (
-                  spy.calledWithMatch(['published-0', 'published-1'])
-                )
-                  resolve(true);
+                if (spy.calledWithMatch(['published-0', 'published-1'])) resolve(true);
               },
             ),
           );
@@ -836,22 +664,10 @@ describe('onQuery', () => {
       const spy = sinon.spy();
       off = onQuery(
         shardedCounters,
-        [
-          order(docId, 'asc', [
-            startAt('draft-1'),
-            endAt('published-1'),
-          ]),
-        ],
+        [order(docId, 'asc', [startAt('draft-1'), endAt('published-1')])],
         (docs) => {
           spy(docs.map((doc) => doc.ref.id));
-          if (
-            spy.calledWithMatch([
-              'draft-1',
-              'published-0',
-              'published-1',
-            ])
-          )
-            done();
+          if (spy.calledWithMatch(['draft-1', 'published-0', 'published-1'])) done();
         },
       );
     });
@@ -919,15 +735,11 @@ describe('onQuery', () => {
               return;
             case 2:
               expect(names).to.eql(['Lesha', 'Tati', 'Theodor']);
-              expect(docChanges).to.eql([
-                { type: 'added', name: 'Theodor' },
-              ]);
+              expect(docChanges).to.eql([{ type: 'added', name: 'Theodor' }]);
               await remove(contacts, leshaId);
               return;
             case 3:
-              expect(docChanges).to.eql([
-                { type: 'removed', name: 'Theodor' },
-              ]);
+              expect(docChanges).to.eql([{ type: 'removed', name: 'Theodor' }]);
               done();
           }
         },
@@ -983,9 +795,7 @@ describe('onQuery', () => {
           assert(!onResult.called);
           assert(
             // Node.js:
-            err.message.match(
-              /Cannot have inequality filters on multiple properties: birthday/,
-            ) ||
+            err.message.match(/Cannot have inequality filters on multiple properties: birthday/) ||
               // Browser:
               err.message.match(/Invalid query/),
           );

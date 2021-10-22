@@ -1,8 +1,4 @@
-import {
-  getAnalytics,
-  Analytics,
-  isSupported,
-} from 'firebase/analytics';
+import { getAnalytics, Analytics, isSupported } from 'firebase/analytics';
 
 import { useFirebaseApp } from '../firebase';
 

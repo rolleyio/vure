@@ -1,12 +1,6 @@
-import {
-  doc as firestoreDoc,
-  runTransaction,
-} from 'firebase/firestore';
+import { doc as firestoreDoc, runTransaction } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { useFirestore } from '../firestore';
 import { unwrapData, wrapData } from '../data';
 import { Doc, doc } from '../doc';
@@ -48,10 +42,7 @@ export interface TransactionRead {
    * @param collection - The collection to get document from
    * @param id - The document id
    */
-  get<Model>(
-    collection: Collection<Model>,
-    id: string,
-  ): Promise<Doc<Model> | null>;
+  get<Model>(collection: Collection<Model>, id: string): Promise<Doc<Model> | null>;
 }
 
 /**
@@ -92,11 +83,7 @@ export interface TransactionWrite<ReadResult> {
    * @param id - the id of the document to set
    * @param data - the document data
    */
-  set<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: SetModel<Model>,
-  ): void;
+  set<Model>(collection: Collection<Model>, id: string, data: SetModel<Model>): void;
 
   /**
    * Sets or updates a document with the given data.
@@ -123,11 +110,7 @@ export interface TransactionWrite<ReadResult> {
    * @param id - the id of the document to set
    * @param data - the document data
    */
-  upset<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: UpsetModel<Model>,
-  ): void;
+  upset<Model>(collection: Collection<Model>, id: string, data: UpsetModel<Model>): void;
 
   /**
    * Updates a document.
@@ -159,11 +142,7 @@ export interface TransactionWrite<ReadResult> {
    * @param id - the id of the document to update
    * @param data - the document data to update
    */
-  update<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: Field<Model>[],
-  ): void;
+  update<Model>(collection: Collection<Model>, id: string, data: Field<Model>[]): void;
   /**
    * @param ref - the reference to the document to set
    * @param data - the document data to update
@@ -174,11 +153,7 @@ export interface TransactionWrite<ReadResult> {
    * @param id - the id of the document to update
    * @param data - the document data to update
    */
-  update<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: UpdateModel<Model>,
-  ): void;
+  update<Model>(collection: Collection<Model>, id: string, data: UpdateModel<Model>): void;
   /**
    * @param ref - the reference to the document to set
    * @param data - the document data to update
@@ -222,9 +197,7 @@ export interface TransactionWrite<ReadResult> {
 /**
  * The transaction body function type.
  */
-export type TransactionReadFunction<ReadResult> = (
-  api: TransactionRead,
-) => Promise<ReadResult>;
+export type TransactionReadFunction<ReadResult> = (api: TransactionRead) => Promise<ReadResult>;
 
 /**
  * The transaction body function type.
@@ -282,16 +255,11 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular get function
-      const firestoreSnap = await t.get(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-      );
+      const firestoreSnap = await t.get(firestoreDoc(collectionToFirestoreCollection(collection), id));
       // v below
       const firestoreData = firestoreSnap.data();
-      const data =
-        firestoreData && (wrapData(firestoreData) as Model);
-      return data
-        ? doc(ref(collection, id), data, getDocMeta(firestoreSnap))
-        : null;
+      const data = firestoreData && (wrapData(firestoreData) as Model);
+      return data ? doc(ref(collection, id), data, getDocMeta(firestoreSnap)) : null;
     }
 
     function set<Model>(
@@ -316,10 +284,7 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
-      t.set(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-        unwrapData(data),
-      );
+      t.set(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(data));
     }
 
     function upset<Model>(
@@ -344,13 +309,9 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
-      t.set(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-        unwrapData(data),
-        {
-          merge: true,
-        },
-      );
+      t.set(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(data), {
+        merge: true,
+      });
     }
 
     function update<Model>(
@@ -381,16 +342,10 @@ export async function transaction<ReadResult, WriteResult>(
         : data;
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular update function
-      t.update(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-        unwrapData(updateData),
-      );
+      t.update(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(updateData));
     }
 
-    function remove<Model>(
-      collectionOrRef: Collection<Model> | Ref<Model>,
-      maybeId?: string,
-    ): void {
+    function remove<Model>(collectionOrRef: Collection<Model> | Ref<Model>, maybeId?: string): void {
       let collection: Collection<Model>;
       let id: string;
 
@@ -405,9 +360,7 @@ export async function transaction<ReadResult, WriteResult>(
 
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular update function
-      t.delete(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-      );
+      t.delete(firestoreDoc(collectionToFirestoreCollection(collection), id));
     }
 
     const data = await readFunction({ get });

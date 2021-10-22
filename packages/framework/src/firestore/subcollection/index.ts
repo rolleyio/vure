@@ -4,31 +4,20 @@ import { Collection, collection } from '../collection';
 /**
  * The subcollection function type.
  */
-export type Subcollection<Model, ParentModel> = (
-  ref: Ref<ParentModel> | string,
-) => Collection<Model>;
+export type Subcollection<Model, ParentModel> = (ref: Ref<ParentModel> | string) => Collection<Model>;
 
-export type NestedSubcollection<
-  Model,
-  ParentModel,
-  ParentIds extends Array<string>,
-> = (ref: Ref<ParentModel> | ParentIds) => Collection<Model>;
+export type NestedSubcollection<Model, ParentModel, ParentIds extends Array<string>> = (
+  ref: Ref<ParentModel> | ParentIds,
+) => Collection<Model>;
 
 export function subcollection<Model, ParentModel>(
   name: string,
   parentCollection: Collection<ParentModel>,
 ): Subcollection<Model, ParentModel>;
 
-export function subcollection<
-  Model,
-  SubcollectionModel,
-  SubcollectionParentModel,
->(
+export function subcollection<Model, SubcollectionModel, SubcollectionParentModel>(
   name: string,
-  parentSubcollection: Subcollection<
-    SubcollectionModel,
-    SubcollectionParentModel
-  >,
+  parentSubcollection: Subcollection<SubcollectionModel, SubcollectionParentModel>,
 ): NestedSubcollection<Model, SubcollectionModel, [string, string]>;
 
 export function subcollection<
@@ -38,16 +27,8 @@ export function subcollection<
   SubcollectionIds extends [string, string],
 >(
   name: string,
-  parentSubcollection: NestedSubcollection<
-    SubcollectionModel,
-    SubcollectionParentModel,
-    SubcollectionIds
-  >,
-): NestedSubcollection<
-  Model,
-  SubcollectionModel,
-  [string, string, string]
->;
+  parentSubcollection: NestedSubcollection<SubcollectionModel, SubcollectionParentModel, SubcollectionIds>,
+): NestedSubcollection<Model, SubcollectionModel, [string, string, string]>;
 
 export function subcollection<
   Model,
@@ -56,16 +37,8 @@ export function subcollection<
   SubcollectionIds extends [string, string, string],
 >(
   name: string,
-  parentSubcollection: NestedSubcollection<
-    SubcollectionModel,
-    SubcollectionParentModel,
-    SubcollectionIds
-  >,
-): NestedSubcollection<
-  Model,
-  SubcollectionModel,
-  [string, string, string, string]
->;
+  parentSubcollection: NestedSubcollection<SubcollectionModel, SubcollectionParentModel, SubcollectionIds>,
+): NestedSubcollection<Model, SubcollectionModel, [string, string, string, string]>;
 
 export function subcollection<
   Model,
@@ -74,16 +47,8 @@ export function subcollection<
   SubcollectionIds extends [string, string, string, string],
 >(
   name: string,
-  parentSubcollection: NestedSubcollection<
-    SubcollectionModel,
-    SubcollectionParentModel,
-    SubcollectionIds
-  >,
-): NestedSubcollection<
-  Model,
-  SubcollectionModel,
-  [string, string, string, string, string]
->;
+  parentSubcollection: NestedSubcollection<SubcollectionModel, SubcollectionParentModel, SubcollectionIds>,
+): NestedSubcollection<Model, SubcollectionModel, [string, string, string, string, string]>;
 
 /**
  * Creates a subcollection function which accepts parent document reference or id
@@ -184,13 +149,7 @@ export function subcollection<Model, ParentModel>(
       id = ids.pop() as string;
       coll =
         typeof parentCollection === 'function'
-          ? (
-              parentCollection as NestedSubcollection<
-                any,
-                any,
-                string[]
-              >
-            )(ids)
+          ? (parentCollection as NestedSubcollection<any, any, string[]>)(ids)
           : parentCollection;
     } else if (typeof ref === 'string') {
       id = ref;

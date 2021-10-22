@@ -1,9 +1,6 @@
 import type { FirebaseOptions } from 'firebase/app';
 
-import type {
-  CustomProvider,
-  ReCaptchaV3Provider,
-} from 'firebase/app-check';
+import type { CustomProvider, ReCaptchaV3Provider } from 'firebase/app-check';
 
 export type VureAuthEmulatorConfig = {
   enabled: boolean;

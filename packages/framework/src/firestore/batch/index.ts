@@ -1,13 +1,6 @@
-import {
-  WriteBatch,
-  writeBatch,
-  doc as firestoreDoc,
-} from 'firebase/firestore';
+import { WriteBatch, writeBatch, doc as firestoreDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { Ref } from '../ref';
 import { unwrapData } from '../data';
 import { UpdateModel } from '../update';
@@ -51,11 +44,7 @@ export interface Batch {
    * @param id - The id of the document to set
    * @param data - The document data
    */
-  set<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: SetModel<Model>,
-  ): void;
+  set<Model>(collection: Collection<Model>, id: string, data: SetModel<Model>): void;
 
   /**
    * Sets or updates a document with the given data.
@@ -84,11 +73,7 @@ export interface Batch {
    * @param id - The id of the document to set or update
    * @param data - The document data
    */
-  upset<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: UpsetModel<Model>,
-  ): void;
+  upset<Model>(collection: Collection<Model>, id: string, data: UpsetModel<Model>): void;
 
   /**
    * Updates a document.
@@ -119,11 +104,7 @@ export interface Batch {
    * @param id - The id of the document to update
    * @param data - The document data to update
    */
-  update<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: Field<Model>[],
-  ): void;
+  update<Model>(collection: Collection<Model>, id: string, data: Field<Model>[]): void;
   /**
    * @param ref - The reference to the document to set
    * @param data - The document data to update
@@ -134,11 +115,7 @@ export interface Batch {
    * @param id - The id of the document to update
    * @param data - The document data to update
    */
-  update<Model>(
-    collection: Collection<Model>,
-    id: string,
-    data: UpdateModel<Model>,
-  ): void;
+  update<Model>(collection: Collection<Model>, id: string, data: UpdateModel<Model>): void;
   /**
    * @param ref - The reference to the document to set
    * @param data - The document data to update
@@ -234,10 +211,7 @@ export function batch(): Batch {
     commands.push((firestoreBatch) => {
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
-      firestoreBatch.set(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-        unwrapData(data),
-      );
+      firestoreBatch.set(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(data));
     });
   }
 
@@ -264,13 +238,9 @@ export function batch(): Batch {
     commands.push((firestoreBatch) => {
       // ^ above
       // TODO: Refactor code above and below because is all the same as in the regular set function
-      firestoreBatch.set(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-        unwrapData(data),
-        {
-          merge: true,
-        },
-      );
+      firestoreBatch.set(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(data), {
+        merge: true,
+      });
     });
   }
 
@@ -310,10 +280,7 @@ export function batch(): Batch {
     });
   }
 
-  function remove<Model>(
-    collectionOrRef: Collection<Model> | Ref<Model>,
-    maybeId?: string,
-  ): void {
+  function remove<Model>(collectionOrRef: Collection<Model> | Ref<Model>, maybeId?: string): void {
     let collection: Collection<Model>;
     let id: string;
 
@@ -329,9 +296,7 @@ export function batch(): Batch {
     commands.push((firestoreBatch) => {
       // ^ above
       // TODO: Refactor code above because is all the same as in the regular remove function
-      firestoreBatch.delete(
-        firestoreDoc(collectionToFirestoreCollection(collection), id),
-      );
+      firestoreBatch.delete(firestoreDoc(collectionToFirestoreCollection(collection), id));
     });
   }
 

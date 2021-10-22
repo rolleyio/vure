@@ -1,8 +1,5 @@
 import { setDoc, doc as firestoreDoc } from 'firebase/firestore';
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { unwrapData } from '../data';
 import { Ref } from '../ref';
 import { SetValue } from '../value';
@@ -21,21 +18,14 @@ export type SetModel<Model> = {
  * @param ref - the reference to the document to set
  * @param data - the document data
  */
-async function set<Model>(
-  ref: Ref<Model>,
-  data: SetModel<Model>,
-): Promise<void>;
+async function set<Model>(ref: Ref<Model>, data: SetModel<Model>): Promise<void>;
 
 /**
  * @param collection - the collection to set document in
  * @param id - the id of the document to set
  * @param data - the document data
  */
-async function set<Model>(
-  collection: Collection<Model>,
-  id: string,
-  data: SetModel<Model>,
-): Promise<void>;
+async function set<Model>(collection: Collection<Model>, id: string, data: SetModel<Model>): Promise<void>;
 
 /**
  * Sets a document to the given data.
@@ -72,10 +62,7 @@ async function set<Model>(
     data = idOrData as SetModel<Model>;
   }
 
-  await setDoc(
-    firestoreDoc(collectionToFirestoreCollection(collection), id),
-    unwrapData(data),
-  );
+  await setDoc(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(data));
 }
 
 export default set;

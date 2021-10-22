@@ -13,11 +13,7 @@ function field<Model, Key extends keyof Model>(
   value: Model[Key] | UpdateValue<Model[Key]>,
 ): Field<Model>;
 
-function field<
-  Model,
-  Key1 extends keyof Model,
-  Key2 extends keyof Model[Key1],
->(
+function field<Model, Key1 extends keyof Model, Key2 extends keyof Model[Key1]>(
   key: [Key1, Key2],
   value: Model[Key1][Key2] | UpdateValue<Model[Key1][Key2]>,
 ): Field<Model>;
@@ -29,9 +25,7 @@ function field<
   Key3 extends keyof Model[Key1][Key2],
 >(
   key: [Key1, Key2, Key3],
-  value:
-    | Model[Key1][Key2][Key3]
-    | UpdateValue<Model[Key1][Key2][Key3]>,
+  value: Model[Key1][Key2][Key3] | UpdateValue<Model[Key1][Key2][Key3]>,
 ): Field<Model>;
 
 function field<
@@ -42,9 +36,7 @@ function field<
   Key4 extends keyof Model[Key1][Key2][Key3],
 >(
   key: [Key1, Key2, Key3, Key4],
-  value:
-    | Model[Key1][Key2][Key3][Key4]
-    | UpdateValue<Model[Key1][Key2][Key3][Key4]>,
+  value: Model[Key1][Key2][Key3][Key4] | UpdateValue<Model[Key1][Key2][Key3][Key4]>,
 ): Field<Model>;
 
 function field<
@@ -56,9 +48,7 @@ function field<
   Key5 extends keyof Model[Key1][Key2][Key3][Key4],
 >(
   key: [Key1, Key2, Key3, Key4, Key5],
-  value:
-    | Model[Key1][Key2][Key3][Key4][Key5]
-    | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5]>,
+  value: Model[Key1][Key2][Key3][Key4][Key5] | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5]>,
 ): Field<Model>;
 
 function field<
@@ -71,9 +61,7 @@ function field<
   Key6 extends keyof Model[Key1][Key2][Key3][Key4][Key5],
 >(
   key: [Key1, Key2, Key3, Key4, Key5, Key6],
-  value:
-    | Model[Key1][Key2][Key3][Key4][Key5][Key6]
-    | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5][Key6]>,
+  value: Model[Key1][Key2][Key3][Key4][Key5][Key6] | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5][Key6]>,
 ): Field<Model>;
 
 function field<
@@ -106,9 +94,7 @@ function field<
   key: [Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8],
   value:
     | Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8]
-    | UpdateValue<
-        Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8]
-      >,
+    | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8]>,
 ): Field<Model>;
 
 function field<
@@ -126,9 +112,7 @@ function field<
   key: [Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9],
   value:
     | Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8][Key9]
-    | UpdateValue<
-        Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8][Key9]
-      >,
+    | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8][Key9]>,
 ): Field<Model>;
 
 function field<
@@ -147,9 +131,7 @@ function field<
   key: [Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9, Key10],
   value:
     | Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8][Key9][Key10]
-    | UpdateValue<
-        Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8][Key9][Key10]
-      >,
+    | UpdateValue<Model[Key1][Key2][Key3][Key4][Key5][Key6][Key7][Key8][Key9][Key10]>,
 ): Field<Model>;
 
 /**
@@ -172,10 +154,7 @@ function field<
  * @param value - The value
  * @returns The field object
  */
-function field<Model>(
-  key: string | string[],
-  value: any,
-): Field<Model> {
+function field<Model>(key: string | string[], value: any): Field<Model> {
   return { key, value };
 }
 

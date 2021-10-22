@@ -43,10 +43,6 @@ export type Metadata = {
  * @param data - The model data
  * @returns The document object
  */
-export function doc<Model>(
-  ref: Ref<Model>,
-  data: Model,
-  meta?: Metadata,
-): Doc<Model> {
+export function doc<Model>(ref: Ref<Model>, data: Model, meta?: Metadata): Doc<Model> {
   return { __type__: 'doc', ref, data, meta };
 }

@@ -48,10 +48,7 @@ describe('update', () => {
       visits: 0,
     });
     await update(user, { name: 'Sasha Koss' });
-    await update(user, [
-      field('name', 'Sasha Koss'),
-      field(['address', 'city'], 'Moscow'),
-    ]);
+    await update(user, [field('name', 'Sasha Koss'), field(['address', 'city'], 'Moscow')]);
     const userFromDB = await get(users, user.id);
     expect(userFromDB!.data).to.deep.equal({
       name: 'Sasha Koss',
@@ -168,10 +165,7 @@ describe('update', () => {
     const dateFromDB = userFromDB!.data.birthday!;
     const now = Date.now();
     expect(dateFromDB).to.be.instanceOf(Date);
-    expect(
-      dateFromDB.getTime() < now &&
-        dateFromDB.getTime() > now - 10000,
-    ).to.be.true;
+    expect(dateFromDB.getTime() < now && dateFromDB.getTime() > now - 10000).to.be.true;
   });
 
   describe('updating arrays', () => {
@@ -185,11 +179,7 @@ describe('update', () => {
       const userId = nanoid();
       const fav = await add(favorites, {
         userId,
-        favorites: [
-          'Sapiens',
-          'The 22 Immutable Laws of Marketing',
-          'The Mom Test',
-        ],
+        favorites: ['Sapiens', 'The 22 Immutable Laws of Marketing', 'The Mom Test'],
       });
       const { id } = fav;
       await update(favorites, id, {
@@ -215,18 +205,11 @@ describe('update', () => {
       const userId = nanoid();
       const fav = await add(favorites, {
         userId,
-        favorites: [
-          'Sapiens',
-          'The 22 Immutable Laws of Marketing',
-          'The Mom Test',
-        ],
+        favorites: ['Sapiens', 'The 22 Immutable Laws of Marketing', 'The Mom Test'],
       });
       const { id } = fav;
       await update(favorites, id, {
-        favorites: value('arrayRemove', [
-          'The 22 Immutable Laws of Marketing',
-          'Sapiens',
-        ]),
+        favorites: value('arrayRemove', ['The 22 Immutable Laws of Marketing', 'Sapiens']),
       });
       const favFromDB = await get(favorites, id);
       expect(favFromDB!.data).to.deep.equal({

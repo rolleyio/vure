@@ -1,9 +1,6 @@
 import { doc as firestoreDoc, updateDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { UpdateValue } from '../value';
 import { Field } from '../field';
 import { unwrapData } from '../data';
@@ -14,9 +11,7 @@ import { Ref } from '../ref';
  * making values optional and allow to set value object.
  */
 export type UpdateModel<Model> = {
-  [Key in keyof Model]?:
-    | UpdateModel<Model[Key]>
-    | UpdateValue<Model[Key]>;
+  [Key in keyof Model]?: UpdateModel<Model[Key]> | UpdateValue<Model[Key]>;
 };
 
 /**
@@ -24,20 +19,13 @@ export type UpdateModel<Model> = {
  * @param id - the id of the document to update
  * @param data - the document data to update
  */
-async function update<Model>(
-  collection: Collection<Model>,
-  id: string,
-  data: Field<Model>[],
-): Promise<void>;
+async function update<Model>(collection: Collection<Model>, id: string, data: Field<Model>[]): Promise<void>;
 
 /**
  * @param ref - the reference to the document to set
  * @param data - the document data to update
  */
-async function update<Model>(
-  ref: Ref<Model>,
-  data: Field<Model>[],
-): Promise<void>;
+async function update<Model>(ref: Ref<Model>, data: Field<Model>[]): Promise<void>;
 
 /**
  * @param collection - the collection to update document in
@@ -54,10 +42,7 @@ async function update<Model>(
  * @param ref - the reference to the document to set
  * @param data - the document data to update
  */
-async function update<Model>(
-  ref: Ref<Model>,
-  data: UpdateModel<Model>,
-): Promise<void>;
+async function update<Model>(ref: Ref<Model>, data: UpdateModel<Model>): Promise<void>;
 
 /**
  * Updates a document.
@@ -112,10 +97,7 @@ async function update<Model>(
         return acc;
       }, {} as { [key: string]: any })
     : data;
-  await updateDoc(
-    firestoreDoc(collectionToFirestoreCollection(collection), id),
-    unwrapData(updateData),
-  );
+  await updateDoc(firestoreDoc(collectionToFirestoreCollection(collection), id), unwrapData(updateData));
 }
 
 export default update;

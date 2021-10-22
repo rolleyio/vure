@@ -1,9 +1,6 @@
 import { doc as firestoreDoc, getDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { getDocMeta } from '../utils';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
@@ -12,18 +9,13 @@ import { ref, Ref } from '../ref';
 /**
  * @param ref - The reference to the document
  */
-async function get<Model>(
-  ref: Ref<Model>,
-): Promise<Doc<Model> | null>;
+async function get<Model>(ref: Ref<Model>): Promise<Doc<Model> | null>;
 
 /**
  * @param collection - The collection to get document from
  * @param id - The document id
  */
-async function get<Model>(
-  collection: Collection<Model>,
-  id: string,
-): Promise<Doc<Model> | null>;
+async function get<Model>(collection: Collection<Model>, id: string): Promise<Doc<Model> | null>;
 
 /**
  * Retrieves a document from a collection.
@@ -60,14 +52,10 @@ async function get<Model>(
     id = ref.id;
   }
 
-  const firestoreSnap = await getDoc(
-    firestoreDoc(collectionToFirestoreCollection(collection), id),
-  );
+  const firestoreSnap = await getDoc(firestoreDoc(collectionToFirestoreCollection(collection), id));
   const firestoreData = firestoreSnap.data();
   const data = firestoreData && (wrapData(firestoreData) as Model);
-  return data
-    ? doc(ref(collection, id), data, getDocMeta(firestoreSnap))
-    : null;
+  return data ? doc(ref(collection, id), data, getDocMeta(firestoreSnap)) : null;
 }
 
 export default get;

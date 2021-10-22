@@ -14,10 +14,7 @@ type CollectionEntity<Model> =
   | Subcollection<Model, any>
   | NestedSubcollection<Model, Model, any>;
 
-function group<A>(
-  path: string,
-  collections: [CollectionEntity<A>],
-): CollectionGroup<A>;
+function group<A>(path: string, collections: [CollectionEntity<A>]): CollectionGroup<A>;
 
 function group<A, B>(
   path: string,
@@ -26,11 +23,7 @@ function group<A, B>(
 
 function group<A, B, C>(
   path: string,
-  collections: [
-    CollectionEntity<A>,
-    CollectionEntity<B>,
-    CollectionEntity<C>,
-  ],
+  collections: [CollectionEntity<A>, CollectionEntity<B>, CollectionEntity<C>],
 ): CollectionGroup<A | B | C>;
 
 /**
@@ -58,10 +51,7 @@ function group<A, B, C>(
  * @param name - The collection group name.
  * @param collections - The collections to create group from.
  */
-function group(
-  name: string,
-  _collections: CollectionEntity<any>[],
-): CollectionGroup<unknown> {
+function group(name: string, _collections: CollectionEntity<any>[]): CollectionGroup<unknown> {
   return {
     __type__: 'collectionGroup',
     path: name,

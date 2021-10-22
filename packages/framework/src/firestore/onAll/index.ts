@@ -1,9 +1,6 @@
 import { onSnapshot } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { CollectionGroup } from '../group';
@@ -50,9 +47,7 @@ export default function onAll<Model>(
     (firestoreSnap) => {
       const docs = firestoreSnap.docs.map((snap) =>
         doc<Model>(
-          collection.__type__ === 'collectionGroup'
-            ? pathToRef(snap.ref.path)
-            : ref(collection, snap.id),
+          collection.__type__ === 'collectionGroup' ? pathToRef(snap.ref.path) : ref(collection, snap.id),
           wrapData(snap.data()) as Model,
           getDocMeta(snap),
         ),
@@ -63,11 +58,7 @@ export default function onAll<Model>(
           oldIndex: change.oldIndex,
           newIndex: change.newIndex,
           doc:
-            docs[
-              change.type === 'removed'
-                ? change.oldIndex
-                : change.newIndex
-            ] ||
+            docs[change.type === 'removed' ? change.oldIndex : change.newIndex] ||
             // If change.type indicates 'removed', sometimes(not all the time) `docs` does not
             // contain the removed document. In that case, we'll restore it from `change.doc`:
             doc(

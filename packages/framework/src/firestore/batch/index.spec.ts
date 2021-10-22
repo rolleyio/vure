@@ -23,11 +23,7 @@ describe('batch', () => {
     set(tatiRef, { name: 'Tati' });
     set(edRef, { name: 'Ed' });
     await commit();
-    const [sasha, tati, ed] = await Promise.all([
-      get(sashaRef),
-      get(tatiRef),
-      get(edRef),
-    ]);
+    const [sasha, tati, ed] = await Promise.all([get(sashaRef), get(tatiRef), get(edRef)]);
     expect(sasha!.data.name).to.eq('Sasha');
     expect(tati!.data.name).to.eq('Tati');
     expect(ed!.data.name).to.eq('Ed');
@@ -43,11 +39,7 @@ describe('batch', () => {
     set(tatiRef, { name: 'Tati' });
     set(edRef, { name: 'Ed' });
     await commit();
-    const [sasha, tati, ed] = await Promise.all([
-      get(sashaRef),
-      get(tatiRef),
-      get(edRef),
-    ]);
+    const [sasha, tati, ed] = await Promise.all([get(sashaRef), get(tatiRef), get(edRef)]);
     expect(sasha).to.deep.equal({
       __type__: 'doc',
       ref: { __type__: 'ref', collection: users, id: `${id}-sasha` },
@@ -83,11 +75,7 @@ describe('batch', () => {
     upset(tatiRef, { name: 'Tati Shepeleva', foo: false });
     upset(edRef, { name: 'Ed Tsech' });
     await commit();
-    const [sasha, tati, ed] = await Promise.all([
-      get(sashaRef),
-      get(tatiRef),
-      get(edRef),
-    ]);
+    const [sasha, tati, ed] = await Promise.all([get(sashaRef), get(tatiRef), get(edRef)]);
     expect(sasha!.data).to.deep.equal({
       name: 'Sasha Koss',
       foo: true,
@@ -114,11 +102,7 @@ describe('batch', () => {
     update(tatiRef, { name: 'Tati Shepeleva' });
     update(edRef, { name: 'Ed Tsech' });
     await commit();
-    const [sasha, tati, ed] = await Promise.all([
-      get(sashaRef),
-      get(tatiRef),
-      get(edRef),
-    ]);
+    const [sasha, tati, ed] = await Promise.all([get(sashaRef), get(tatiRef), get(edRef)]);
     expect(sasha!.data.name).to.equal('Sasha Koss');
     expect(tati!.data.name).to.equal('Tati Shepeleva');
     expect(ed!.data.name).to.equal('Ed Tsech');
@@ -139,11 +123,7 @@ describe('batch', () => {
     remove(tatiRef);
     remove(edRef);
     await commit();
-    const [sasha, tati, ed] = await Promise.all([
-      get(sashaRef),
-      get(tatiRef),
-      get(edRef),
-    ]);
+    const [sasha, tati, ed] = await Promise.all([get(sashaRef), get(tatiRef), get(edRef)]);
     expect(sasha).to.be.null;
     expect(tati).to.be.null;
     expect(ed).to.be.null;

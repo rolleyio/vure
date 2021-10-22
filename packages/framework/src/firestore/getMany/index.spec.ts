@@ -20,11 +20,7 @@ describe('getMany', () => {
   });
 
   after(async () => {
-    await Promise.all([
-      remove(fruits, 'apple'),
-      remove(fruits, 'banana'),
-      remove(fruits, 'orange'),
-    ]);
+    await Promise.all([remove(fruits, 'apple'), remove(fruits, 'banana'), remove(fruits, 'orange')]);
   });
 
   it('returns nothing when called with empty array', async () => {
@@ -42,12 +38,7 @@ describe('getMany', () => {
   });
 
   it('allows to get multiple docs by id', async () => {
-    const fruitsFromDB = await getMany(fruits, [
-      'banana',
-      'apple',
-      'banana',
-      'orange',
-    ]);
+    const fruitsFromDB = await getMany(fruits, ['banana', 'apple', 'banana', 'orange']);
     expect(fruitsFromDB.length).to.equal(4);
     expect(fruitsFromDB[0].ref.id).to.equal('banana');
     expect(fruitsFromDB[1].ref.id).to.equal('apple');
@@ -61,9 +52,7 @@ describe('getMany', () => {
         throw new Error('The promise should be rejected');
       })
       .catch((err) => {
-        expect(err.message).to.equal(
-          'Missing document with id nonexistant',
-        );
+        expect(err.message).to.equal('Missing document with id nonexistant');
       }));
 
   it('allows to specify custom logic when a document is not found', async () => {
@@ -71,17 +60,11 @@ describe('getMany', () => {
       color: `${id} is missing but I filled it in`,
     }));
     expect(list.length).to.equal(1);
-    expect(list[0].data.color).to.equal(
-      'nonexistant is missing but I filled it in',
-    );
+    expect(list[0].data.color).to.equal('nonexistant is missing but I filled it in');
   });
 
   it('allows to ignore missing documents', async () => {
-    const list = await getMany(
-      fruits,
-      ['apple', 'nonexistant', 'banana'],
-      'ignore',
-    );
+    const list = await getMany(fruits, ['apple', 'nonexistant', 'banana'], 'ignore');
     expect(list.length).to.equal(2);
   });
 });

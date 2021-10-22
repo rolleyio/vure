@@ -1,9 +1,6 @@
 import { doc as firestoreDoc } from 'firebase/firestore';
 
-import {
-  Collection,
-  collectionToFirestoreCollection,
-} from '../collection';
+import { Collection, collectionToFirestoreCollection } from '../collection';
 import { wrapData } from '../data';
 import { doc, Doc } from '../doc';
 import { ref } from '../ref';
@@ -46,9 +43,7 @@ export default async function getMany<Model>(
   }
 
   const firestoreSnaps = await getAll(
-    ...ids.map((id) =>
-      firestoreDoc(collectionToFirestoreCollection(collection), id),
-    ),
+    ...ids.map((id) => firestoreDoc(collectionToFirestoreCollection(collection), id)),
   );
 
   return firestoreSnaps
@@ -66,13 +61,8 @@ export default async function getMany<Model>(
       }
 
       const firestoreData = firestoreSnap.data();
-      const data =
-        firestoreData && (wrapData(firestoreData) as Model);
-      return doc(
-        ref(collection, firestoreSnap.id),
-        data,
-        getDocMeta(firestoreSnap),
-      );
+      const data = firestoreData && (wrapData(firestoreData) as Model);
+      return doc(ref(collection, firestoreSnap.id), data, getDocMeta(firestoreSnap));
     })
     .filter((doc) => doc != null) as Doc<Model>[];
 }

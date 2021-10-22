@@ -82,14 +82,8 @@ describe('query', () => {
   );
 
   it('queries documents', async () => {
-    const docs = await query(contacts, [
-      where('ownerId', '==', ownerId),
-    ]);
-    expect(docs.map(({ data: { name } }) => name).sort()).to.eql([
-      'Lesha',
-      'Sasha',
-      'Tati',
-    ]);
+    const docs = await query(contacts, [where('ownerId', '==', ownerId)]);
+    expect(docs.map(({ data: { name } }) => name).sort()).to.eql(['Lesha', 'Sasha', 'Tati']);
   });
 
   it('allows to query by value in maps', async () => {
@@ -119,10 +113,7 @@ describe('query', () => {
       where('mapId', '==', mapId),
       where(['address', 'city'], '==', 'New York'),
     ]);
-    expect(docs.map(({ data: { name } }) => name).sort()).to.eql([
-      'Bagels Tower',
-      'Pizza City',
-    ]);
+    expect(docs.map(({ data: { name } }) => name).sort()).to.eql(['Bagels Tower', 'Pizza City']);
   });
 
   it('allows to query using array-contains filter', async () => {
@@ -147,14 +138,8 @@ describe('query', () => {
         tags: ['food', 'hotdogs'],
       }),
     ]);
-    const docs = await query(posts, [
-      where('blogId', '==', blogId),
-      where('tags', 'array-contains', 'pets'),
-    ]);
-    expect(docs.map(({ data: { title } }) => title).sort()).to.eql([
-      'Post about cats',
-      'Post about dogs',
-    ]);
+    const docs = await query(posts, [where('blogId', '==', blogId), where('tags', 'array-contains', 'pets')]);
+    expect(docs.map(({ data: { title } }) => title).sort()).to.eql(['Post about cats', 'Post about dogs']);
   });
 
   it('allows to query using in filter', async () => {
@@ -182,24 +167,12 @@ describe('query', () => {
         type: 'snake',
       }),
     ]);
-    const docs = await query(pets, [
-      where('ownerId', '==', ownerId),
-      where('type', 'in', ['cat', 'dog']),
-    ]);
-    expect(docs.map(({ data: { name } }) => name).sort()).to.eql([
-      'Kimchi',
-      'Persik',
-    ]);
+    const docs = await query(pets, [where('ownerId', '==', ownerId), where('type', 'in', ['cat', 'dog'])]);
+    expect(docs.map(({ data: { name } }) => name).sort()).to.eql(['Kimchi', 'Persik']);
   });
 
   it('allows to query using array-contains-any filter', async () => {
-    type Tag =
-      | 'pets'
-      | 'cats'
-      | 'dogs'
-      | 'wildlife'
-      | 'food'
-      | 'hotdogs';
+    type Tag = 'pets' | 'cats' | 'dogs' | 'wildlife' | 'food' | 'hotdogs';
     type Post = {
       blogId: string;
       title: string;
@@ -241,18 +214,10 @@ describe('query', () => {
   });
 
   it('expands references', async () => {
-    const docs = await query(messages, [
-      where('ownerId', '==', ownerId),
-      where('text', '==', '+1'),
-    ]);
+    const docs = await query(messages, [where('ownerId', '==', ownerId), where('text', '==', '+1')]);
     expect(docs[0].data.author.__type__).to.eql('ref');
-    const authors = await Promise.all(
-      docs.map((doc) => get(contacts, doc.data.author.id)),
-    );
-    expect(authors.map((author) => author!.data.name).sort()).to.eql([
-      'Lesha',
-      'Sasha',
-    ]);
+    const authors = await Promise.all(docs.map((doc) => get(contacts, doc.data.author.id)));
+    expect(authors.map((author) => author!.data.name).sort()).to.eql(['Lesha', 'Sasha']);
   });
 
   it('allows to query by reference', async () => {
@@ -260,10 +225,7 @@ describe('query', () => {
       where('ownerId', '==', ownerId),
       where('author', '==', ref(contacts, sashaId)),
     ]);
-    expect(docs.map((doc) => doc.data.text).sort()).to.eql([
-      '+1',
-      'lul',
-    ]);
+    expect(docs.map((doc) => doc.data.text).sort()).to.eql(['+1', 'lul']);
   });
 
   it('allows to query by date', async () => {
@@ -277,10 +239,7 @@ describe('query', () => {
 
   it('allows querying collection groups', async () => {
     const ownerId = nanoid();
-    const contactMessages = subcollection<Message, Contact>(
-      'contactMessages',
-      contacts,
-    );
+    const contactMessages = subcollection<Message, Contact>('contactMessages', contacts);
     const sashaRef = ref(contacts, `${ownerId}-sasha`);
     const sashasContactMessages = contactMessages(sashaRef);
     add(sashasContactMessages, {
@@ -302,12 +261,8 @@ describe('query', () => {
         text: 'Hello, again!',
       }),
     ]);
-    const allContactMessages = group('contactMessages', [
-      contactMessages,
-    ]);
-    const messages = await query(allContactMessages, [
-      where('ownerId', '==', ownerId),
-    ]);
+    const allContactMessages = group('contactMessages', [contactMessages]);
+    const messages = await query(allContactMessages, [where('ownerId', '==', ownerId)]);
     expect(messages.map((m) => m.data.text).sort()).to.eql([
       'Hello from Sasha!',
       'Hello from Tati!',
@@ -316,18 +271,12 @@ describe('query', () => {
   });
 
   it('allows querying nested subcollection groups', async () => {
-    const contactMessages = subcollection<Message, Contact>(
-      'contactMessages',
-      contacts,
-    );
+    const contactMessages = subcollection<Message, Contact>('contactMessages', contacts);
     type Post = {
       ownerId: string;
       title: string;
     };
-    const nestedPost = subcollection<Post, Message, Contact>(
-      'posts',
-      contactMessages,
-    );
+    const nestedPost = subcollection<Post, Message, Contact>('posts', contactMessages);
 
     const ownerId = nanoid();
     const messageId = nanoid();
@@ -341,85 +290,42 @@ describe('query', () => {
       title: 'Hello, again!',
     });
     const allPosts = group('posts', [nestedPost]);
-    const posts = await query(allPosts, [
-      where('ownerId', '==', ownerId),
-    ]);
-    expect(posts.map((m) => m.data.title).sort()).to.eql([
-      'Hello',
-      'Hello, again!',
-    ]);
+    const posts = await query(allPosts, [where('ownerId', '==', ownerId)]);
+    expect(posts.map((m) => m.data.title).sort()).to.eql(['Hello', 'Hello, again!']);
   });
 
   describe('ordering', () => {
     it('allows ordering', async () => {
-      const docs = await query(contacts, [
-        where('ownerId', '==', ownerId),
-        order('year', 'asc'),
-      ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Sasha',
-        'Tati',
-        'Lesha',
-      ]);
+      const docs = await query(contacts, [where('ownerId', '==', ownerId), order('year', 'asc')]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Sasha', 'Tati', 'Lesha']);
     });
 
     it('allows ordering by desc', async () => {
-      const docs = await query(contacts, [
-        where('ownerId', '==', ownerId),
-        order('year', 'desc'),
-      ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Lesha',
-        'Tati',
-        'Sasha',
-      ]);
+      const docs = await query(contacts, [where('ownerId', '==', ownerId), order('year', 'desc')]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Lesha', 'Tati', 'Sasha']);
     });
 
     it('allows ordering by references', async () => {
-      const docs = await query(messages, [
-        where('ownerId', '==', ownerId),
-        order('author', 'desc'),
-      ]);
+      const docs = await query(messages, [where('ownerId', '==', ownerId), order('author', 'desc')]);
       const messagesLog = await Promise.all(
         docs.map((doc) =>
-          get(contacts, doc.data.author.id).then(
-            (contact) => `${contact!.data.name}: ${doc.data.text}`,
-          ),
+          get(contacts, doc.data.author.id).then((contact) => `${contact!.data.name}: ${doc.data.text}`),
         ),
       );
 
-      expect(messagesLog).to.eql([
-        'Tati: wut',
-        'Sasha: +1',
-        'Sasha: lul',
-        'Lesha: +1',
-      ]);
+      expect(messagesLog).to.eql(['Tati: wut', 'Sasha: +1', 'Sasha: lul', 'Lesha: +1']);
     });
 
     it('allows ordering by date', async () => {
-      const docs = await query(contacts, [
-        where('ownerId', '==', ownerId),
-        order('birthday', 'asc'),
-      ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Sasha',
-        'Tati',
-        'Lesha',
-      ]);
+      const docs = await query(contacts, [where('ownerId', '==', ownerId), order('birthday', 'asc')]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Sasha', 'Tati', 'Lesha']);
     });
   });
 
   describe('limiting', () => {
     it('allows to limit response length', async () => {
-      const docs = await query(contacts, [
-        where('ownerId', '==', ownerId),
-        order('year', 'asc'),
-        limit(2),
-      ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Sasha',
-        'Tati',
-      ]);
+      const docs = await query(contacts, [where('ownerId', '==', ownerId), order('year', 'asc'), limit(2)]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Sasha', 'Tati']);
     });
   });
 
@@ -431,18 +337,13 @@ describe('query', () => {
           order('year', 'asc', [startAfter(undefined)]),
           limit(2),
         ]);
-        expect(page1Docs.map(({ data: { name } }) => name)).to.eql([
-          'Sasha',
-          'Tati',
-        ]);
+        expect(page1Docs.map(({ data: { name } }) => name)).to.eql(['Sasha', 'Tati']);
         const page2Docs = await query(contacts, [
           where('ownerId', '==', ownerId),
           order('year', 'asc', [startAfter(page1Docs[1].data.year)]),
           limit(2),
         ]);
-        expect(page2Docs.map(({ data: { name } }) => name)).to.eql([
-          'Lesha',
-        ]);
+        expect(page2Docs.map(({ data: { name } }) => name)).to.eql(['Lesha']);
       });
     });
 
@@ -453,10 +354,7 @@ describe('query', () => {
           order('year', 'asc', [startAt(1989)]),
           limit(2),
         ]);
-        expect(docs.map(({ data: { name } }) => name)).to.eql([
-          'Tati',
-          'Lesha',
-        ]);
+        expect(docs.map(({ data: { name } }) => name)).to.eql(['Tati', 'Lesha']);
       });
     });
 
@@ -467,9 +365,7 @@ describe('query', () => {
           order('year', 'asc', [endBefore(1989)]),
           limit(2),
         ]);
-        expect(docs.map(({ data: { name } }) => name)).to.eql([
-          'Sasha',
-        ]);
+        expect(docs.map(({ data: { name } }) => name)).to.eql(['Sasha']);
       });
     });
 
@@ -480,10 +376,7 @@ describe('query', () => {
           order('year', 'asc', [endAt(1989)]),
           limit(2),
         ]);
-        expect(docs.map(({ data: { name } }) => name)).to.eql([
-          'Sasha',
-          'Tati',
-        ]);
+        expect(docs.map(({ data: { name } }) => name)).to.eql(['Sasha', 'Tati']);
       });
     });
 
@@ -493,10 +386,7 @@ describe('query', () => {
         order('year', [startAt(1989)]),
         limit(2),
       ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Tati',
-        'Lesha',
-      ]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Tati', 'Lesha']);
     });
 
     it('allows specify multiple cursor conditions', async () => {
@@ -526,9 +416,10 @@ describe('query', () => {
         order('state', 'asc', [startAt('Missouri')]),
         limit(2),
       ]);
-      expect(
-        docs.map(({ data: { name, state } }) => `${name}, ${state}`),
-      ).to.eql(['Springfield, Missouri', 'Springfield, Wisconsin']);
+      expect(docs.map(({ data: { name, state } }) => `${name}, ${state}`)).to.eql([
+        'Springfield, Missouri',
+        'Springfield, Wisconsin',
+      ]);
     });
 
     it('allows to combine cursors', async () => {
@@ -547,10 +438,7 @@ describe('query', () => {
         order('year', 'asc', [startAt(tati!)]),
         limit(2),
       ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Tati',
-        'Lesha',
-      ]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Tati', 'Lesha']);
     });
 
     it('allows using dates as cursors', async () => {
@@ -559,10 +447,7 @@ describe('query', () => {
         order('birthday', 'asc', [startAt(new Date(1989, 6, 10))]),
         limit(2),
       ]);
-      expect(docs.map(({ data: { name } }) => name)).to.eql([
-        'Tati',
-        'Lesha',
-      ]);
+      expect(docs.map(({ data: { name } }) => name)).to.eql(['Tati', 'Lesha']);
     });
   });
 
@@ -583,18 +468,12 @@ describe('query', () => {
         where(docId, '>=', 'published'),
         where(docId, '<', 'publishee'),
       ]);
-      expect(docs.map((doc) => doc.ref.id)).to.eql([
-        'published-0',
-        'published-1',
-      ]);
+      expect(docs.map((doc) => doc.ref.id)).to.eql(['published-0', 'published-1']);
     });
 
     it('allows cursors to use documentId', async () => {
       const docs = await query(shardedCounters, [
-        order(docId, 'asc', [
-          startAt('draft-1'),
-          endAt('published-1'),
-        ]),
+        order(docId, 'asc', [startAt('draft-1'), endAt('published-1')]),
       ]);
       expect(docs.length).to.eql(3);
       expect(docs[0].ref.id).to.eql(`draft-1`);

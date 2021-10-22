@@ -46,10 +46,7 @@ export interface Ref<Model> {
  * @param id=RANDOM_ID - The document id; generated when not passed
  * @returns The reference object
  */
-export function ref<Model>(
-  collection: Collection<Model>,
-  id: string,
-): Ref<Model> {
+export function ref<Model>(collection: Collection<Model>, id: string): Ref<Model> {
   return { __type__: 'ref', collection, id };
 }
 

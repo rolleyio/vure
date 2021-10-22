@@ -42,9 +42,7 @@ describe('onGetMany', () => {
         expect(fruitsFromDB[0].__type__).to.equal('doc');
         expect(fruitsFromDB[0].data.color).to.equal('green');
         expect(fruitsFromDB[0].ref.id).to.equal('apple');
-        expect(fruitsFromDB[0].ref.collection.path).to.equal(
-          'fruits',
-        );
+        expect(fruitsFromDB[0].ref.collection.path).to.equal('fruits');
         resolve(true);
       });
     });
@@ -52,18 +50,14 @@ describe('onGetMany', () => {
 
   it('allows to get multiple docs by id', () => {
     return new Promise((resolve) => {
-      off = onGetMany(
-        fruits,
-        ['banana', 'apple', 'banana', 'orange'],
-        (fruitsFromDB) => {
-          expect(fruitsFromDB.length).to.equal(4);
-          expect(fruitsFromDB[0].ref.id).to.equal('banana');
-          expect(fruitsFromDB[1].ref.id).to.equal('apple');
-          expect(fruitsFromDB[2].ref.id).to.equal('banana');
-          expect(fruitsFromDB[3].ref.id).to.equal('orange');
-          resolve(true);
-        },
-      );
+      off = onGetMany(fruits, ['banana', 'apple', 'banana', 'orange'], (fruitsFromDB) => {
+        expect(fruitsFromDB.length).to.equal(4);
+        expect(fruitsFromDB[0].ref.id).to.equal('banana');
+        expect(fruitsFromDB[1].ref.id).to.equal('apple');
+        expect(fruitsFromDB[2].ref.id).to.equal('banana');
+        expect(fruitsFromDB[3].ref.id).to.equal('orange');
+        resolve(true);
+      });
     });
   });
 
@@ -122,10 +116,7 @@ describe('onGetMany', () => {
 
   describe('real-time', () => {
     it('subscribes to updates', async () => {
-      await Promise.all([
-        set(fruits, 'apple', { color: 'green' }),
-        set(fruits, 'mango', { color: 'green' }),
-      ]);
+      await Promise.all([set(fruits, 'apple', { color: 'green' }), set(fruits, 'mango', { color: 'green' })]);
 
       setTimeout(() => {
         update(fruits, 'mango', { color: 'yellow' });
@@ -133,17 +124,13 @@ describe('onGetMany', () => {
 
       return new Promise((resolve) => {
         off = onGetMany(fruits, ['apple', 'mango'], (list) => {
-          const colorOf = (id: string) =>
-            list.find((doc) => doc.ref.id === id)!.data.color;
+          const colorOf = (id: string) => list.find((doc) => doc.ref.id === id)!.data.color;
 
           if (colorOf('mango') === 'yellow') {
             update(fruits, 'mango', { color: 'red' });
             update(fruits, 'apple', { color: 'red' });
           }
-          if (
-            colorOf('mango') === 'red' &&
-            colorOf('apple') === 'red'
-          ) {
+          if (colorOf('mango') === 'red' && colorOf('apple') === 'red') {
             resolve();
           }
         });

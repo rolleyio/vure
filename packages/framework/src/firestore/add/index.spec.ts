@@ -45,9 +45,7 @@ describe('add', () => {
     });
     const postFromDB = await get(posts, post.id);
     expect(postFromDB?.data.date).to.be.instanceOf(Date);
-    return expect(postFromDB!.data.date!.getTime()).to.equal(
-      date.getTime(),
-    );
+    return expect(postFromDB!.data.date!.getTime()).to.equal(date.getTime());
   });
 
   it('supports server dates', async () => {
@@ -61,16 +59,10 @@ describe('add', () => {
     const now = Date.now();
     const returnedDate = post?.data.date;
     expect(returnedDate).to.be.instanceOf(Date);
-    expect(
-      returnedDate!.getTime() < now &&
-        returnedDate!.getTime() > now - 10000,
-    ).to.be.true;
+    expect(returnedDate!.getTime() < now && returnedDate!.getTime() > now - 10000).to.be.true;
     const postFromDB = await get(posts, post!.ref.id);
     const dateFromDB = postFromDB!.data.date;
     expect(dateFromDB).to.be.instanceOf(Date);
-    return expect(
-      dateFromDB!.getTime() < now &&
-        dateFromDB!.getTime() > now - 10000,
-    ).to.be.true;
+    return expect(dateFromDB!.getTime() < now && dateFromDB!.getTime() > now - 10000).to.be.true;
   });
 });

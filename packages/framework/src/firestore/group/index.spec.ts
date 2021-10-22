@@ -18,15 +18,8 @@ describe('group', () => {
     it('creates collection group', () => {
       const posts = collection<Post>('posts');
       const userPosts = subcollection<Post, User>('posts', users);
-      const companyPosts = subcollection<Post, User>(
-        'posts',
-        companies,
-      );
-      const allPosts = group('posts', [
-        posts,
-        userPosts,
-        companyPosts,
-      ]);
+      const companyPosts = subcollection<Post, User>('posts', companies);
+      const allPosts = group('posts', [posts, userPosts, companyPosts]);
       expect(allPosts).to.deep.equal({
         __type__: 'collectionGroup',
         path: 'posts',

@@ -40,10 +40,7 @@ export function unwrapData(data: any): any {
       return Timestamp.fromDate(data);
     }
 
-    const unwrappedObject: { [key: string]: any } = Object.assign(
-      Array.isArray(data) ? [] : {},
-      data,
-    );
+    const unwrappedObject: { [key: string]: any } = Object.assign(Array.isArray(data) ? [] : {}, data);
     Object.keys(unwrappedObject).forEach((key) => {
       unwrappedObject[key] = unwrapData(unwrappedObject[key]);
     });
@@ -68,10 +65,7 @@ export function wrapData(data: unknown) {
   } else if (data instanceof Timestamp) {
     return data.toDate();
   } else if (data && typeof data === 'object') {
-    const wrappedData: { [key: string]: any } = Object.assign(
-      Array.isArray(data) ? [] : {},
-      data,
-    );
+    const wrappedData: { [key: string]: any } = Object.assign(Array.isArray(data) ? [] : {}, data);
     Object.keys(wrappedData).forEach((key) => {
       wrappedData[key] = wrapData(wrappedData[key]);
     });
